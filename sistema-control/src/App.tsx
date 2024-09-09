@@ -5,6 +5,8 @@ import LoginForm from './components/LoginForm/LoginForm'; // Asegúrate de que l
 import MainLayout from './components/MainLayout/MainLayout';
 import PublishPage from './components/PublishPage/PublishPage';
 import CreatePost from './components/PublishPage/CreatePost';
+import Settings from './components/Settings/Settings';
+import ManagePosts from './components/PublishPage/ManagePosts';
 
 const App: React.FC = () => {
   return (
@@ -14,6 +16,8 @@ const App: React.FC = () => {
         <Route path='/menu' element={<MainLayout/>}/>
         <Route path="/publicar" element={<PublishPage />} />
         <Route path="/crear-publicacion" element={<CreatePost />} />
+        <Route path="/administrar-publicaciones" element={<ManagePosts />} />
+        <Route path="/settings" element={<Settings />} />  
       </Routes>
     </Router>
   );

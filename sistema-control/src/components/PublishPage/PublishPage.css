@@ -1,50 +1,84 @@
-.publish-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-  }
-  
-  .publish-title {
-    text-align: center;
-    color: #003366; /* Color azul oscuro */
-    margin-bottom: 30px;
-  }
-  
-  .menu {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-  
-  .menu-list {
-    list-style-type: none;
-    padding: 0;
-    display: flex;
-    gap: 20px;
-  }
-  
-  .menu-item {
-    padding: 10px;
-  }
-  
-  .menu-link {
-    text-decoration: none;
-    color: #003366;
-    font-weight: bold;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s ease;
-  }
-  
-  .menu-link:hover {
-    color: #ff6600;
-    border-bottom: 2px solid #ff6600; /* Subrayado naranja al pasar el mouse */
-  }
-  
-  .content {
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
+/* Contenedor principal */
+.create-post-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Toma el 100% de la altura de la ventana */
+  background-color: #f4f6f9;
+}
+
+/* Estilos de la tarjeta del formulario */
+.create-post-card {
+  background-color: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+}
+
+/* Título del formulario */
+.create-post-title {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #003366;
+  margin-bottom: 30px;
+}
+
+/* Estilos de los campos del formulario */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  color: #003366;
+  margin-bottom: 10px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #007bff;
+}
+
+/* Estilos de la previsualización de la imagen */
+.image-preview {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón de enviar */
+.submit-button {
+  width: 100%;
+  padding: 15px;
+  background-color: #005bb5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #007bff;
+}

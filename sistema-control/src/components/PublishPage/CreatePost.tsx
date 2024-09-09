@@ -35,52 +35,55 @@ const CreatePost: React.FC = () => {
       {/* Agregamos el Navbar */}
       <Navbar />
 
-      <div className="create-post">
+      <div className="create-post-container">
         <h1 className="create-post-title">Crear Nueva Publicación</h1>
-        <form className="create-post-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="title">Título de la publicación</label>
-            <input
-              type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ingrese el título"
-              required
-            />
+        <div className="create-post-card">
+          <div className="image-section">
+            {imagePreviewUrl ? (
+              <img src={imagePreviewUrl} alt="Previsualización" className="image-preview" />
+            ) : (
+              <div className="placeholder">Header</div>
+            )}
           </div>
+          <div className="content-section">
+            <form className="create-post-form" onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="title">Título de la publicación</label>
+                <input
+                  type="text"
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Ingrese el título"
+                  required
+                />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="content">Contenido de la publicación</label>
-            <textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Ingrese el contenido"
-              required
-            />
+              <div className="form-group">
+                <label htmlFor="content">Contenido de la publicación</label>
+                <textarea
+                  id="content"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="Ingrese el contenido"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="image">Subir una imagen (opcional)</label>
+                <input 
+                  type="file" 
+                  id="image" 
+                  accept="image/*" 
+                  onChange={handleImageChange} 
+                />
+              </div>
+
+              <button type="submit" className="submit-button">Publicar</button>
+            </form>
           </div>
-
-          <div className="form-group">
-            <label htmlFor="image">Subir una imagen (opcional)</label>
-            <input 
-              type="file" 
-              id="image" 
-              accept="image/*" 
-              onChange={handleImageChange} 
-            />
-          </div>
-
-          {/* Mostrar la previsualización de la imagen si existe */}
-          {imagePreviewUrl && (
-            <div className="image-preview">
-              <p>Previsualización de la imagen:</p>
-              <img src={imagePreviewUrl} alt="Previsualización" />
-            </div>
-          )}
-
-          <button type="submit" className="submit-button">Publicar</button>
-        </form>
+        </div>
       </div>
     </div>
   );

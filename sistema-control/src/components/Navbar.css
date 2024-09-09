@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(45deg, #0033cc, #0066ff); /* Degradado de azul */
+  background-color: #003366;
   padding: 15px;
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -21,21 +21,22 @@
 .navbar-actions {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
-.publish-button {
-  background-color: #ffc107; /* Color dorado */
-  color: #003366; /* Texto azul oscuro para buen contraste */
+.publish-button,
+.iglesias-button {
+  background-color: #005bb5;
+  color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 15px;
   border-radius: 5px;
   cursor: pointer;
-  margin-right: 20px;
-  font-weight: bold;
 }
 
-.publish-button:hover {
-  background-color: #e0a800; /* Color dorado más oscuro al pasar el mouse */
+.publish-button:hover,
+.iglesias-button:hover {
+  background-color: #007bff;
 }
 
 .user-icon {
