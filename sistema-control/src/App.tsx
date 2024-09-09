@@ -1,22 +1,20 @@
 // src/App.tsx
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import Header from './components/Header';
-import HeroSection from './components/HeroSection';
-import Footer from './components/Footer';
-
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import LoginForm from './components/LoginForm/LoginForm'; // Asegúrate de que la ruta al componente sea correcta
+import MainLayout from './components/MainLayout/MainLayout';
+import PublishPage from './components/PublishPage/PublishPage';
+import CreatePost from './components/PublishPage/CreatePost';
 
 const App: React.FC = () => {
   return (
     <Router>
-      <Header />
-      <nav>
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/about">About</Link></li>
-        </ul>
-      </nav>
-      <Footer />
+      <Routes>
+        <Route path="/" element={<LoginForm />} />
+        <Route path='/menu' element={<MainLayout/>}/>
+        <Route path="/publicar" element={<PublishPage />} />
+        <Route path="/crear-publicacion" element={<CreatePost />} />
+      </Routes>
     </Router>
   );
 };

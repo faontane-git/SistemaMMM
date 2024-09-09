@@ -1,0 +1,50 @@
+.publish-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .publish-title {
+    text-align: center;
+    color: #003366; /* Color azul oscuro */
+    margin-bottom: 30px;
+  }
+  
+  .menu {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .menu-list {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .menu-item {
+    padding: 10px;
+  }
+  
+  .menu-link {
+    text-decoration: none;
+    color: #003366;
+    font-weight: bold;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+  
+  .menu-link:hover {
+    color: #ff6600;
+    border-bottom: 2px solid #ff6600; /* Subrayado naranja al pasar el mouse */
+  }
+  
+  .content {
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
