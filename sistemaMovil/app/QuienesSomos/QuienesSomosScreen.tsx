@@ -11,12 +11,12 @@ export default function QuienesSomosScreen() {
   };
 
   // Función para llamar a un contacto
-  const callContact = (phone) => {
+  const callContact = (phone:any) => {
     Linking.openURL(`tel:${phone}`);
   };
 
   // Función para enviar correo a un contacto
-  const emailContact = (email) => {
+  const emailContact = (email:any) => {
     Linking.openURL(`mailto:${email}`);
   };
 
