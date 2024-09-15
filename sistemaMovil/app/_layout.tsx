@@ -1,45 +1,31 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import React from "react";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from "./Home/HomeScreen";
+import QuienesSomosScreen from "./QuienesSomos/QuienesSomosScreen";
+import RedesSocialesScreen from "./RedesSociales/RedesSocialesScreen";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-import InicioScreen from '.';
+const Stack = createNativeStackNavigator();
 
-// Evitar que la splash screen se esconda automáticamente.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  // Detectar si el dispositivo usa el tema oscuro o claro
-  const colorScheme = useColorScheme();
-
-  // Cargar fuentes personalizadas
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  // Ocultar splash screen cuando las fuentes estén cargadas
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  // Si las fuentes no están cargadas, no renderizar nada.
-  if (!loaded) {
-    return null;
-  }
-
+const MainStack = () => {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen
-          name="index" // Nombre de la ruta
-          options={{ headerShown: false }} // Sin encabezado
-        />
-      </Stack>
-    </ThemeProvider>
+    <Stack.Navigator>
+      <Stack.Screen
+        name='index'
+        component={HomeScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='QuienesSomos/QuienesSomosScreen'
+        component={QuienesSomosScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='RedesSociales/RedesSocialesScreen'
+        component={RedesSocialesScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
   );
-}
+};
+
+export default MainStack;
