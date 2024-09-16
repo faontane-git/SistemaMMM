@@ -41,26 +41,37 @@ export default function HomeScreen() {
                         Todos los miércoles a las 7 PM, estudio bíblico con el pastor.
                     </Text>
                 </View>
-            </ScrollView>
 
-            {/* Sección de sermones */}
-            <View style={styles.sermons}>
-                <Text style={styles.sermonsTitle}>Últimos Sermones</Text>
-                <View style={styles.sermonItem}>
-                    <Text style={styles.sermonTitle}>Título del Sermón 1</Text>
-                    <TouchableOpacity style={styles.playButton}>
-                        <FontAwesome name="play" size={20} color="white" />
-                        <Text style={styles.playButtonText}>Reproducir</Text>
+                {/* Sección de sermones */}
+                <View style={styles.sermons}>
+                    <Text style={styles.sermonsTitle}>Últimos Sermones</Text>
+                    <View style={styles.sermonItem}>
+                        <Text style={styles.sermonTitle}>Título del Sermón 1</Text>
+                        <TouchableOpacity style={styles.playButton}>
+                            <FontAwesome name="play" size={20} color="white" />
+                            <Text style={styles.playButtonText}>Reproducir</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.sermonItem}>
+                        <Text style={styles.sermonTitle}>Título del Sermón 2</Text>
+                        <TouchableOpacity style={styles.playButton}>
+                            <FontAwesome name="play" size={20} color="white" />
+                            <Text style={styles.playButtonText}>Reproducir</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                {/* Botón de Doctrina */}
+                <View style={styles.doctrinaSection}>
+                    <TouchableOpacity
+                        style={styles.doctrinaButton}
+                        onPress={() => handleOptionPress('Doctrina/DoctrinaScreen')}
+                    >
+                        <FontAwesome name="book" size={20} color="white" />
+                        <Text style={styles.doctrinaButtonText}>Ver Doctrina</Text>
                     </TouchableOpacity>
                 </View>
-                <View style={styles.sermonItem}>
-                    <Text style={styles.sermonTitle}>Título del Sermón 2</Text>
-                    <TouchableOpacity style={styles.playButton}>
-                        <FontAwesome name="play" size={20} color="white" />
-                        <Text style={styles.playButtonText}>Reproducir</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
+            </ScrollView>
 
             {/* Barra de menú en la parte inferior */}
             <View style={styles.bottomMenu}>
@@ -71,11 +82,17 @@ export default function HomeScreen() {
                     <FontAwesome name="info-circle" size={24} color="white" />
                     <Text style={styles.menuItemText}>¿Quiénes somos?</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.menuItem}>
+                <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => handleOptionPress('Rutas/RutasScreen')}
+                >
                     <FontAwesome name="map-marker" size={24} color="white" />
                     <Text style={styles.menuItemText}>Rutas</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.menuItem}>
+                <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => handleOptionPress('Agenda/AgendaScreen')}
+                >
                     <FontAwesome name="calendar" size={24} color="white" />
                     <Text style={styles.menuItemText}>Agenda</Text>
                 </TouchableOpacity>
@@ -86,12 +103,6 @@ export default function HomeScreen() {
                     <FontAwesome name="share-alt" size={24} color="white" />
                     <Text style={styles.menuItemText}>Redes Sociales</Text>
                 </TouchableOpacity>
-                {/* 
-                <TouchableOpacity style={styles.menuItem}>
-                    <FontAwesome name="book" size={24} color="white" />
-                    <Text style={styles.menuItemText}>Doctrina</Text>
-                </TouchableOpacity>
-                */}
             </View>
         </View>
     );
@@ -186,6 +197,27 @@ const styles = StyleSheet.create({
         color: 'white',
         marginLeft: 10,
         fontSize: 16,
+    },
+    doctrinaSection: {
+        marginVertical: 20,
+        alignItems: 'center',
+    },
+    doctrinaButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#2980b9',
+        padding: 15,
+        borderRadius: 50,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        elevation: 3,
+    },
+    doctrinaButtonText: {
+        color: 'white',
+        marginLeft: 10,
+        fontSize: 16,
+        fontWeight: 'bold',
     },
     bottomMenu: {
         flexDirection: 'row',

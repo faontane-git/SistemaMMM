@@ -1,151 +1,176 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { FontAwesome } from '@expo/vector-icons'; // Icono para el botón
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function QuienesSomosScreen() {
   const navigation = useNavigation();
 
   const handleGoBack = () => {
-    navigation.goBack();
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('Home' as never); // Redirige a la pantalla 'Home' si no puede ir hacia atrás
+    }
   };
 
-  // Función para llamar a un contacto
-  const callContact = (phone:any) => {
+  // Funciones para llamar y enviar correos electrónicos
+  const callContact = (phone: any) => {
     Linking.openURL(`tel:${phone}`);
   };
 
-  // Función para enviar correo a un contacto
-  const emailContact = (email:any) => {
+  const emailContact = (email: any) => {
     Linking.openURL(`mailto:${email}`);
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>¿Quiénes somos?</Text>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require('../../assets/logo.png')} // Ruta local al logo
+            style={styles.logo}
+          />
+        </View>
+        <Text style={styles.headerText}>¿Quiénes somos?
+        </Text>
+        <TouchableOpacity style={styles.backIcon} onPress={handleGoBack}>
+          <FontAwesome name="arrow-left" size={24} color="white" />
+        </TouchableOpacity>
       </View>
-      <Text style={styles.paragraph}>
-        Bienvenidos a la iglesia MMV, una comunidad que busca crecer en la fe y en el servicio
-        a Dios. Nuestra iglesia ha sido un refugio espiritual para cientos de familias desde
-        su fundación. A través de la oración, el servicio y el compañerismo, buscamos ayudar a
-        las personas a encontrar su propósito en Cristo.
-      </Text>
-      <Text style={styles.paragraph}>
-        Nos dedicamos a difundir el evangelio de Jesús y ofrecer un espacio donde todos sean
-        bienvenidos, independientemente de su trasfondo o situación actual. Creemos en la
-        importancia de la familia, la comunidad y el crecimiento espiritual constante.
-      </Text>
-      <Text style={styles.paragraph}>
-        Te invitamos a ser parte de nuestras actividades, donde podrás crecer en la fe y en
-        el conocimiento de la Palabra de Dios. Únete a nosotros y sé parte de esta gran familia.
-      </Text>
-
-      {/* Sección de Contactos */}
-      <View style={styles.contactSection}>
-        <Text style={styles.contactTitle}>Nuestros Contactos</Text>
-
-        {/* Tarjeta de contacto 1 */}
-        <View style={styles.contactCard}>
-          <Text style={styles.contactName}>Juan Pérez</Text>
-          <Text style={styles.contactRole}>Pastor Principal</Text>
-          <View style={styles.contactActions}>
-            <TouchableOpacity onPress={() => callContact('+123456789')} style={styles.contactButton}>
-              <FontAwesome name="phone" size={20} color="#fff" />
-              <Text style={styles.contactButtonText}>Llamar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => emailContact('juanperez@iglesiammv.com')} style={styles.contactButton}>
-              <FontAwesome name="envelope" size={20} color="#fff" />
-              <Text style={styles.contactButtonText}>Email</Text>
-            </TouchableOpacity>
-          </View>
+      {/* Contenido */}
+      <ScrollView style={styles.contentSection}>
+        <Text style={styles.sectionTitle}>Somos una organización sin fines de lucro</Text>
+        <View style={styles.infoCard}>
+          <Text style={styles.infoText}>
+            Llevamos el mensaje de Dios a las vidas necesitadas, y predicamos que la sangre de Cristo puede transformar las vidas y los hogares destruidos.
+          </Text>
         </View>
 
-        {/* Tarjeta de contacto 2 */}
-        <View style={styles.contactCard}>
-          <Text style={styles.contactName}>María González</Text>
-          <Text style={styles.contactRole}>Coordinadora de Jóvenes</Text>
-          <View style={styles.contactActions}>
-            <TouchableOpacity onPress={() => callContact('+987654321')} style={styles.contactButton}>
-              <FontAwesome name="phone" size={20} color="#fff" />
-              <Text style={styles.contactButtonText}>Llamar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => emailContact('mariagonzalez@iglesiammv.com')} style={styles.contactButton}>
-              <FontAwesome name="envelope" size={20} color="#fff" />
-              <Text style={styles.contactButtonText}>Email</Text>
-            </TouchableOpacity>
-          </View>
+        {/* Sección de Misión */}
+        <Text style={styles.sectionTitle}>Misión</Text>
+        <View style={styles.infoCard}>
+          <Text style={styles.infoText}>
+            Llevamos un enfoque en la pesca de almas para nuestro Señor Jesucristo, alcanzando jóvenes y familias destruidas por las redes del enemigo, proclamando el evangelio y llamando a nuevas personas a la fe en Cristo.
+          </Text>
         </View>
 
-        {/* Más tarjetas de contacto pueden añadirse aquí */}
-      </View>
+        {/* Sección de Visión */}
+        <Text style={styles.sectionTitle}>Visión</Text>
+        <View style={styles.infoCard}>
+          <Text style={styles.infoText}>
+            Está enfocada en reflejar nuestros valores fundamentales, metas espirituales y facilitar una conexión con Dios. Queremos ser un lugar donde las personas puedan experimentar un cambio radical en sus vidas a través de la fe en Jesucristo.
+          </Text>
+        </View>
 
-      {/* Botón de volver */}
-      <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-        <FontAwesome name="arrow-left" size={20} color="white" />
-        <Text style={styles.backButtonText}>Volver</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        {/* Sección de Contactos */}
+        <Text style={styles.sectionTitle}>Contactos</Text>
+
+        {/* Contacto Pastor Víctor Escobar */}
+        <View style={styles.contactCard}>
+          <Text style={styles.contactName}>Pastor, Víctor Escobar</Text>
+          <TouchableOpacity onPress={() => callContact('0986463987')} style={styles.contactButton}>
+            <FontAwesome name="phone" size={20} color="#fff" />
+            <Text style={styles.contactButtonText}>0986463987</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Contacto Pastora Rosa Landázuri */}
+        <View style={styles.contactCard}>
+          <Text style={styles.contactName}>Pastora, Rosa Landázuri</Text>
+          <TouchableOpacity onPress={() => callContact('0998231349')} style={styles.contactButton}>
+            <FontAwesome name="phone" size={20} color="#fff" />
+            <Text style={styles.contactButtonText}>0998231349</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Contacto Co-Pastor David García */}
+        <View style={styles.contactCard}>
+          <Text style={styles.contactName}>Co-Pastor, David García</Text>
+          <TouchableOpacity onPress={() => callContact('0991831447')} style={styles.contactButton}>
+            <FontAwesome name="phone" size={20} color="#fff" />
+            <Text style={styles.contactButtonText}>0991831447</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Contacto Correo */}
+        <View style={styles.contactCard}>
+          <Text style={styles.contactName}>Correo</Text>
+          <TouchableOpacity onPress={() => emailContact('mmmfranciscoorellana@gmail.com')} style={styles.contactButton}>
+            <FontAwesome name="envelope" size={20} color="#fff" />
+            <Text style={[styles.contactButtonText, styles.smallEmailText]}>
+              mmmfranciscoorellana@gmail.com
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f0f3f5',
+    backgroundColor: '#f8f9fa',
   },
   header: {
-    backgroundColor: '#3498db',
-    padding: 20,
-    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    paddingTop: 30, // Espacio adicional en la parte superior
+    backgroundColor: '#2c3e50',
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 5,
   },
-  title: {
-    fontSize: 28,
+  logoContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 40,
+    height: 40,
+  },
+  headerText: {
+    color: 'white',
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
+    flex: 1,
     textAlign: 'center',
   },
-  paragraph: {
-    fontSize: 16,
-    lineHeight: 26,
-    color: '#2c3e50',
+  backIcon: {
+    backgroundColor: '#2980b9',
+    padding: 10,
+    borderRadius: 50,
+  },
+  contentSection: {
+    padding: 20,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
     marginBottom: 15,
-    textAlign: 'justify',
+    color: '#2c3e50',
+  },
+  infoCard: {
+    padding: 20,
     backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
+    borderRadius: 10,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 3,
-  },
-  contactSection: {
-    backgroundColor: '#ecf0f1',
-    padding: 20,
-    borderRadius: 10,
+    elevation: 2,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
   },
-  contactTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    textAlign: 'center',
-    marginBottom: 20,
+  infoText: {
+    fontSize: 16,
+    color: '#34495e',
   },
   contactCard: {
     backgroundColor: '#fff',
     padding: 20,
-    borderRadius: 10,
+    borderRadius: 12,
     marginBottom: 15,
     shadowColor: '#000',
     shadowOpacity: 0.2,
@@ -155,30 +180,16 @@ const styles = StyleSheet.create({
   contactName: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
     color: '#2c3e50',
-  },
-  contactRole: {
-    fontSize: 16,
-    marginBottom: 15,
-    color: '#7f8c8d',
-  },
-  contactActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    marginBottom: 10,
   },
   contactButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: '#2980b9',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 50,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
   },
   contactButtonText: {
     color: 'white',
@@ -186,23 +197,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#e74c3c',
-    paddingVertical: 15,
-    borderRadius: 50,
-    marginTop: 30,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+  smallEmailText: {
+    fontSize: 12, // Tamaño más pequeño para el texto del correo
   },
-  backButtonText: {
-    color: 'white',
-    marginLeft: 10,
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
+
 });
