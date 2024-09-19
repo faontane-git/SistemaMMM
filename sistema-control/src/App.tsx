@@ -7,17 +7,19 @@ import PublishPage from './components/PublishPage/PublishPage';
 import CreatePost from './components/PublishPage/CreatePost';
 import Settings from './components/Settings/Settings';
 import ManagePosts from './components/PublishPage/ManagePosts';
+import Metrics from './components/Settings/Metrics';
 
 const App: React.FC = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<LoginForm />} />
-        <Route path='/menu' element={<MainLayout/>}/>
+        <Route path='/menu' element={<MainLayout />} />
         <Route path="/publicar" element={<PublishPage />} />
         <Route path="/crear-publicacion" element={<CreatePost />} />
         <Route path="/administrar-publicaciones" element={<ManagePosts />} />
-        <Route path="/settings" element={<Settings />} />  
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/metrics" element={<Metrics />} />
       </Routes>
     </Router>
   );

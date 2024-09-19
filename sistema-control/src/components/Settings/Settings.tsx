@@ -13,6 +13,11 @@ const Settings: React.FC = () => {
         navigate('/');
     };
 
+    const goToMetrics = () => {
+        // Redirigir a la pantalla de métricas
+        navigate('/metrics');
+    };
+
     return (
         <div>
             <Navbar /> {/* Incluimos el Navbar */}
@@ -21,9 +26,9 @@ const Settings: React.FC = () => {
 
                 <div className="settings-options">
                     <div className="settings-item">
-                        <h2>Notificaciones</h2>
-                        <p>Configura tus preferencias de notificaciones.</p>
-                        <button className="settings-button">Modificar</button>
+                        <h2>Métricas</h2>
+                        <p>Mira las métricas de almacenamiento y consultas.</p>
+                        <button className="settings-button" onClick={goToMetrics}>Ver métricas</button> {/* Redirige a métricas */}
                     </div>
 
                     <div className="settings-item">
