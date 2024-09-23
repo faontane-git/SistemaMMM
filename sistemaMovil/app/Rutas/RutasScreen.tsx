@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Linking, TouchableHighlight } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import MapView, { Marker } from 'react-native-maps';
 
 export default function RutasScreen() {
     const navigation = useNavigation();
@@ -46,6 +47,28 @@ export default function RutasScreen() {
                 {/* Ubicación GPS */}
                 <View style={styles.infoCard}>
                     <Text style={styles.infoText}>Ubicación GPS (Google Maps)</Text>
+
+                    {/* Mapa interactivo */}
+                    <MapView
+                        style={styles.mapPreview}
+                        initialRegion={{
+                            latitude: -2.0976604,   // Latitud de la ubicación
+                            longitude: -79.9108986, // Longitud de la ubicación
+                            latitudeDelta: 0.01,    // Zoom del mapa
+                            longitudeDelta: 0.01,
+                        }}
+                    >
+                        <Marker
+                            coordinate={{
+                                latitude: -2.0976604,
+                                longitude: -79.9108986,
+                            }}
+                            title="Movimiento Misionero Mundial"
+                            description="Francisco Orellana"
+                        />
+                    </MapView>
+
+                    {/* Botón para abrir en Google Maps */}
                     <TouchableHighlight
                         style={styles.linkButton}
                         onPress={() => openLink('https://maps.app.goo.gl/5T8qgD1newABiDHQ9')}
@@ -58,17 +81,17 @@ export default function RutasScreen() {
                     </TouchableHighlight>
                 </View>
 
-                {/* Video de cómo llegar */}
+                {/* Botón para abrir el video */}
                 <View style={styles.infoCard}>
                     <Text style={styles.infoText}>Video de cómo llegar</Text>
                     <TouchableHighlight
                         style={styles.linkButton}
-                        onPress={() => openLink('https://fb.watch/uilFjkFkEn/')}
+                        onPress={() => openLink('https://www.facebook.com/watch/?v=uilFjkFkEn')}
                         underlayColor="#21618C"
                     >
                         <View style={styles.linkButtonInner}>
                             <FontAwesome name="video-camera" size={20} color="white" />
-                            <Text style={styles.linkButtonText}>Ver Video</Text>
+                            <Text style={styles.linkButtonText}>Ver video</Text>
                         </View>
                     </TouchableHighlight>
                 </View>
@@ -79,18 +102,6 @@ export default function RutasScreen() {
                     <Text style={styles.infoText}>64B, 63A, 85, 131, 143</Text>
                 </View>
             </ScrollView>
-
-            {/* Barra de menú en la parte inferior */}
-            <View style={styles.bottomMenu}>
-                <TouchableOpacity
-                    style={styles.menuItem}
-                    onPress={handleGoBack}
-                    activeOpacity={0.7}
-                >
-                    <FontAwesome name="arrow-left" size={24} color="white" />
-                    <Text style={styles.menuItemText}>Volver</Text>
-                </TouchableOpacity>
-            </View>
         </View>
     );
 }
@@ -183,5 +194,11 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 5,
         textAlign: 'center',
+    },
+    mapPreview: {
+        width: '100%',
+        height: 200,
+        borderRadius: 10,
+        marginBottom: 10,
     },
 });

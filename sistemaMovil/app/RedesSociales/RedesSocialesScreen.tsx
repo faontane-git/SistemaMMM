@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Linking, TouchableHighlight } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons'; // Icono para el botón
 
@@ -23,6 +23,12 @@ export default function RedesSocialesScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require('../../assets/logo.png')} // Ruta local al logo genérico
+            style={styles.logo}
+          />
+        </View>
         <Text style={styles.headerText}>Redes Sociales</Text>
         <TouchableOpacity style={styles.backIcon} onPress={handleGoBack}>
           <FontAwesome name="arrow-left" size={24} color="white" />
@@ -164,4 +170,12 @@ const styles = StyleSheet.create({
     color: '#2c3e50',
     lineHeight: 26,
   },
+   logoContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 40,
+    height: 40,
+  }
 });

@@ -41,17 +41,16 @@ export default function QuienesSomosScreen() {
       </View>
       {/* Contenido */}
       <ScrollView style={styles.contentSection}>
-        <Text style={styles.sectionTitle}>Somos una organización sin fines de lucro</Text>
         <View style={styles.infoCard}>
-          <Text style={styles.infoText}>
-            Llevamos el mensaje de Dios a las vidas necesitadas, y predicamos que la sangre de Cristo puede transformar las vidas y los hogares destruidos.
+          <Text style={[styles.infoText, { textAlign: 'justify' }]}>
+            Somos una organización sin fines de lucro llevamos el mensaje de Dios a las vidas necesitadas, y predicamos que la sangre de Cristo puede transformar las vidas y los hogares destruidos.
           </Text>
         </View>
 
         {/* Sección de Misión */}
         <Text style={styles.sectionTitle}>Misión</Text>
         <View style={styles.infoCard}>
-          <Text style={styles.infoText}>
+          <Text style={[styles.infoText, { textAlign: 'justify' }]}>
             Llevamos un enfoque en la pesca de almas para nuestro Señor Jesucristo, alcanzando jóvenes y familias destruidas por las redes del enemigo, proclamando el evangelio y llamando a nuevas personas a la fe en Cristo.
           </Text>
         </View>
@@ -59,7 +58,7 @@ export default function QuienesSomosScreen() {
         {/* Sección de Visión */}
         <Text style={styles.sectionTitle}>Visión</Text>
         <View style={styles.infoCard}>
-          <Text style={styles.infoText}>
+          <Text style={[styles.infoText, { textAlign: 'justify' }]}>
             Está enfocada en reflejar nuestros valores fundamentales, metas espirituales y facilitar una conexión con Dios. Queremos ser un lugar donde las personas puedan experimentar un cambio radical en sus vidas a través de la fe en Jesucristo.
           </Text>
         </View>
@@ -69,30 +68,51 @@ export default function QuienesSomosScreen() {
 
         {/* Contacto Pastor Víctor Escobar */}
         <View style={styles.contactCard}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={require('../../assets/images/victorEscobar.jpeg')} // Ruta a la imagen local
+              style={styles.contactImage} // Agrega un estilo para la imagen
+            />
+          </View>
           <Text style={styles.contactName}>Pastor, Víctor Escobar</Text>
           <TouchableOpacity onPress={() => callContact('0986463987')} style={styles.contactButton}>
             <FontAwesome name="phone" size={20} color="#fff" />
-            <Text style={styles.contactButtonText}>0986463987</Text>
+            <Text style={styles.contactButtonText}>Llamar</Text>
           </TouchableOpacity>
         </View>
+
 
         {/* Contacto Pastora Rosa Landázuri */}
         <View style={styles.contactCard}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={require('../../assets/images/rosaLandazuri.jpeg')} // Ruta a la imagen local de Rosa Landázuri
+              style={styles.contactImage} // Estilo para la imagen
+            />
+          </View>
           <Text style={styles.contactName}>Pastora, Rosa Landázuri</Text>
           <TouchableOpacity onPress={() => callContact('0998231349')} style={styles.contactButton}>
-            <FontAwesome name="phone" size={20} color="#fff" />
-            <Text style={styles.contactButtonText}>0998231349</Text>
+            <FontAwesome name="phone" size={16} color="#fff" />
+            <Text style={styles.contactButtonText}>Llamar</Text>
           </TouchableOpacity>
         </View>
 
+
         {/* Contacto Co-Pastor David García */}
         <View style={styles.contactCard}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={require('../../assets/images/davidGarcia.jpeg')} // Ruta a la imagen local de David García
+              style={styles.contactImage} // Estilo para la imagen
+            />
+          </View>
           <Text style={styles.contactName}>Co-Pastor, David García</Text>
           <TouchableOpacity onPress={() => callContact('0991831447')} style={styles.contactButton}>
             <FontAwesome name="phone" size={20} color="#fff" />
-            <Text style={styles.contactButtonText}>0991831447</Text>
+            <Text style={styles.contactButtonText}>Llamar</Text>
           </TouchableOpacity>
         </View>
+
 
         {/* Contacto Correo */}
         <View style={styles.contactCard}>
@@ -120,7 +140,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    paddingTop: 30, // Espacio adicional en la parte superior
+    paddingTop: 30,
     backgroundColor: '#2c3e50',
     marginBottom: 20,
   },
@@ -170,35 +190,52 @@ const styles = StyleSheet.create({
   contactCard: {
     backgroundColor: '#fff',
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 20,  // Borde más redondeado
     marginBottom: 15,
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 5,
-    elevation: 3,
+    elevation: 4, // Mayor elevación para dar sensación de "flotante"
+    alignItems: 'center', // Centrar contenido en la tarjeta
+  },
+  imageContainer: {
+    borderWidth: 3,   // Añadir borde a la imagen
+    borderColor: '#2980b9', // Color del borde de la imagen
+    borderRadius: 50,
+    padding: 5,
+    marginBottom: 15, // Añadir separación entre la imagen y el texto
+  },
+  contactImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,  // Imagen redonda
   },
   contactName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#2c3e50',
     marginBottom: 10,
+    textAlign: 'center',  // Centrar el texto
   },
   contactButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center', // Centrar el contenido del botón
     backgroundColor: '#2980b9',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 50,
+    width: '80%', // Hacer el botón más ancho
   },
   contactButtonText: {
     color: 'white',
     marginLeft: 10,
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   smallEmailText: {
-    fontSize: 12, // Tamaño más pequeño para el texto del correo
+    fontSize: 10,  // Tamaño más pequeño para el texto del correo
   },
-
 });
+

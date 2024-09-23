@@ -20,10 +20,7 @@ export default function HomeScreen() {
                         style={styles.logo}
                     />
                 </View>
-                <Text style={styles.headerText}>Movimiento MMV</Text>
-                <TouchableOpacity style={styles.loginIcon}>
-                    <FontAwesome name="user" size={24} color="white" />
-                </TouchableOpacity>
+                <Text style={styles.headerText}>Movimiento MMM</Text>
             </View>
 
             {/* Noticias y eventos */}
@@ -137,11 +134,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         flex: 1,
         textAlign: 'center', // Alineación centrada para el título
-    },
-    loginIcon: {
-        backgroundColor: '#2980b9',
-        padding: 10,
-        borderRadius: 50,
     },
     newsSection: {
         padding: 20,
