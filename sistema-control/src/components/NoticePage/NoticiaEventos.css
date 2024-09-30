@@ -1,0 +1,79 @@
+/* NoticiaEventos.css */
+.notivia-container {
+  margin: 20px;
+  padding: 20px;
+}
+
+.notivia-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 28px;
+  color: #333;
+}
+
+.new-event-button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.new-event-button:hover {
+  background-color: #0056b3;
+}
+
+.noticias-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.noticia-card {
+  width: 300px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer; /* Indicar que la tarjeta es un botón */
+  text-align: left; /* Alinear el contenido a la izquierda */
+  font: inherit; /* Inherit para mantener consistencia en la fuente */
+  color: inherit; /* Inherit para mantener consistencia en el color */
+}
+
+.noticia-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.noticia-titulo {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.noticia-descripcion {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.noticia-fecha {
+  font-size: 12px;
+  color: #aaa;
+  text-align: right;
+}
+
+.no-news {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+}

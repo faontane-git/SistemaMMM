@@ -1,39 +1,35 @@
-/* Contenedor principal de la página */
+/* PublishPage.css */
 .publish-container {
-  padding: 40px;
-  max-width: 1200px;
-  margin: 0 auto;
-  background-color: #f4f4f9;
-  border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  padding: 20px;
 }
 
-/* Título de la página */
 .publish-title {
-  font-size: 2.5rem;
-  color: #003366;
   text-align: center;
-  margin-bottom: 40px;
-  font-family: 'Roboto', sans-serif;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
 }
 
-/* Estilos del menú */
 .menu {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
 .menu-list {
-  list-style: none;
+  list-style-type: none;
   padding: 0;
   display: flex;
-  gap: 20px;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .menu-item {
-  flex: 1;
-  min-width: 300px;
+  margin: 10px;
+  padding: 10px;
+  width: 220px;
 }
 
 .menu-link {
@@ -42,36 +38,28 @@
 }
 
 .menu-card {
-  background-color: white;
-  padding: 30px;
+  padding: 20px;
+  border: 1px solid #ddd;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  text-align: center;
+  background-color: #f9f9f9;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .menu-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .menu-card h2 {
-  font-size: 1.8rem;
-  color: #003366;
+  font-size: 18px;
   margin-bottom: 10px;
 }
 
 .menu-card p {
+  font-size: 14px;
   color: #666;
-  font-size: 1rem;
-  margin-bottom: 0;
 }
 
-/* Estilos del contenido */
 .content {
-  margin-top: 40px;
-  background-color: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
 }

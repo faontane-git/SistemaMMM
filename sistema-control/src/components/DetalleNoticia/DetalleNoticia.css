@@ -1,0 +1,54 @@
+/* Estilo para los botones de acción */
+.accion-button {
+  padding: 8px 12px;
+  margin: 0 5px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.editar-button {
+  background-color: #ffc107; /* Color amarillo */
+  color: #ffffff;
+}
+
+.eliminar-button {
+  background-color: #dc3545; /* Color rojo */
+  color: #ffffff;
+}
+
+/* Efectos hover para los botones */
+.editar-button:hover {
+  background-color: #e0a800; /* Amarillo más oscuro */
+}
+
+.eliminar-button:hover {
+  background-color: #c82333; /* Rojo más oscuro */
+}
+
+/* Ajustes adicionales para la tabla */
+.tabla-noticias th, .tabla-noticias td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.tabla-noticias th {
+  background-color: #007bff; /* Fondo azul para las cabeceras */
+  color: #ffffff;
+}
+
+.tabla-noticias tr:nth-child(even) {
+  background-color: #f9f9f9; /* Fila alterna */
+}
+
+.tabla-noticias tr:hover {
+  background-color: #f1f1f1; /* Fondo al pasar el cursor */
+}
+
+/* Ajuste para la columna de acciones */
+.tabla-noticias td:last-child {
+  text-align: center;
+  white-space: nowrap; /* Evitar que los botones se desborden */
+}
