@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../Navbar';
-import { Container, Typography, Card, CardContent, Box, Avatar, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } from '@mui/material';
+import {
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  Box,
+  Avatar,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+} from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -44,6 +58,7 @@ const Contactos: React.FC = () => {
 
   const handleEditar = (contacto: Contacto) => {
     setContactoSeleccionado(contacto);
+    setNombreArchivo(null); // Resetear el nombre del archivo al abrir la edición
     setOpenEditar(true);
   };
 
@@ -55,6 +70,7 @@ const Contactos: React.FC = () => {
   const handleCloseEditar = () => {
     setOpenEditar(false);
     setContactoSeleccionado(null);
+    setNombreArchivo(null); // Limpiar el nombre del archivo al cerrar el modal
   };
 
   const handleCloseCrear = () => {
@@ -78,12 +94,16 @@ const Contactos: React.FC = () => {
   };
 
   // Función para manejar la subida de la imagen y convertirla a Base64
-  const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>, modo: 'crear' | 'editar') => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setNuevoContacto({ ...nuevoContacto, foto: reader.result as string });
+        if (modo === 'crear') {
+          setNuevoContacto({ ...nuevoContacto, foto: reader.result as string });
+        } else if (modo === 'editar' && contactoSeleccionado) {
+          setContactoSeleccionado({ ...contactoSeleccionado, foto: reader.result as string });
+        }
       };
       reader.readAsDataURL(file); // Convertir la imagen a Base64
 
@@ -271,14 +291,22 @@ const Contactos: React.FC = () => {
               onChange={handleChangeEditar}
               sx={{ mb: 2 }}
             />
-            <TextField
-              margin="dense"
-              label="Foto (URL Base64)"
-              name="foto"
-              fullWidth
-              value={contactoSeleccionado?.foto || ''}
-              onChange={handleChangeEditar}
-            />
+            {/* Input de archivo para subir la imagen */}
+            <Button
+              variant="contained"
+              component="label"
+              sx={{ mt: 2, mb: 2 }}
+              color="primary"
+            >
+              Reemplazar Foto
+              <input type="file" hidden accept="image/*" onChange={(e) => handleUploadImage(e, 'editar')} />
+            </Button>
+            {/* Mostrar el nombre del archivo seleccionado como feedback */}
+            {nombreArchivo && (
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                Archivo seleccionado: {nombreArchivo}
+              </Typography>
+            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseEditar} color="secondary">
@@ -320,7 +348,7 @@ const Contactos: React.FC = () => {
               color="primary"
             >
               Subir Foto
-              <input type="file" hidden accept="image/*" onChange={handleUploadImage} />
+              <input type="file" hidden accept="image/*" onChange={(e) => handleUploadImage(e, 'crear')} />
             </Button>
             {/* Mostrar el nombre del archivo seleccionado como feedback */}
             {nombreArchivo && (

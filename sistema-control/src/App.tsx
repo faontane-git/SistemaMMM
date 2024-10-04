@@ -11,6 +11,7 @@ import CrearNoticia from './components/CrearNoticia/CrearNoticia';
 import DetalleNoticia from './components/DetalleNoticia/DetalleNoticia';
 import Contactos from './components/Contactos/Contactos';
 import Agenda from './components/Agenda/Agenda';
+import RedesSociales from './components/RedesSociales/RedesSociales';
 
 const App: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const App: React.FC = () => {
         <Route path="detalle-noticia" element={<DetalleNoticia />} /> {/* Nueva ruta para crear noticia */}
         <Route path="contactos" element={<Contactos />} />
         <Route path='agenda' element={<Agenda/>}/>
+        <Route path='redes-sociales' element={<RedesSociales/>}/>
       </Routes>
     </Router>
   );
