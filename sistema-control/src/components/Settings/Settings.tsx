@@ -99,48 +99,7 @@ const Settings: React.FC = () => {
               </Card>
             </Grid>
 
-            {/* Tarjeta de Preferencias */}
-            <Grid item xs={12} sm={6} md={4}>
-              <Card
-                sx={{
-                  backgroundColor: '#f9f9f9',
-                  borderRadius: 3,
-                  textAlign: 'center',
-                  padding: 4,
-                  boxShadow: '0px 6px 14px rgba(0, 0, 0, 0.1)',
-                  '&:hover': { boxShadow: '0px 8px 18px rgba(0, 0, 0, 0.15)', transform: 'scale(1.03)' },
-                  transition: 'all 0.3s ease-in-out',
-                  minHeight: '300px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#3a6073', mb: 2 }}>
-                    Preferencias
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
-                    Configura tus preferencias de cuenta.
-                  </Typography>
-                </CardContent>
-                <CardActions sx={{ justifyContent: 'center', mt: 'auto' }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{
-                      backgroundColor: '#3a7bd5',
-                      '&:hover': { backgroundColor: '#3a6073' },
-                      fontSize: '16px',
-                      padding: 1.2,
-                    }}
-                  >
-                    Modificar
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-
+ 
             {/* Tarjeta de Cerrar Sesión */}
             <Grid item xs={12} sm={6} md={4}>
               <Card

@@ -2,8 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import Swal from 'sweetalert2'; // Importar SweetAlert2
-import './CrearNoticia.css';
+import Swal from 'sweetalert2';
+import {
+  Box,
+  Container,
+  TextField,
+  Typography,
+  Button,
+  Grid,
+} from '@mui/material';
 
 const CrearNoticia: React.FC = () => {
   const [titulo, setTitulo] = useState('');
@@ -50,46 +57,96 @@ const CrearNoticia: React.FC = () => {
 
   return (
     <div>
-      <Navbar />
-      <div className="crear-noticia-wrapper">
-        <div className="crear-noticia-container">
-          <h1 className="crear-noticia-title">Crear Nueva Noticia</h1>
-          <form onSubmit={handleSubmit} className="crear-noticia-form">
-            <div className="form-group">
-              <label htmlFor="titulo">Título:</label>
-              <input
-                type="text"
-                id="titulo"
-                value={titulo}
-                onChange={(e) => setTitulo(e.target.value)}
-                placeholder="Ingrese el título de la noticia"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="descripcion">Descripción:</label>
-              <textarea
-                id="descripcion"
-                value={descripcion}
-                onChange={(e) => setDescripcion(e.target.value)}
-                placeholder="Ingrese la descripción detallada de la noticia"
-                required
-              ></textarea>
-            </div>
-            <div className="form-group">
-              <label htmlFor="fecha">Fecha:</label>
-              <input
-                type="date"
-                id="fecha"
-                value={fecha}
-                onChange={(e) => setFecha(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" className="submit-button">Publicar Noticia</button>
-          </form>
-        </div>
-      </div>
+      <Navbar /> {/* Incluye el Navbar */}
+
+      {/* Contenedor Principal */}
+      <Box
+        sx={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          padding: 4,
+          pt: 8,
+        }}
+      >
+        <Container maxWidth="sm" sx={{ backgroundColor: '#fff', borderRadius: 3, boxShadow: 3, padding: 4 }}>
+          {/* Título del formulario */}
+          <Typography variant="h4" component="h1" align="center" gutterBottom sx={{ fontWeight: 'bold', color: '#3a6073' }}>
+            Crear Nueva Noticia
+          </Typography>
+
+          {/* Formulario de creación de noticia */}
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4 }}>
+            <Grid container spacing={3}>
+              {/* Campo de Título */}
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Título"
+                  value={titulo}
+                  onChange={(e) => setTitulo(e.target.value)}
+                  placeholder="Ingrese el título de la noticia"
+                  required
+                  variant="outlined"
+                />
+              </Grid>
+
+              {/* Campo de Descripción */}
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Descripción"
+                  value={descripcion}
+                  onChange={(e) => setDescripcion(e.target.value)}
+                  placeholder="Ingrese la descripción detallada de la noticia"
+                  required
+                  multiline
+                  rows={4}
+                  variant="outlined"
+                />
+              </Grid>
+
+              {/* Campo de Fecha */}
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Fecha"
+                  type="date"
+                  value={fecha}
+                  onChange={(e) => setFecha(e.target.value)}
+                  required
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                />
+              </Grid>
+            </Grid>
+
+            {/* Botón para publicar la noticia */}
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{
+                mt: 4,
+                backgroundColor: '#3a7bd5',
+                '&:hover': {
+                  backgroundColor: '#3a6073',
+                },
+                fontSize: '16px',
+                fontWeight: 'bold',
+                padding: 1.5,
+              }}
+            >
+              Publicar Noticia
+            </Button>
+          </Box>
+        </Container>
+      </Box>
     </div>
   );
 };
