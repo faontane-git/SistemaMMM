@@ -10,38 +10,33 @@ import {
   Divider,
 } from '@mui/material';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import { getStorage, ref, listAll, getMetadata } from 'firebase/storage';
 
 const Metrics: React.FC = () => {
-  const [queryCount, setQueryCount] = useState<number>(0);
-  const [storageMetrics, setStorageMetrics] = useState<number>(0);
-  const storageLimit = 1024; // Límite de almacenamiento en MB (1GB = 1024 MB)
+  const [totalDocuments, setTotalDocuments] = useState<number>(0);
+  const [estimatedStorageUsageKB, setEstimatedStorageUsageKB] = useState<number>(0);
+  const documentLimit = 10000; // Límite estimado para el número de documentos
+  const avgDocSizeKB = 5; // Tamaño estimado de cada documento en KB
+  const storageLimitKB = 1024 * 1024; // Límite de almacenamiento de 1GB en KB (1GB = 1,048,576 KB)
 
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        // Obtener el número de documentos en la colección "Usuarios"
         const db = getFirestore();
-        const querySnapshot = await getDocs(collection(db, 'Usuarios'));
-        setQueryCount(querySnapshot.size);
+        let documentCount = 0;
 
-        // Calcular el uso de almacenamiento desde Firebase Storage
-        const storage = getStorage();
-        const storageRef = ref(storage);
+        // Definir manualmente las colecciones que quieres sumar
+        const collectionNames = ['Usuarios', 'RedesSociales', 'Noticias', 'Horarios', 'Contactos']; // Aquí defines las colecciones
 
-        // Listar todos los archivos en la raíz y calcular su tamaño total
-        let totalSize = 0;
-        const listResult = await listAll(storageRef);
-
-        // Obtener metadatos de cada archivo
-        for (const itemRef of listResult.items) {
-          const metadata = await getMetadata(itemRef);
-          totalSize += metadata.size; // Sumar el tamaño del archivo en bytes
+        for (const name of collectionNames) {
+          const querySnapshot = await getDocs(collection(db, name));
+          documentCount += querySnapshot.size;
         }
 
-        // Convertir el tamaño total a MB
-        const totalSizeInMB = totalSize / (1024 * 1024);
-        setStorageMetrics(totalSizeInMB);
+        setTotalDocuments(documentCount);
+
+        // Estimación del tamaño total de almacenamiento en KB
+        const estimatedStorage = documentCount * avgDocSizeKB;
+        setEstimatedStorageUsageKB(estimatedStorage);
       } catch (error) {
         console.error('Error fetching metrics: ', error);
       }
@@ -50,8 +45,11 @@ const Metrics: React.FC = () => {
     fetchMetrics();
   }, []);
 
-  // Calcular porcentaje de uso de almacenamiento
-  const storagePercentage = (storageMetrics / storageLimit) * 100;
+  // Calcular porcentaje de documentos consumidos
+  const documentPercentage = (totalDocuments / documentLimit) * 100;
+
+  // Calcular porcentaje de almacenamiento consumido en relación a 1GB
+  const storagePercentage = (estimatedStorageUsageKB / storageLimitKB) * 100;
 
   return (
     <div>
@@ -87,26 +85,35 @@ const Metrics: React.FC = () => {
                 Documentos en Firestore
               </Typography>
               <Typography variant="h6" sx={{ color: '#3a6073' }}>
-                Número de documentos: {queryCount}
-              </Typography>
-            </CardContent>
-          </Card>
-
-          {/* Tarjeta para Métricas de Almacenamiento */}
-          <Card sx={{ padding: 2, borderRadius: 2, boxShadow: 3, backgroundColor: '#f9f9f9' }}>
-            <CardContent>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 'medium' }}>
-                Uso de Almacenamiento
-              </Typography>
-              <Typography variant="h6" sx={{ color: '#3a6073' }}>
-                Tamaño total de almacenamiento: {storageMetrics.toFixed(2)} MB / {storageLimit} MB
+                Número total de documentos: {totalDocuments} / {documentLimit} (Límite estimado)
               </Typography>
               <Divider sx={{ my: 2 }} />
               <Typography variant="body1" gutterBottom>
-                {storagePercentage.toFixed(2)}% utilizado
+                {documentPercentage.toFixed(2)}% del límite de documentos utilizado
               </Typography>
+              {/* Barra de Progreso para documentos */}
+              <LinearProgress
+                variant="determinate"
+                value={documentPercentage}
+                sx={{ height: 10, borderRadius: 5, backgroundColor: '#e0e0e0' }}
+              />
+            </CardContent>
+          </Card>
 
-              {/* Barra de Progreso */}
+          {/* Tarjeta para Estimación de Uso de Almacenamiento */}
+          <Card sx={{ padding: 2, borderRadius: 2, boxShadow: 3, backgroundColor: '#f9f9f9' }}>
+            <CardContent>
+              <Typography variant="h5" gutterBottom sx={{ fontWeight: 'medium' }}>
+                Estimación de Uso de Almacenamiento en Firestore
+              </Typography>
+              <Typography variant="h6" sx={{ color: '#3a6073' }}>
+                Tamaño total estimado de almacenamiento: {estimatedStorageUsageKB.toFixed(2)} KB / {storageLimitKB.toLocaleString()} KB (1 GB)
+              </Typography>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="body1" gutterBottom>
+                {storagePercentage.toFixed(2)}% del límite de almacenamiento utilizado
+              </Typography>
+              {/* Barra de Progreso para almacenamiento */}
               <LinearProgress
                 variant="determinate"
                 value={storagePercentage}

@@ -227,13 +227,20 @@ const Contactos: React.FC = () => {
         <Typography variant="body1" align="center" gutterBottom>
           Aquí puedes encontrar los datos de contacto de nuestros pastores.
         </Typography>
+
+        {/* Botón para crear contacto en la parte superior */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+          <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={handleCrear}>
+            Crear Contacto
+          </Button>
+        </Box>
+
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             gap: 3,
-            mt: 3,
           }}
         >
           {contactos.map((contacto) => (
@@ -260,13 +267,6 @@ const Contactos: React.FC = () => {
               </IconButton>
             </Card>
           ))}
-        </Box>
-
-        {/* Botón para crear contacto en la parte inferior */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={handleCrear}>
-            Crear Contacto
-          </Button>
         </Box>
 
         {/* Modal para editar el contacto */}

@@ -33,7 +33,7 @@ const Settings: React.FC = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          backgroundColor: '#ffffff',
+          backgroundColor: '#f0f0f0', // Un color de fondo más suave para hacer contraste con las tarjetas
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-start', // Alinear el contenido hacia arriba
@@ -55,19 +55,22 @@ const Settings: React.FC = () => {
           </Typography>
 
           {/* Opciones de configuración organizadas en un Grid */}
-          <Grid container spacing={3} justifyContent="center">
+          <Grid container spacing={4} justifyContent="center">
             {/* Tarjeta de Métricas */}
             <Grid item xs={12} sm={6} md={4}>
               <Card
                 sx={{
-                  backgroundColor: '#f9f9f9',
+                  backgroundColor: '#ffffff',
                   borderRadius: 3,
                   textAlign: 'center',
                   padding: 4,
                   boxShadow: '0px 6px 14px rgba(0, 0, 0, 0.1)',
-                  '&:hover': { boxShadow: '0px 8px 18px rgba(0, 0, 0, 0.15)', transform: 'scale(1.03)' },
+                  '&:hover': {
+                    boxShadow: '0px 8px 18px rgba(0, 0, 0, 0.15)',
+                    transform: 'scale(1.03)',
+                  },
                   transition: 'all 0.3s ease-in-out',
-                  minHeight: '300px', // Definir una altura mínima uniforme
+                  minHeight: '300px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -81,7 +84,7 @@ const Settings: React.FC = () => {
                     Mira las métricas de almacenamiento y consultas.
                   </Typography>
                 </CardContent>
-                <CardActions sx={{ justifyContent: 'center', mt: 'auto' }}> {/* Alinear los botones en la misma posición */}
+                <CardActions sx={{ justifyContent: 'center', mt: 'auto' }}>
                   <Button
                     variant="contained"
                     color="primary"
@@ -90,7 +93,7 @@ const Settings: React.FC = () => {
                       backgroundColor: '#3a7bd5',
                       '&:hover': { backgroundColor: '#3a6073' },
                       fontSize: '16px',
-                      padding: 1.2,
+                      padding: '10px 20px',
                     }}
                   >
                     Ver métricas
@@ -99,17 +102,19 @@ const Settings: React.FC = () => {
               </Card>
             </Grid>
 
- 
             {/* Tarjeta de Cerrar Sesión */}
             <Grid item xs={12} sm={6} md={4}>
               <Card
                 sx={{
-                  backgroundColor: '#f9f9f9',
+                  backgroundColor: '#ffffff',
                   borderRadius: 3,
                   textAlign: 'center',
                   padding: 4,
                   boxShadow: '0px 6px 14px rgba(0, 0, 0, 0.1)',
-                  '&:hover': { boxShadow: '0px 8px 18px rgba(0, 0, 0, 0.15)', transform: 'scale(1.03)' },
+                  '&:hover': {
+                    boxShadow: '0px 8px 18px rgba(0, 0, 0, 0.15)',
+                    transform: 'scale(1.03)',
+                  },
                   transition: 'all 0.3s ease-in-out',
                   minHeight: '300px',
                   display: 'flex',
@@ -134,7 +139,7 @@ const Settings: React.FC = () => {
                       backgroundColor: '#e53935',
                       '&:hover': { backgroundColor: '#d32f2f' },
                       fontSize: '16px',
-                      padding: 1.2,
+                      padding: '10px 20px',
                     }}
                   >
                     Cerrar Sesión
