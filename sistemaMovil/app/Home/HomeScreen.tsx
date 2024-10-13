@@ -1,14 +1,45 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native'; // Importa el hook de navegación
+import { useNavigation } from '@react-navigation/native';
+import { getDocs, collection } from 'firebase/firestore';
+import { firestore } from '../../firebaseConfig'; // Asegúrate de importar `firestore` correctamente
 
 export default function HomeScreen() {
-    const navigation = useNavigation(); // Usa el hook para obtener el objeto navigation
+    const [noticias, setNoticias] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        const obtenerNoticias = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(firestore, 'Noticias')); // Cambia 'Noticias' por tu colección
+                const noticiasArray = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                setNoticias(noticiasArray);
+            } catch (error) {
+                console.error('Error al obtener noticias:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        obtenerNoticias();
+    }, []);
 
     const handleOptionPress = (option: string) => {
-        navigation.navigate(option as never); // Navegar a la ruta proporcionada
+        navigation.navigate(option as never);
     };
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -16,7 +47,7 @@ export default function HomeScreen() {
             <View style={styles.header}>
                 <View style={styles.logoContainer}>
                     <Image
-                        source={require('../../assets/logo.png')} // Ruta local al logo genérico
+                        source={require('../../assets/logo.png')}
                         style={styles.logo}
                     />
                 </View>
@@ -26,18 +57,12 @@ export default function HomeScreen() {
             {/* Noticias y eventos */}
             <ScrollView style={styles.newsSection}>
                 <Text style={styles.newsTitle}>Noticias y Eventos</Text>
-                <View style={styles.newsItem}>
-                    <Text style={styles.newsItemTitle}>Evento de jóvenes</Text>
-                    <Text style={styles.newsItemDescription}>
-                        Ven y únete a nuestro próximo evento para jóvenes este fin de semana.
-                    </Text>
-                </View>
-                <View style={styles.newsItem}>
-                    <Text style={styles.newsItemTitle}>Estudio bíblico</Text>
-                    <Text style={styles.newsItemDescription}>
-                        Todos los miércoles a las 7 PM, estudio bíblico con el pastor.
-                    </Text>
-                </View>
+                {noticias.map((noticia) => (
+                    <View key={noticia.id} style={styles.newsItem}>
+                        <Text style={styles.newsItemTitle}>{noticia.titulo}</Text>
+                        <Text style={styles.newsItemDescription}>{noticia.descripcion}</Text>
+                    </View>
+                ))}
 
                 {/* Sección de sermones */}
                 <View style={styles.sermons}>
@@ -110,15 +135,20 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f8f9fa',
     },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 15,
-        paddingTop: 30, // Espacio adicional en la parte superior
+        paddingTop: 30,
         backgroundColor: '#2c3e50',
-        marginBottom: 20, // Añadir más espacio debajo del header
+        marginBottom: 20,
     },
     logoContainer: {
         justifyContent: 'center',
@@ -126,14 +156,14 @@ const styles = StyleSheet.create({
     },
     logo: {
         width: 40,
-        height: 40, // Ajusta el tamaño del logo según tu preferencia
+        height: 40,
     },
     headerText: {
         color: 'white',
-        fontSize: 16, // Reducido el tamaño del texto
+        fontSize: 16,
         fontWeight: 'bold',
         flex: 1,
-        textAlign: 'center', // Alineación centrada para el título
+        textAlign: 'center',
     },
     newsSection: {
         padding: 20,
