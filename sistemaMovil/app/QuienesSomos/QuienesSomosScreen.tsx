@@ -1,27 +1,53 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
+import { getDocs, collection } from 'firebase/firestore';
+import { firestore } from '../../firebaseConfig'; // Asegúrate de importar correctamente tu configuración de Firebase
 
 export default function QuienesSomosScreen() {
+  const [contactos, setContactos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const obtenerContactos = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(firestore, 'Contactos')); // Cambia 'Contactos' por tu colección en Firestore
+        const contactosArray = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setContactos(contactosArray);
+      } catch (error) {
+        console.error('Error al obtener contactos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    obtenerContactos();
+  }, []);
 
   const handleGoBack = () => {
     if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
-      navigation.navigate('Home' as never); // Redirige a la pantalla 'Home' si no puede ir hacia atrás
+      navigation.navigate('Home' as never);
     }
   };
 
-  // Funciones para llamar y enviar correos electrónicos
-  const callContact = (phone: any) => {
+  const callContact = (phone: string) => {
     Linking.openURL(`tel:${phone}`);
   };
 
-  const emailContact = (email: any) => {
-    Linking.openURL(`mailto:${email}`);
-  };
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -33,12 +59,12 @@ export default function QuienesSomosScreen() {
             style={styles.logo}
           />
         </View>
-        <Text style={styles.headerText}>¿Quiénes somos?
-        </Text>
+        <Text style={styles.headerText}>¿Quiénes somos?</Text>
         <TouchableOpacity style={styles.backIcon} onPress={handleGoBack}>
           <FontAwesome name="arrow-left" size={24} color="white" />
         </TouchableOpacity>
       </View>
+
       {/* Contenido */}
       <ScrollView style={styles.contentSection}>
         <View style={styles.infoCard}>
@@ -63,67 +89,23 @@ export default function QuienesSomosScreen() {
           </Text>
         </View>
 
-        {/* Sección de Contactos */}
+        {/* Sección de Contactos (cargada dinámicamente desde Firestore) */}
         <Text style={styles.sectionTitle}>Contactos</Text>
-
-        {/* Contacto Pastor Víctor Escobar */}
-        <View style={styles.contactCard}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={require('../../assets/images/victorEscobar.jpeg')} // Ruta a la imagen local
-              style={styles.contactImage} // Agrega un estilo para la imagen
-            />
+        {contactos.map((contacto) => (
+          <View key={contacto.id} style={styles.contactCard}>
+            <View style={styles.imageContainer}>
+              <Image
+                source={{ uri: contacto.foto }} // Usamos la URL de la imagen desde Firestore
+                style={styles.contactImage}
+              />
+            </View>
+            <Text style={styles.contactName}>{contacto.nombre}</Text>
+            <TouchableOpacity onPress={() => callContact(contacto.telefono)} style={styles.contactButton}>
+              <FontAwesome name="phone" size={20} color="#fff" />
+              <Text style={styles.contactButtonText}>Llamar</Text>
+            </TouchableOpacity>
           </View>
-          <Text style={styles.contactName}>Pastor, Víctor Escobar</Text>
-          <TouchableOpacity onPress={() => callContact('0986463987')} style={styles.contactButton}>
-            <FontAwesome name="phone" size={20} color="#fff" />
-            <Text style={styles.contactButtonText}>Llamar</Text>
-          </TouchableOpacity>
-        </View>
-
-
-        {/* Contacto Pastora Rosa Landázuri */}
-        <View style={styles.contactCard}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={require('../../assets/images/rosaLandazuri.jpeg')} // Ruta a la imagen local de Rosa Landázuri
-              style={styles.contactImage} // Estilo para la imagen
-            />
-          </View>
-          <Text style={styles.contactName}>Pastora, Rosa Landázuri</Text>
-          <TouchableOpacity onPress={() => callContact('0998231349')} style={styles.contactButton}>
-            <FontAwesome name="phone" size={16} color="#fff" />
-            <Text style={styles.contactButtonText}>Llamar</Text>
-          </TouchableOpacity>
-        </View>
-
-
-        {/* Contacto Co-Pastor David García */}
-        <View style={styles.contactCard}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={require('../../assets/images/davidGarcia.jpeg')} // Ruta a la imagen local de David García
-              style={styles.contactImage} // Estilo para la imagen
-            />
-          </View>
-          <Text style={styles.contactName}>Co-Pastor, David García</Text>
-          <TouchableOpacity onPress={() => callContact('0991831447')} style={styles.contactButton}>
-            <FontAwesome name="phone" size={20} color="#fff" />
-            <Text style={styles.contactButtonText}>Llamar</Text>
-          </TouchableOpacity>
-        </View>
-
-
-        {/* Contacto Correo */}
-        <View style={styles.contactCard}>
-          <Text style={styles.contactName}>Correo</Text>
-          <TouchableOpacity onPress={() => emailContact('mmmfranciscoorellana@gmail.com')} style={styles.contactButton}>
-            <FontAwesome name="envelope" size={20} color="#fff" />
-            <Text style={[styles.contactButtonText, styles.smallEmailText]}>
-              mmmfranciscoorellana@gmail.com
-            </Text>
-          </TouchableOpacity>
-        </View>
+        ))}
       </ScrollView>
     </View>
   );
@@ -133,6 +115,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -190,42 +177,42 @@ const styles = StyleSheet.create({
   contactCard: {
     backgroundColor: '#fff',
     padding: 20,
-    borderRadius: 20,  // Borde más redondeado
+    borderRadius: 20,
     marginBottom: 15,
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 5,
-    elevation: 4, // Mayor elevación para dar sensación de "flotante"
-    alignItems: 'center', // Centrar contenido en la tarjeta
+    elevation: 4,
+    alignItems: 'center',
   },
   imageContainer: {
-    borderWidth: 3,   // Añadir borde a la imagen
-    borderColor: '#2980b9', // Color del borde de la imagen
+    borderWidth: 3,
+    borderColor: '#2980b9',
     borderRadius: 50,
     padding: 5,
-    marginBottom: 15, // Añadir separación entre la imagen y el texto
+    marginBottom: 15,
   },
   contactImage: {
     width: 100,
     height: 100,
-    borderRadius: 50,  // Imagen redonda
+    borderRadius: 50,
   },
   contactName: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#2c3e50',
     marginBottom: 10,
-    textAlign: 'center',  // Centrar el texto
+    textAlign: 'center',
   },
   contactButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center', // Centrar el contenido del botón
+    justifyContent: 'center',
     backgroundColor: '#2980b9',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 50,
-    width: '80%', // Hacer el botón más ancho
+    width: '80%',
   },
   contactButtonText: {
     color: 'white',
@@ -234,8 +221,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  smallEmailText: {
-    fontSize: 10,  // Tamaño más pequeño para el texto del correo
-  },
 });
-

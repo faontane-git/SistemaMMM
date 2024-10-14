@@ -1,23 +1,53 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Linking, TouchableHighlight } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Linking, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { FontAwesome } from '@expo/vector-icons'; // Icono para el botón
+import { FontAwesome } from '@expo/vector-icons';
+import { getDocs, collection } from 'firebase/firestore';
+import { firestore } from '../../firebaseConfig'; // Asegúrate de importar correctamente tu configuración de Firebase
 
 export default function RedesSocialesScreen() {
+  const [redes, setRedes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const obtenerRedes = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(firestore, 'RedesSociales')); // Cambia 'RedesSociales' por tu colección en Firestore
+        const redesArray = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setRedes(redesArray);
+      } catch (error) {
+        console.error('Error al obtener redes sociales:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    obtenerRedes();
+  }, []);
 
   const handleGoBack = () => {
     if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
-      navigation.navigate('Home' as never); // Redirige a la pantalla 'Home' si no puede ir hacia atrás
+      navigation.navigate('Home' as never);
     }
   };
 
-  // Funciones para abrir enlaces
-  const openLink = (url: any) => {
+  const openLink = (url: string) => {
     Linking.openURL(url);
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -25,7 +55,7 @@ export default function RedesSocialesScreen() {
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image
-            source={require('../../assets/logo.png')} // Ruta local al logo genérico
+            source={require('../../assets/logo.png')}
             style={styles.logo}
           />
         </View>
@@ -35,50 +65,26 @@ export default function RedesSocialesScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Contenido de redes sociales */}
+      {/* Contenido dinámico de redes sociales */}
       <ScrollView style={styles.contentSection}>
-        {/* Páginas de Facebook */}
-        <Text style={styles.sectionTitle}>Páginas de Facebook</Text>
-
-        <View style={styles.socialCard}>
-          <Text style={styles.socialName}>MMM Francisco de Orellana</Text>
-          <TouchableOpacity
-            onPress={() => openLink('https://www.facebook.com/mmmfranciscodeorellana/')}
-            style={[styles.socialButton, styles.facebookButton]}>
-            <FontAwesome name="facebook" size={20} color="#fff" />
-            <Text style={styles.socialButtonText}>Visitar Página</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.socialCard}>
-          <Text style={styles.socialName}>Juventud Victoriosa</Text>
-          <TouchableOpacity
-            onPress={() => openLink('https://www.facebook.com/JuventudVictoriosaS8')}
-            style={[styles.socialButton, styles.facebookButton]}>
-            <FontAwesome name="facebook" size={20} color="#fff" />
-            <Text style={styles.socialButtonText}>Visitar Página</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Instagram */}
-        <Text style={styles.sectionTitle}>Instagram</Text>
-        <View style={styles.socialCard}>
-          <Text style={styles.socialName}>@juventudvictoriosas8</Text>
-          <TouchableOpacity
-            onPress={() => openLink('https://www.instagram.com/juventudvictoriosas8/')}
-            style={[styles.socialButton, styles.instagramButton]}>
-            <FontAwesome name="instagram" size={20} color="#fff" />
-            <Text style={styles.socialButtonText}>Visitar Perfil</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Transmisión en vivo */}
-        <Text style={styles.sectionTitle}>Transmisión en vivo</Text>
-        <View style={styles.infoCard}>
-          <Text style={styles.liveBroadcastText}>
-            Días Domingos 10 AM (En la página de Facebook oficial de la iglesia)
-          </Text>
-        </View>
+        <Text style={styles.sectionTitle}>Redes Sociales</Text>
+        {redes.map((red) => (
+          <View key={red.id} style={styles.socialCard}>
+            <Text style={styles.socialName}>{red.nombre}</Text>
+            <Text style={styles.userName}>{red.usuario}</Text>
+            <TouchableOpacity
+              onPress={() => openLink(red.url)}
+              style={[styles.socialButton, red.tipo === 'Facebook' ? styles.facebookButton : styles.instagramButton]}
+            >
+              <FontAwesome
+                name={red.tipo === 'Facebook' ? 'facebook' : 'instagram'}
+                size={20}
+                color="#fff"
+              />
+              <Text style={styles.socialButtonText}>Visitar {red.tipo}</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
       </ScrollView>
     </View>
   );
@@ -89,13 +95,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f9fa',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    paddingTop: 30, // Espacio adicional en la parte superior
+    paddingTop: 30,
     backgroundColor: '#2c3e50',
     marginBottom: 20,
   },
@@ -134,6 +145,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#34495e',
+    marginBottom: 5,
+  },
+  userName: {
+    fontSize: 16,
+    color: '#555',
     marginBottom: 10,
   },
   socialButton: {
@@ -144,10 +160,10 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   facebookButton: {
-    backgroundColor: '#3b5998', // Color de Facebook
+    backgroundColor: '#3b5998',
   },
   instagramButton: {
-    backgroundColor: '#E1306C', // Color de Instagram
+    backgroundColor: '#E1306C',
   },
   socialButtonText: {
     color: 'white',
@@ -155,27 +171,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  infoCard: {
-    padding: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
-    marginBottom: 20,
-  },
-  liveBroadcastText: {
-    fontSize: 16,
-    color: '#2c3e50',
-    lineHeight: 26,
-  },
-   logoContainer: {
+  logoContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   logo: {
     width: 40,
     height: 40,
-  }
+  },
 });

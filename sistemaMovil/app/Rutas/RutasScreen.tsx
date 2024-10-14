@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Linking, T
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import MapView, { Marker } from 'react-native-maps';
+import { Video } from 'expo-av'; // Importamos el componente de video
 
 export default function RutasScreen() {
     const navigation = useNavigation();
@@ -81,19 +82,22 @@ export default function RutasScreen() {
                     </TouchableHighlight>
                 </View>
 
-                {/* Botón para abrir el video */}
+                {/* Sección de video de cómo llegar */}
                 <View style={styles.infoCard}>
                     <Text style={styles.infoText}>Video de cómo llegar</Text>
-                    <TouchableHighlight
-                        style={styles.linkButton}
-                        onPress={() => openLink('https://www.facebook.com/watch/?v=uilFjkFkEn')}
-                        underlayColor="#21618C"
-                    >
-                        <View style={styles.linkButtonInner}>
-                            <FontAwesome name="video-camera" size={20} color="white" />
-                            <Text style={styles.linkButtonText}>Ver video</Text>
-                        </View>
-                    </TouchableHighlight>
+
+                    {/* Reproducción del video */}
+                    <Video
+                        source={require('../../assets/VideoLlegada.mp4')}  // Ruta local al archivo MP4
+                        rate={1.0}
+                        volume={1.0}
+                        isMuted={false}
+                        shouldPlay
+                        useNativeControls
+                        style={styles.video}
+                    />
+
+
                 </View>
 
                 {/* Buses */}
@@ -200,5 +204,10 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 10,
         marginBottom: 10,
+    },
+    video: {
+        width: '100%',
+        height: 200,
+        borderRadius: 10,
     },
 });

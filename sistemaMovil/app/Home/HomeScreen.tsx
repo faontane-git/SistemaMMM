@@ -51,7 +51,7 @@ export default function HomeScreen() {
                         style={styles.logo}
                     />
                 </View>
-                <Text style={styles.headerText}>Movimiento MMM</Text>
+                <Text style={styles.headerText}>IGLESIA MMM</Text>
             </View>
 
             {/* Noticias y eventos */}

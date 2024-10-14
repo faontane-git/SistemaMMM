@@ -14,6 +14,7 @@ import EventIcon from '@mui/icons-material/Event';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import ShareIcon from '@mui/icons-material/Share';
+import MapIcon from '@mui/icons-material/Map';  // Icono para la opción de Rutas
 
 const PublishPage: React.FC = () => {
   return (
@@ -54,7 +55,7 @@ const PublishPage: React.FC = () => {
                   boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                   borderRadius: 4,
                   backgroundColor: '#ffffff',
-                  height: '280px', // Altura fija para todas las tarjetas
+                  height: '280px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
@@ -87,7 +88,7 @@ const PublishPage: React.FC = () => {
                   boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                   borderRadius: 4,
                   backgroundColor: '#ffffff',
-                  height: '280px', // Altura fija para todas las tarjetas
+                  height: '280px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
@@ -120,7 +121,7 @@ const PublishPage: React.FC = () => {
                   boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                   borderRadius: 4,
                   backgroundColor: '#ffffff',
-                  height: '280px', // Altura fija para todas las tarjetas
+                  height: '280px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
@@ -153,7 +154,7 @@ const PublishPage: React.FC = () => {
                   boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                   borderRadius: 4,
                   backgroundColor: '#ffffff',
-                  height: '280px', // Altura fija para todas las tarjetas
+                  height: '280px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
@@ -173,6 +174,39 @@ const PublishPage: React.FC = () => {
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Conéctate con nosotros a través de nuestras redes sociales oficiales.
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+
+            {/* Opción 5: Rutas (Nueva opción) */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Card
+                sx={{
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                  borderRadius: 4,
+                  backgroundColor: '#ffffff',
+                  height: '280px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  '&:hover': {
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+                    transform: 'scale(1.05)',
+                  },
+                  transition: 'all 0.3s ease-in-out',
+                }}
+              >
+                <CardActionArea component={Link} to="/rutas">
+                  <CardContent sx={{ textAlign: 'center', padding: 3 }}>
+                    <MapIcon sx={{ fontSize: 60, color: '#4caf50', mb: 2 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333' }}>
+                      Rutas
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Encuentra las mejores rutas para llegar a nuestras instalaciones.
                     </Typography>
                   </CardContent>
                 </CardActionArea>
