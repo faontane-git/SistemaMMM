@@ -1,33 +1,62 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
-import { getDocs, collection } from 'firebase/firestore';
-import { firestore } from '../../firebaseConfig'; // Asegúrate de importar correctamente tu configuración de Firebase
 
-export default function QuienesSomosScreen() {
-  const [contactos, setContactos] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function ActividadesScreen() {
   const navigation = useNavigation();
-
-  useEffect(() => {
-    const obtenerContactos = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(firestore, 'Contactos')); // Cambia 'Contactos' por tu colección en Firestore
-        const contactosArray = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setContactos(contactosArray);
-      } catch (error) {
-        console.error('Error al obtener contactos:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    obtenerContactos();
-  }, []);
+  
+  // Datos estáticos para actividades
+  const actividades = [
+    {
+      id: '1',
+      descripcion: 'Ayuno',
+      tipo: 'Culto',
+      horaInicio: '09:00 AM',
+      horaFin: '01:00 PM',
+      dias: ['Martes'],
+    },
+    {
+      id: '2',
+      descripcion: 'Culto de Oración',
+      tipo: 'Oración',
+      horaInicio: '07:00 PM',
+      horaFin: '09:00 PM',
+      dias: ['Martes'],
+    },
+    {
+      id: '3',
+      descripcion: 'Culto de Enseñanza',
+      tipo: 'Enseñanza',
+      horaInicio: '07:00 PM',
+      horaFin: '09:00 PM',
+      dias: ['Miércoles'],
+    },
+    {
+      id: '4',
+      descripcion: 'Culto de Caballeros',
+      tipo: 'Culto',
+      horaInicio: '07:00 PM',
+      horaFin: '09:00 PM',
+      dias: ['Jueves'],
+    },
+    {
+      id: '5',
+      descripcion: 'Culto de Jóvenes',
+      tipo: 'Jóvenes',
+      horaInicio: '05:00 PM',
+      horaFin: '07:00 PM',
+      dias: ['Sábado'],
+    },
+    {
+      id: '6',
+      descripcion: 'Escuela Dominical',
+      tipo: 'Escuela',
+      horaInicio: '09:30 AM',
+      horaFin: '12:00 PM',
+      dias: ['Domingo'],
+    },
+  ];
 
   const handleGoBack = () => {
     if (navigation.canGoBack()) {
@@ -36,18 +65,6 @@ export default function QuienesSomosScreen() {
       navigation.navigate('Home' as never);
     }
   };
-
-  const callContact = (phone: string) => {
-    Linking.openURL(`tel:${phone}`);
-  };
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -65,45 +82,17 @@ export default function QuienesSomosScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Contenido */}
       <ScrollView style={styles.contentSection}>
-        <View style={styles.infoCard}>
-          <Text style={[styles.infoText, { textAlign: 'justify' }]}>
-            Somos una organización sin fines de lucro llevamos el mensaje de Dios a las vidas necesitadas, y predicamos que la sangre de Cristo puede transformar las vidas y los hogares destruidos.
-          </Text>
-        </View>
-
-        {/* Sección de Misión */}
-        <Text style={styles.sectionTitle}>Misión</Text>
-        <View style={styles.infoCard}>
-          <Text style={[styles.infoText, { textAlign: 'justify' }]}>
-            Llevamos un enfoque en la pesca de almas para nuestro Señor Jesucristo, alcanzando jóvenes y familias destruidas por las redes del enemigo, proclamando el evangelio y llamando a nuevas personas a la fe en Cristo.
-          </Text>
-        </View>
-
-        {/* Sección de Visión */}
-        <Text style={styles.sectionTitle}>Visión</Text>
-        <View style={styles.infoCard}>
-          <Text style={[styles.infoText, { textAlign: 'justify' }]}>
-            Está enfocada en reflejar nuestros valores fundamentales, metas espirituales y facilitar una conexión con Dios. Queremos ser un lugar donde las personas puedan experimentar un cambio radical en sus vidas a través de la fe en Jesucristo.
-          </Text>
-        </View>
-
-        {/* Sección de Contactos (cargada dinámicamente desde Firestore) */}
-        <Text style={styles.sectionTitle}>Contactos</Text>
-        {contactos.map((contacto) => (
-          <View key={contacto.id} style={styles.contactCard}>
-            <View style={styles.imageContainer}>
-              <Image
-                source={{ uri: contacto.foto }} // Usamos la URL de la imagen desde Firestore
-                style={styles.contactImage}
-              />
-            </View>
-            <Text style={styles.contactName}>{contacto.nombre}</Text>
-            <TouchableOpacity onPress={() => callContact(contacto.telefono)} style={styles.contactButton}>
-              <FontAwesome name="phone" size={20} color="#fff" />
-              <Text style={styles.contactButtonText}>Llamar</Text>
-            </TouchableOpacity>
+        {actividades.map((actividad) => (
+          <View key={actividad.id} style={styles.activityCard}>
+            <Text style={styles.activityTitle}>{actividad.descripcion}</Text>
+            <Text style={styles.activityText}>Tipo: {actividad.tipo}</Text>
+            <Text style={styles.activityText}>
+              Hora: {actividad.horaInicio} - {actividad.horaFin}
+            </Text>
+            <Text style={styles.activityText}>
+              Días: {actividad.dias ? actividad.dias.join(', ') : 'No especificado'}
+            </Text>
           </View>
         ))}
       </ScrollView>
@@ -114,12 +103,7 @@ export default function QuienesSomosScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#ecf0f1',
   },
   header: {
     flexDirection: 'row',
@@ -128,23 +112,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     paddingTop: 30,
-    backgroundColor: '#2c3e50',
-    marginBottom: 20,
+    backgroundColor: '#3498db',
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
   },
   logoContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    flex: 1,
   },
   logo: {
-    width: 40,
-    height: 40,
+    width: 40, // Ajusta el tamaño del logo
+    height: 40, // Ajusta el tamaño del logo
+    resizeMode: 'contain',
   },
   headerText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    flex: 1,
     textAlign: 'center',
+    flex: 3,
   },
   backIcon: {
     backgroundColor: '#2980b9',
@@ -154,71 +145,27 @@ const styles = StyleSheet.create({
   contentSection: {
     padding: 20,
   },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#2c3e50',
-  },
-  infoCard: {
-    padding: 20,
+  activityCard: {
     backgroundColor: '#fff',
-    borderRadius: 10,
+    padding: 20,
+    borderRadius: 15,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 2,
+    elevation: 3,
     marginBottom: 20,
+    borderLeftWidth: 5,
+    borderLeftColor: '#1abc9c',
   },
-  infoText: {
-    fontSize: 16,
-    color: '#34495e',
-  },
-  contactCard: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 20,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 4,
-    alignItems: 'center',
-  },
-  imageContainer: {
-    borderWidth: 3,
-    borderColor: '#2980b9',
-    borderRadius: 50,
-    padding: 5,
-    marginBottom: 15,
-  },
-  contactImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
-  contactName: {
+  activityTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#2c3e50',
+    color: '#34495e',
     marginBottom: 10,
-    textAlign: 'center',
   },
-  contactButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#2980b9',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 50,
-    width: '80%',
-  },
-  contactButtonText: {
-    color: 'white',
-    marginLeft: 10,
+  activityText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: '#7f8c8d',
+    marginBottom: 5,
   },
 });
