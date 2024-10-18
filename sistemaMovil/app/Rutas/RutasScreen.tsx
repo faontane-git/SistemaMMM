@@ -93,9 +93,9 @@ export default function RutasScreen() {
                         volume={1.0}
                         isMuted={false}
                         shouldPlay
+                        useNativeControls
                         style={styles.video}
                     />
-
                 </View>
 
                 {/* Buses */}
