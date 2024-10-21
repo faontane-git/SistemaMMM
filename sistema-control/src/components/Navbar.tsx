@@ -27,7 +27,7 @@ const Navbar: React.FC = () => {
         >
           <img src={logo} alt="Logo" style={{ width: 60, height: 60, marginRight: 15 }} />
           <Typography variant="h5" component="div" sx={{ fontWeight: 'bold', color: 'white' }}>
-            IGLESIA UNIVERSAL MMM
+            IGLESIA CRISTIANA MMM
           </Typography>
         </Box>
 

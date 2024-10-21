@@ -14,19 +14,18 @@ import EventIcon from '@mui/icons-material/Event';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import ShareIcon from '@mui/icons-material/Share';
-import MapIcon from '@mui/icons-material/Map';  // Icono para la opción de Rutas
+import MapIcon from '@mui/icons-material/Map';
+import AudiotrackIcon from '@mui/icons-material/Audiotrack';  // Icono para la opción de Audios
 
 const PublishPage: React.FC = () => {
   return (
     <div>
-      {/* Navbar en la parte superior */}
       <Navbar />
 
-      {/* Contenedor Principal */}
       <Box
         sx={{
           minHeight: '100vh',
-          backgroundColor: '#ffffff', // Fondo blanco
+          backgroundColor: '#ffffff',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-start',
@@ -35,7 +34,6 @@ const PublishPage: React.FC = () => {
         }}
       >
         <Container maxWidth="lg">
-          {/* Título Principal */}
           <Typography
             variant="h3"
             component="h1"
@@ -46,9 +44,7 @@ const PublishPage: React.FC = () => {
             Panel de Publicaciones
           </Typography>
 
-          {/* Menú de opciones con tarjetas en una fila */}
           <Grid container spacing={4} justifyContent="center">
-            {/* Opción 1: Noticia y eventos */}
             <Grid item xs={12} sm={6} md={3}>
               <Card
                 sx={{
@@ -81,7 +77,6 @@ const PublishPage: React.FC = () => {
               </Card>
             </Grid>
 
-            {/* Opción 2: Contactos */}
             <Grid item xs={12} sm={6} md={3}>
               <Card
                 sx={{
@@ -114,7 +109,6 @@ const PublishPage: React.FC = () => {
               </Card>
             </Grid>
 
-            {/* Opción 3: Agenda */}
             <Grid item xs={12} sm={6} md={3}>
               <Card
                 sx={{
@@ -147,7 +141,6 @@ const PublishPage: React.FC = () => {
               </Card>
             </Grid>
 
-            {/* Opción 4: Redes Sociales */}
             <Grid item xs={12} sm={6} md={3}>
               <Card
                 sx={{
@@ -180,7 +173,6 @@ const PublishPage: React.FC = () => {
               </Card>
             </Grid>
 
-            {/* Opción 5: Rutas (Nueva opción) */}
             <Grid item xs={12} sm={6} md={3}>
               <Card
                 sx={{
@@ -212,9 +204,41 @@ const PublishPage: React.FC = () => {
                 </CardActionArea>
               </Card>
             </Grid>
+
+            {/* Opción 6: Audios (Nueva opción) */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Card
+                sx={{
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                  borderRadius: 4,
+                  backgroundColor: '#ffffff',
+                  height: '280px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  '&:hover': {
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+                    transform: 'scale(1.05)',
+                  },
+                  transition: 'all 0.3s ease-in-out',
+                }}
+              >
+                <CardActionArea component={Link} to="/audios">
+                  <CardContent sx={{ textAlign: 'center', padding: 3 }}>
+                    <AudiotrackIcon sx={{ fontSize: 60, color: '#673ab7', mb: 2 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333' }}>
+                      Audios
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Escucha sermones y mensajes de audio de nuestros líderes.
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
           </Grid>
 
-          {/* Contenido renderizado de las rutas seleccionadas */}
           <Box sx={{ mt: 4 }}>
             <Outlet />
           </Box>
