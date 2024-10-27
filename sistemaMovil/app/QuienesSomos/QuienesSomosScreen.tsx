@@ -1,62 +1,41 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Clipboard, ToastAndroid, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
 
-export default function ActividadesScreen() {
+interface Contacto {
+  id: string;
+  foto: string;
+  nombre: string;
+  telefono: string;
+}
+
+export default function ContactosScreen() {
   const navigation = useNavigation();
-  
-  // Datos estáticos para actividades
-  const actividades = [
-    {
-      id: '1',
-      descripcion: 'Ayuno',
-      tipo: 'Culto',
-      horaInicio: '09:00 AM',
-      horaFin: '01:00 PM',
-      dias: ['Martes'],
-    },
-    {
-      id: '2',
-      descripcion: 'Culto de Oración',
-      tipo: 'Oración',
-      horaInicio: '07:00 PM',
-      horaFin: '09:00 PM',
-      dias: ['Martes'],
-    },
-    {
-      id: '3',
-      descripcion: 'Culto de Enseñanza',
-      tipo: 'Enseñanza',
-      horaInicio: '07:00 PM',
-      horaFin: '09:00 PM',
-      dias: ['Miércoles'],
-    },
-    {
-      id: '4',
-      descripcion: 'Culto de Caballeros',
-      tipo: 'Culto',
-      horaInicio: '07:00 PM',
-      horaFin: '09:00 PM',
-      dias: ['Jueves'],
-    },
-    {
-      id: '5',
-      descripcion: 'Culto de Jóvenes',
-      tipo: 'Jóvenes',
-      horaInicio: '05:00 PM',
-      horaFin: '07:00 PM',
-      dias: ['Sábado'],
-    },
-    {
-      id: '6',
-      descripcion: 'Escuela Dominical',
-      tipo: 'Escuela',
-      horaInicio: '09:30 AM',
-      horaFin: '12:00 PM',
-      dias: ['Domingo'],
-    },
-  ];
+  const [contactos, setContactos] = useState<Contacto[]>([]);
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const db = getFirestore();
+
+  useEffect(() => {
+    const obtenerContactos = async () => {
+      try {
+        const contactosCollection = collection(db, 'Contactos');
+        const querySnapshot = await getDocs(contactosCollection);
+        const contactosArray: Contacto[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Contacto[];
+        setContactos(contactosArray);
+      } catch (error) {
+        console.error('Error al obtener los contactos:', error);
+      } finally {
+        setLoading(false); // Finalizar la carga
+      }
+    };
+
+    obtenerContactos();
+  }, []);
 
   const handleGoBack = () => {
     if (navigation.canGoBack()) {
@@ -66,36 +45,55 @@ export default function ActividadesScreen() {
     }
   };
 
+  const copyToClipboard = () => {
+    Clipboard.setString('mmmfranciscoorellana@gmail.com');
+    ToastAndroid.show('Correo copiado al portapapeles', ToastAndroid.SHORT);
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image
-            source={require('../../assets/logo.png')} // Ruta local al logo
+            source={require('../../assets/logo.png')}
             style={styles.logo}
           />
         </View>
-        <Text style={styles.headerText}>¿Quiénes somos?</Text>
+        <Text style={styles.headerText}>Contactos</Text>
         <TouchableOpacity style={styles.backIcon} onPress={handleGoBack}>
           <FontAwesome name="arrow-left" size={24} color="white" />
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.contentSection}>
-        {actividades.map((actividad) => (
-          <View key={actividad.id} style={styles.activityCard}>
-            <Text style={styles.activityTitle}>{actividad.descripcion}</Text>
-            <Text style={styles.activityText}>Tipo: {actividad.tipo}</Text>
-            <Text style={styles.activityText}>
-              Hora: {actividad.horaInicio} - {actividad.horaFin}
+      {/* Indicador de carga */}
+      {loading ? (
+        <ActivityIndicator size="large" color="#3498db" style={styles.loadingIndicator} />
+      ) : (
+        <ScrollView style={styles.contentSection}>
+          {/* Lista de contactos */}
+          {contactos.map((contacto) => (
+            <View key={contacto.id} style={styles.contactCard}>
+              <Image source={{ uri: contacto.foto }} style={styles.contactImage} />
+              <View style={styles.contactInfo}>
+                <Text style={styles.contactName}>{contacto.nombre}</Text>
+                <Text style={styles.contactPhone}>Teléfono: {contacto.telefono}</Text>
+              </View>
+            </View>
+          ))}
+
+          {/* Cuadro de correo electrónico al final */}
+          <View style={styles.emailBox}>
+            <MaterialIcons name="email" size={24} color="#ffffff" style={styles.emailIcon} />
+            <Text style={styles.emailText} numberOfLines={1} ellipsizeMode="tail">
+              mmmfranciscoorellana@gmail.com
             </Text>
-            <Text style={styles.activityText}>
-              Días: {actividad.dias ? actividad.dias.join(', ') : 'No especificado'}
-            </Text>
+            <TouchableOpacity onPress={copyToClipboard} style={styles.copyIcon}>
+              <MaterialIcons name="content-copy" size={20} color="white" />
+            </TouchableOpacity>
           </View>
-        ))}
-      </ScrollView>
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -107,30 +105,19 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
     paddingTop: 30,
     backgroundColor: '#2c3e50',
     marginBottom: 20,
-},
-  logoContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-  },
-  logo: {
-    width: 40, // Ajusta el tamaño del logo
-    height: 40, // Ajusta el tamaño del logo
-    resizeMode: 'contain',
   },
   headerText: {
+    flex: 1,
     color: 'white',
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    flex: 3,
   },
   backIcon: {
     backgroundColor: '#2980b9',
@@ -140,27 +127,76 @@ const styles = StyleSheet.create({
   contentSection: {
     padding: 20,
   },
-  activityCard: {
+  contactCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 15,
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
-    marginBottom: 20,
     borderLeftWidth: 5,
     borderLeftColor: '#1abc9c',
   },
-  activityTitle: {
-    fontSize: 20,
+  contactImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 15,
+  },
+  contactInfo: {
+    flex: 1,
+  },
+  contactName: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#34495e',
-    marginBottom: 10,
   },
-  activityText: {
+  contactPhone: {
     fontSize: 16,
     color: '#7f8c8d',
     marginBottom: 5,
+  },
+  emailBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    backgroundColor: '#3498db',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  emailIcon: {
+    marginRight: 8,
+  },
+  emailText: {
+    fontSize: 16,
+    color: 'white',
+    fontWeight: 'bold',
+    flex: 1,
+    marginRight: 10,
+  },
+  copyIcon: {
+    padding: 5,
+    borderRadius: 5,
+  },
+  logoContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 40,
+    height: 40,
+  },
+  loadingIndicator: {
+    marginTop: 20,
   },
 });
