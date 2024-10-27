@@ -221,7 +221,7 @@ const Contactos: React.FC = () => {
     <div>
       <Navbar />
       <Container maxWidth="md" sx={{ mt: 5 }}>
-        <Typography variant="h4" align="center" gutterBottom>
+        <Typography variant="h4" align="center" gutterBottom sx={{ fontSize: '18px' }}>
           Contactos
         </Typography>
         <Typography variant="body1" align="center" gutterBottom>
@@ -251,7 +251,7 @@ const Contactos: React.FC = () => {
                 sx={{ width: 80, height: 80, margin: 2 }}
               />
               <CardContent sx={{ flex: 1 }}>
-                <Typography variant="h5" component="div">
+                <Typography variant="h5" component="div" sx={{ fontSize: '16px' }}>
                   {contacto.nombre}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>

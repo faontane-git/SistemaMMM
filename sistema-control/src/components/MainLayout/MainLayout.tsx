@@ -1,101 +1,133 @@
 import React from 'react';
-import Navbar from '../Navbar'; // Importar el Navbar
-import Carousel from 'react-material-ui-carousel'; // Carrusel de Material-UI
+import Navbar from '../Navbar';
+import Carousel from 'react-material-ui-carousel';
 import { Paper, Typography, Box, Container } from '@mui/material';
-import './MainLayout.css';
-import img1 from '../../assets/img1.jpg';
-import img2 from '../../assets/img2.jpg';
-import img3 from '../../assets/img3.jpg';
 
-// Imágenes para el carrusel (puedes sustituir con las imágenes que desees)
 const items = [
-  { id: 1, image: img1, title: 'Bienvenido a la Iglesia MMM' },
-  { id: 2, image: img2, title: 'Únete a nuestras actividades' },
-  { id: 3, image: img3, title: 'Creciendo juntos en comunidad' },
+  {
+    id: 1,
+    title: 'Nuestros Servicios',
+    description: 'Ofrecemos servicios semanales para toda la familia, donde puedes aprender, crecer espiritualmente y compartir en comunidad. ¡Todos son bienvenidos!',
+  },
+  {
+    id: 2,
+    title: 'Nuestra Misión',
+    description: 'Nuestra misión es ser una comunidad que fomente el crecimiento espiritual y el amor al prójimo. Buscamos servir a través de la enseñanza y la acción.',
+  },
+  {
+    id: 3,
+    title: 'Recursos y Apoyo',
+    description: 'Contamos con programas de apoyo y consejería para quienes lo necesiten. Nuestro equipo está aquí para acompañarte en momentos importantes.',
+  },
 ];
 
 const MainLayout: React.FC = () => {
   return (
     <div>
-      {/* Navbar colocado en la parte superior */}
       <Navbar />
 
-      {/* Sección de bienvenida con un fondo suave */}
       <Box
         sx={{
-          backgroundColor: '#f5f5f5', // Un color gris claro para fondo suave
-          padding: '40px 0',
+          backgroundColor: '#f0f4fa',
+          padding: '60px 0',
           textAlign: 'center',
-          borderBottom: '2px solid #e0e0e0', // Un borde sutil
+          borderBottom: '2px solid #cfd8dc',
         }}
       >
-        <Typography variant="h2" sx={{ fontWeight: 'bold', color: '#3f51b5', mb: 2, letterSpacing: 1 }}>
+        <Typography
+          variant="h3"
+          sx={{
+            fontWeight: 700,
+            color: '#3f51b5',
+            mb: 1,
+            letterSpacing: 1,
+            fontSize: '2rem',
+          }}
+        >
           ¡Bienvenidos a nuestra Iglesia!
         </Typography>
-        <Typography variant="h5" sx={{ color: '#616161', fontStyle: 'italic', maxWidth: '800px', margin: '0 auto' }}>
-          Participa en nuestras actividades y únete a nuestra comunidad. <br />
+        <Typography
+          variant="h6"
+          sx={{
+            color: '#757575',
+            fontStyle: 'italic',
+            maxWidth: '700px',
+            margin: '0 auto',
+            fontSize: '1.1rem',
+          }}
+        >
+          Participa en nuestras actividades y únete a nuestra comunidad.
+          <br />
           <strong>¡Juntos crecemos y aprendemos!</strong>
         </Typography>
       </Box>
 
-      {/* Carrusel de imágenes con títulos reubicados */}
-      <Container sx={{ mt: 4, maxWidth: '900px' }}>
+      <Container sx={{ mt: 4, maxWidth: '850px' }}>
         <Carousel
           autoPlay
           interval={5000}
-          animation="slide"
-          indicators={false}
+          animation="fade"
+          indicators
           navButtonsAlwaysVisible
           navButtonsProps={{
             style: {
               backgroundColor: '#ffffff',
               color: '#3f51b5',
-              borderRadius: 50,
-              margin: '0 10px',
-              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+              borderRadius: '50%',
+              margin: '0 8px',
+              boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
+            },
+          }}
+          indicatorIconButtonProps={{
+            style: {
+              color: '#c5cae9',
+            },
+          }}
+          activeIndicatorIconButtonProps={{
+            style: {
+              color: '#3f51b5',
             },
           }}
         >
           {items.map((item) => (
-            <Paper key={item.id} sx={{ position: 'relative', borderRadius: '10px', overflow: 'hidden' }}>
-              {/* Imagen del carrusel */}
-              <img
-                src={item.image}
-                alt={item.title}
-                style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', transition: 'transform 0.5s ease' }}
-                className="carousel-image"
-              />
-              {/* Título reubicado en la parte inferior */}
-              <Box
+            <Paper
+              key={item.id}
+              sx={{
+                padding: '30px',
+                borderRadius: '12px',
+                boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)',
+                backgroundColor: '#ffffff',
+                textAlign: 'center',
+              }}
+            >
+              <Typography
+                variant="h4"
+                component="div"
                 sx={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  width: '100%',
-                  backgroundColor: 'rgba(0, 0, 0, 0.6)', // Fondo oscuro transparente para legibilidad
-                  color: 'white',
-                  textAlign: 'center',
-                  padding: 2,
-                  boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.5)',
-                  transition: 'all 0.5s ease',
+                  fontWeight: 600,
+                  letterSpacing: 0.5,
+                  color: '#3f51b5',
+                  mb: 2,
                 }}
               >
-                <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', letterSpacing: 1 }}>
-                  {item.title}
-                </Typography>
-              </Box>
+                {item.title}
+              </Typography>
+              <Typography
+                variant="body1"
+                component="p"
+                sx={{
+                  color: '#757575',
+                  maxWidth: '700px',
+                  margin: '0 auto',
+                  lineHeight: 1.6,
+                }}
+              >
+                {item.description}
+              </Typography>
             </Paper>
           ))}
         </Carousel>
       </Container>
-
-      <style>
-        {`
-          .carousel-image:hover {
-            transform: scale(1.05);
-          }
-        `}
-      </style>
     </div>
   );
 };

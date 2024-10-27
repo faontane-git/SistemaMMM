@@ -26,10 +26,9 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import MailIcon from '@mui/icons-material/Mail'; // Icono para el correo
+import MailIcon from '@mui/icons-material/Mail';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import AddIcon from '@mui/icons-material/Add';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
@@ -37,7 +36,7 @@ import Navbar from '../Navbar';
 
 interface RedSocial {
   id: string;
-  tipo: string; // Tipo de red social (Facebook, Instagram, etc.)
+  tipo: string;
   nombre: string;
   url: string;
   usuario: string;
@@ -51,7 +50,6 @@ const RedesSociales: React.FC = () => {
   const [openCrear, setOpenCrear] = useState(false);
   const [nuevaRedSocial, setNuevaRedSocial] = useState<RedSocial>({ id: '', tipo: '', nombre: '', url: '', usuario: '', correo: '' });
 
-  // Obtener las redes sociales desde Firestore
   useEffect(() => {
     const obtenerRedesSociales = async () => {
       try {
@@ -71,31 +69,26 @@ const RedesSociales: React.FC = () => {
     obtenerRedesSociales();
   }, []);
 
-  // Función para abrir el modal de edición
   const handleOpenEditar = (redSocial: RedSocial) => {
     setRedSocialSeleccionada(redSocial);
     setOpenEditar(true);
   };
 
-  // Función para abrir el modal de creación
   const handleOpenCrear = () => {
     setNuevaRedSocial({ id: '', tipo: '', nombre: '', url: '', usuario: '', correo: '' });
     setOpenCrear(true);
   };
 
-  // Función para cerrar el modal de edición
   const handleCloseEditar = () => {
     setOpenEditar(false);
     setRedSocialSeleccionada(null);
   };
 
-  // Función para cerrar el modal de creación
   const handleCloseCrear = () => {
     setOpenCrear(false);
     setNuevaRedSocial({ id: '', tipo: '', nombre: '', url: '', usuario: '', correo: '' });
   };
 
-  // Función para manejar los cambios en los TextField
   const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setRedSocialSeleccionada((prevState) => ({
@@ -104,7 +97,6 @@ const RedesSociales: React.FC = () => {
     }));
   };
 
-  // Función para manejar los cambios del Select
   const handleSelectChange = (e: SelectChangeEvent) => {
     const { name, value } = e.target;
     setRedSocialSeleccionada((prevState) => ({
@@ -113,7 +105,6 @@ const RedesSociales: React.FC = () => {
     }));
   };
 
-  // Función para manejar los cambios en los TextField del modal de creación
   const handleTextFieldChangeCrear = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNuevaRedSocial((prevState) => ({
@@ -122,7 +113,6 @@ const RedesSociales: React.FC = () => {
     }));
   };
 
-  // Función para manejar los cambios del Select del modal de creación
   const handleSelectChangeCrear = (e: SelectChangeEvent) => {
     const { name, value } = e.target;
     setNuevaRedSocial((prevState) => ({
@@ -131,7 +121,6 @@ const RedesSociales: React.FC = () => {
     }));
   };
 
-  // Función para actualizar la red social en Firestore
   const handleActualizarRedSocial = async () => {
     if (redSocialSeleccionada) {
       const db = getFirestore();
@@ -160,7 +149,6 @@ const RedesSociales: React.FC = () => {
     }
   };
 
-  // Función para agregar una nueva red social a Firestore
   const handleCrearRedSocial = async () => {
     if (nuevaRedSocial.tipo && nuevaRedSocial.nombre && (nuevaRedSocial.url || nuevaRedSocial.correo)) {
       const db = getFirestore();
@@ -185,7 +173,6 @@ const RedesSociales: React.FC = () => {
     }
   };
 
-  // Función para eliminar la red social de Firestore
   const handleEliminarRedSocial = async (redSocial: RedSocial) => {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -212,7 +199,6 @@ const RedesSociales: React.FC = () => {
     });
   };
 
-  // Función para obtener el ícono según el nombre de la red social
   const obtenerIconoRedSocial = (tipo: string | undefined) => {
     if (!tipo) return null;
 
@@ -230,7 +216,7 @@ const RedesSociales: React.FC = () => {
       case 'whatsapp':
         return <WhatsAppIcon fontSize="large" sx={{ color: '#25D366' }} />;
       case 'correo':
-        return <MailIcon fontSize="large" sx={{ color: '#D93025' }} />; // Ícono de correo
+        return <MailIcon fontSize="large" sx={{ color: '#D93025' }} />;
       default:
         return null;
     }
@@ -240,46 +226,43 @@ const RedesSociales: React.FC = () => {
     <div>
       <Navbar />
       <Container maxWidth="lg" sx={{ mt: 5 }}>
-        <Typography variant="h4" align="center" gutterBottom>
+        <Typography variant="h4" align="center" gutterBottom sx={{ fontSize: '18px' }}>
           Redes Sociales
         </Typography>
         <Typography variant="body1" align="center" gutterBottom>
           Aquí puedes ver todas las redes sociales de la iglesia y su comunidad.
         </Typography>
 
-        {/* Botón para agregar nueva red social */}
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
           <Fab color="primary" aria-label="add" onClick={handleOpenCrear}>
             <AddIcon />
           </Fab>
         </Box>
 
-        {/* Mostrar las redes sociales en un Grid */}
-        <Grid container spacing={5} justifyContent="center">
+        <Grid container spacing={3} justifyContent="center">
           {redesSociales.map((redSocial) => (
-            <Grid item xs={12} sm={6} md={6} lg={4} key={redSocial.id}> {/* Ajuste para que sean más grandes */}
+            <Grid item xs={12} sm={6} md={4} key={redSocial.id}>
               <Card
                 sx={{
-                  height: '85%',
+                  height: '200px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   textAlign: 'center',
-                  padding: 4, // Más padding para tarjetas más grandes
-                  borderRadius: 4,
-                  boxShadow: 5,
-                  backgroundColor: '#f7f7f7',
+                  padding: 2,
+                  borderRadius: 2,
+                  boxShadow: 3,
+                  backgroundColor: '#f9f9f9',
                   transition: 'transform 0.2s',
-                  '&:hover': { transform: 'scale(1.08)', boxShadow: 8 }, // Mayor efecto en hover
+                  '&:hover': { transform: 'scale(1.05)', boxShadow: 6 },
                 }}
               >
                 <CardContent>
-                  {/* Muestra el icono de la red social */}
-                  <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
                     {obtenerIconoRedSocial(redSocial.tipo)}
                   </Box>
-                  <Typography variant="h6" component="div" gutterBottom>
+                  <Typography variant="h6" component="div" gutterBottom sx={{ fontSize: '16px' }}>
                     {redSocial.nombre}
                   </Typography>
                   {redSocial.tipo?.toLowerCase() === 'correo' ? (
@@ -299,7 +282,7 @@ const RedesSociales: React.FC = () => {
                     </>
                   )}
                 </CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
                   <IconButton color="primary" onClick={() => handleOpenEditar(redSocial)}>
                     <EditIcon />
                   </IconButton>
@@ -311,154 +294,6 @@ const RedesSociales: React.FC = () => {
             </Grid>
           ))}
         </Grid>
-
-        {/* Modal para editar la red social */}
-        <Dialog open={openEditar} onClose={handleCloseEditar}>
-          <DialogTitle>Editar Red Social</DialogTitle>
-          <DialogContent>
-            {/* Campo tipo con Select */}
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Tipo de Red Social</InputLabel>
-              <Select
-                label="Tipo de Red Social"
-                name="tipo"
-                value={redSocialSeleccionada?.tipo || ''}
-                onChange={handleSelectChange}
-              >
-                <MenuItem value="Facebook">Facebook</MenuItem>
-                <MenuItem value="Instagram">Instagram</MenuItem>
-                <MenuItem value="Twitter">Twitter</MenuItem>
-                <MenuItem value="YouTube">YouTube</MenuItem>
-                <MenuItem value="LinkedIn">LinkedIn</MenuItem>
-                <MenuItem value="WhatsApp">WhatsApp</MenuItem>
-                <MenuItem value="Correo">Correo</MenuItem> {/* Opción de correo */}
-              </Select>
-            </FormControl>
-            <TextField
-              margin="dense"
-              label="Nombre"
-              name="nombre"
-              fullWidth
-              value={redSocialSeleccionada?.nombre || ''}
-              onChange={handleTextFieldChange}
-              sx={{ mb: 2 }}
-            />
-            {redSocialSeleccionada?.tipo?.toLowerCase() === 'correo' ? (
-              <TextField
-                margin="dense"
-                label="Correo"
-                name="correo"
-                fullWidth
-                value={redSocialSeleccionada?.correo || ''}
-                onChange={handleTextFieldChange}
-                sx={{ mb: 2 }}
-              />
-            ) : (
-              <>
-                <TextField
-                  margin="dense"
-                  label="Usuario"
-                  name="usuario"
-                  fullWidth
-                  value={redSocialSeleccionada?.usuario || ''}
-                  onChange={handleTextFieldChange}
-                  sx={{ mb: 2 }}
-                />
-                <TextField
-                  margin="dense"
-                  label="URL"
-                  name="url"
-                  fullWidth
-                  value={redSocialSeleccionada?.url || ''}
-                  onChange={handleTextFieldChange}
-                  sx={{ mb: 2 }}
-                />
-              </>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseEditar} color="secondary">
-              Cancelar
-            </Button>
-            <Button onClick={handleActualizarRedSocial} color="primary">
-              Guardar
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* Modal para crear una nueva red social */}
-        <Dialog open={openCrear} onClose={handleCloseCrear}>
-          <DialogTitle>Crear Nueva Red Social</DialogTitle>
-          <DialogContent>
-            {/* Campo tipo con Select */}
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Tipo de Red Social</InputLabel>
-              <Select
-                label="Tipo de Red Social"
-                name="tipo"
-                value={nuevaRedSocial.tipo}
-                onChange={handleSelectChangeCrear}
-              >
-                <MenuItem value="Facebook">Facebook</MenuItem>
-                <MenuItem value="Instagram">Instagram</MenuItem>
-                <MenuItem value="Twitter">Twitter</MenuItem>
-                <MenuItem value="YouTube">YouTube</MenuItem>
-                <MenuItem value="LinkedIn">LinkedIn</MenuItem>
-                <MenuItem value="WhatsApp">WhatsApp</MenuItem>
-                <MenuItem value="Correo">Correo</MenuItem> {/* Opción de correo */}
-              </Select>
-            </FormControl>
-            <TextField
-              margin="dense"
-              label="Nombre"
-              name="nombre"
-              fullWidth
-              value={nuevaRedSocial.nombre}
-              onChange={handleTextFieldChangeCrear}
-              sx={{ mb: 2 }}
-            />
-            {nuevaRedSocial.tipo?.toLowerCase() === 'correo' ? (
-              <TextField
-                margin="dense"
-                label="Correo"
-                name="correo"
-                fullWidth
-                value={nuevaRedSocial.correo}
-                onChange={handleTextFieldChangeCrear}
-                sx={{ mb: 2 }}
-              />
-            ) : (
-              <>
-                <TextField
-                  margin="dense"
-                  label="Usuario"
-                  name="usuario"
-                  fullWidth
-                  value={nuevaRedSocial.usuario}
-                  onChange={handleTextFieldChangeCrear}
-                  sx={{ mb: 2 }}
-                />
-                <TextField
-                  margin="dense"
-                  label="URL"
-                  name="url"
-                  fullWidth
-                  value={nuevaRedSocial.url}
-                  onChange={handleTextFieldChangeCrear}
-                  sx={{ mb: 2 }}
-                />
-              </>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseCrear} color="secondary">
-              Cancelar
-            </Button>
-            <Button onClick={handleCrearRedSocial} color="primary">
-              Crear
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Container>
     </div>
   );
