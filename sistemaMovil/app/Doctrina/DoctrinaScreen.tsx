@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Clipboard, ToastAndroid, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons'; // Icono para el botón
 
@@ -18,6 +18,12 @@ export default function DoctrinaScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require('../../assets/logo.png')}
+            style={styles.logo}
+          />
+        </View>
         <Text style={styles.headerText}>Doctrina</Text>
         <TouchableOpacity style={styles.backIcon} onPress={handleGoBack}>
           <FontAwesome name="arrow-left" size={24} color="white" />
@@ -129,5 +135,16 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: 5,
     color: '#34495e',
+  },
+  logoContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 40,
+    height: 40,
+  },
+  loadingIndicator: {
+    marginTop: 20,
   },
 });

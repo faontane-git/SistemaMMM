@@ -105,7 +105,7 @@ const LoginForm: React.FC = () => {
             <form onSubmit={handleLogin}>
               <Stack spacing={2}>
                 <TextField
-                  label="Correo"
+                  label="Usuario"
                   variant="outlined"
                   fullWidth
                   value={email}
