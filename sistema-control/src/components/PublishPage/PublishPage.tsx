@@ -25,7 +25,7 @@ const PublishPage: React.FC = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'background.default', // Usa el fondo del tema
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-start',
@@ -35,31 +35,59 @@ const PublishPage: React.FC = () => {
       >
         <Container maxWidth="lg">
           <Typography
-            variant="h3"
-            component="h1"
+            variant="h4" // Cambiado a h4 para un tamaño más pequeño
             align="center"
             gutterBottom
-            sx={{ fontWeight: 'bold', color: '#333', mb: 4, fontSize: '18px' }}
           >
             Panel de Publicaciones
           </Typography>
 
           <Grid container spacing={3} justifyContent="center">
             {[
-              { to: "/noticia-eventos", icon: <EventIcon sx={{ fontSize: 35, color: '#1976d2', mb: 1 }} />, title: "Noticia y eventos", description: "Mantente informado con noticias y eventos relevantes de la comunidad." },
-              { to: "/audios", icon: <AudiotrackIcon sx={{ fontSize: 35, color: '#673ab7', mb: 1 }} />, title: "Audios", description: "Escucha sermones y mensajes de audio de nuestros líderes." },
-              { to: "/contactos", icon: <ContactsIcon sx={{ fontSize: 35, color: '#388e3c', mb: 1 }} />, title: "Contactos", description: "Accede a los contactos de miembros y líderes de la comunidad." },
-              { to: "/agenda", icon: <ScheduleIcon sx={{ fontSize: 35, color: '#d32f2f', mb: 1 }} />, title: "Agenda", description: "Consulta la agenda de eventos y reuniones programadas." },
-              { to: "/redes-sociales", icon: <ShareIcon sx={{ fontSize: 35, color: '#ff5722', mb: 1 }} />, title: "Redes Sociales", description: "Conéctate con nosotros a través de nuestras redes sociales oficiales." },
-              { to: "/rutas", icon: <MapIcon sx={{ fontSize: 35, color: '#4caf50', mb: 1 }} />, title: "Rutas", description: "Encuentra las mejores rutas para llegar a nuestras instalaciones." },
+              {
+                to: "/detalle-noticia",
+                icon: <EventIcon sx={{ fontSize: 35, color: '#1976d2', mb: 1 }} />,
+                title: "Noticia y eventos",
+                description: "Mantente informado con noticias y eventos relevantes de la comunidad.",
+              },
+              {
+                to: "/detalle-audio",
+                icon: <AudiotrackIcon sx={{ fontSize: 35, color: '#673ab7', mb: 1 }} />,
+                title: "Audios",
+                description: "Escucha sermones y mensajes de audio de nuestros líderes.",
+              },
+              {
+                to: "/contactos",
+                icon: <ContactsIcon sx={{ fontSize: 35, color: '#388e3c', mb: 1 }} />,
+                title: "Contactos",
+                description: "Accede a los contactos de miembros y líderes de la comunidad.",
+              },
+              {
+                to: "/agenda",
+                icon: <ScheduleIcon sx={{ fontSize: 35, color: '#d32f2f', mb: 1 }} />,
+                title: "Agenda",
+                description: "Consulta la agenda de eventos y reuniones programadas.",
+              },
+              {
+                to: "/redes-sociales",
+                icon: <ShareIcon sx={{ fontSize: 35, color: '#ff5722', mb: 1 }} />,
+                title: "Redes Sociales",
+                description: "Conéctate con nosotros a través de nuestras redes sociales oficiales.",
+              },
+              {
+                to: "/rutas",
+                icon: <MapIcon sx={{ fontSize: 35, color: '#4caf50', mb: 1 }} />,
+                title: "Rutas",
+                description: "Encuentra las mejores rutas para llegar a nuestras instalaciones.",
+              },
             ].map((item, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
                 <Card
                   sx={{
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     borderRadius: 3,
-                    backgroundColor: '#ffffff',
-                    height: '200px', // Ajuste de altura más compacto
+                    backgroundColor: 'background.default', // Fondo del tema
+                    height: '200px',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
@@ -72,16 +100,9 @@ const PublishPage: React.FC = () => {
                   }}
                 >
                   <CardActionArea component={Link} to={item.to}>
-                    <CardContent sx={{ textAlign: 'center', padding: 1.5 }}> {/* Menor padding interno */}
+                    <CardContent sx={{ textAlign: 'center', padding: 1.5 }}>
                       {item.icon}
-                      <Typography
-                        variant="subtitle1"
-                        sx={{
-                          fontWeight: 'bold',
-                          color: '#333',
-                          fontSize: '18px',
-                        }}
-                      >
+                      <Typography variant="subtitle1">
                         {item.title}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">

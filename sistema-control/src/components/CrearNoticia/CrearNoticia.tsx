@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Swal from 'sweetalert2';
 import {
   Box,
@@ -10,39 +11,57 @@ import {
   Typography,
   Button,
   Grid,
+  IconButton,
 } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const CrearNoticia: React.FC = () => {
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [fecha, setFecha] = useState('');
+  const [foto, setFoto] = useState<File | null>(null);
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Función para manejar el cambio de archivo
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setFoto(file);
+      setFotoPreview(URL.createObjectURL(file)); // Mostrar la vista previa de la imagen
+    }
+  };
 
   // Función para manejar el envío del formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      // Conexión a Firestore
       const db = getFirestore();
       const noticiasCollection = collection(db, 'Noticias');
 
-      // Agregar nueva noticia a la base de datos
+      let fotoURL = '';
+      if (foto) {
+        const storage = getStorage();
+        const fotoRef = ref(storage, `noticias/${Date.now()}_${foto.name}`);
+        await uploadBytes(fotoRef, foto);
+        fotoURL = await getDownloadURL(fotoRef);
+      }
+
       await addDoc(noticiasCollection, {
         titulo,
         descripcion,
         fecha,
+        fotoURL,
       });
 
-      // Mostrar mensaje de éxito con SweetAlert
       Swal.fire({
         title: '¡Noticia creada con éxito!',
         text: 'La noticia se ha publicado correctamente.',
         icon: 'success',
         confirmButtonText: 'Aceptar',
       }).then(() => {
-        // Redirigir a la pantalla de noticias después de cerrar el SweetAlert
-        navigate('/noticia-eventos'); // Asegúrate de que esta ruta coincida con la ruta correcta
+        navigate('/noticia-eventos');
       });
     } catch (error) {
       console.error('Error al crear la noticia:', error);
@@ -57,30 +76,41 @@ const CrearNoticia: React.FC = () => {
 
   return (
     <div>
-      <Navbar /> {/* Incluye el Navbar */}
+      <Navbar />
 
       {/* Contenedor Principal */}
       <Box
         sx={{
           minHeight: '100vh',
-          backgroundColor: '#f5f5f5',
+          backgroundColor: 'background.default',
           display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
+          flexDirection: 'column',
+          alignItems: 'center',
           padding: 4,
           pt: 8,
+          position: 'relative',
         }}
       >
+        {/* Botón de regresar */}
+        <Box display="flex" justifyContent="flex-start" mb={2} sx={{ width: '100%', maxWidth: 'sm' }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+          >
+            Regresar
+          </Button>
+        </Box>
+
         <Container maxWidth="sm" sx={{ backgroundColor: '#fff', borderRadius: 3, boxShadow: 3, padding: 4 }}>
           {/* Título del formulario */}
-          <Typography variant="h4" component="h1" align="center" gutterBottom sx={{ fontWeight: 'bold', color: '#3a6073' }}>
+          <Typography variant="h4" component="h1" align="center" gutterBottom>
             Crear Nueva Noticia
           </Typography>
 
           {/* Formulario de creación de noticia */}
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4 }}>
             <Grid container spacing={3}>
-              {/* Campo de Título */}
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -93,7 +123,6 @@ const CrearNoticia: React.FC = () => {
                 />
               </Grid>
 
-              {/* Campo de Descripción */}
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -108,7 +137,6 @@ const CrearNoticia: React.FC = () => {
                 />
               </Grid>
 
-              {/* Campo de Fecha */}
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -123,9 +151,48 @@ const CrearNoticia: React.FC = () => {
                   variant="outlined"
                 />
               </Grid>
+
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  component="label"
+                  sx={{
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    padding: '8px 16px',
+                  }}
+                >
+                  Subir Foto
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={handleFileChange}
+                  />
+                </Button>
+              </Grid>
+
+              {fotoPreview && (
+                <Grid item xs={12} sx={{ textAlign: 'center' }}>
+                  <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                    Vista previa de la foto:
+                  </Typography>
+                  <Box
+                    component="img"
+                    src={fotoPreview}
+                    alt="Vista previa de la foto"
+                    sx={{
+                      width: '100%',
+                      maxHeight: '200px',
+                      objectFit: 'cover',
+                      borderRadius: 2,
+                      boxShadow: 2,
+                    }}
+                  />
+                </Grid>
+              )}
             </Grid>
 
-            {/* Botón para publicar la noticia */}
             <Button
               type="submit"
               variant="contained"
@@ -133,10 +200,6 @@ const CrearNoticia: React.FC = () => {
               fullWidth
               sx={{
                 mt: 4,
-                backgroundColor: '#3a7bd5',
-                '&:hover': {
-                  backgroundColor: '#3a6073',
-                },
                 fontSize: '16px',
                 fontWeight: 'bold',
                 padding: 1.5,

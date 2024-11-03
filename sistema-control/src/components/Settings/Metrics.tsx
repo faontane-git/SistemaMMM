@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import {
   Box,
@@ -8,7 +9,9 @@ import {
   LinearProgress,
   CardContent,
   Divider,
+  Button,
 } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 
 const Metrics: React.FC = () => {
@@ -17,6 +20,7 @@ const Metrics: React.FC = () => {
   const documentLimit = 10000;
   const avgDocSizeKB = 5;
   const storageLimitKB = 1024 * 1024;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMetrics = async () => {
@@ -56,6 +60,18 @@ const Metrics: React.FC = () => {
         }}
       >
         <Container maxWidth="sm">
+          {/* Botón de Regresar */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 3 }}>
+            <Button
+              variant="outlined"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => navigate(-1)}
+              sx={{ color: '#3a6073', borderColor: '#3a6073' }}
+            >
+              Regresar
+            </Button>
+          </Box>
+
           <Typography
             variant="h5"
             component="h1"

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import { getFirestore, getDocs, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import {
@@ -23,10 +24,10 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Swal from 'sweetalert2';
 import { styled } from '@mui/system';
 
-// Definir una interfaz para la noticia individual
 interface Noticia {
   id: string;
   titulo: string;
@@ -34,7 +35,6 @@ interface Noticia {
   fecha: string;
 }
 
-// Estilos personalizados para la tabla y los componentes
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: 'bold',
   color: theme?.palette?.primary?.main || '#1976d2',
@@ -49,10 +49,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const DetalleNoticia: React.FC = () => {
   const [noticias, setNoticias] = useState<Noticia[]>([]);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false); // Estado para controlar el modal
-  const [noticiaSeleccionada, setNoticiaSeleccionada] = useState<Noticia | null>(null); // Almacenar la noticia seleccionada
+  const [open, setOpen] = useState(false);
+  const [noticiaSeleccionada, setNoticiaSeleccionada] = useState<Noticia | null>(null);
+  const navigate = useNavigate();
 
-  // Obtener datos desde Firestore
   useEffect(() => {
     const obtenerNoticias = async () => {
       try {
@@ -75,19 +75,16 @@ const DetalleNoticia: React.FC = () => {
     obtenerNoticias();
   }, []);
 
-  // Función para abrir el modal con la información de la noticia seleccionada
   const handleOpenModal = (noticia: Noticia) => {
     setNoticiaSeleccionada(noticia);
     setOpen(true);
   };
 
-  // Función para cerrar el modal
   const handleCloseModal = () => {
     setOpen(false);
     setNoticiaSeleccionada(null);
   };
 
-  // Función para manejar la edición de noticias
   const handleEditarNoticia = async () => {
     if (noticiaSeleccionada) {
       try {
@@ -99,14 +96,12 @@ const DetalleNoticia: React.FC = () => {
           fecha: noticiaSeleccionada.fecha,
         });
 
-        // Actualizar el estado local con la noticia editada
         setNoticias((prevNoticias) =>
           prevNoticias.map((noticia) =>
             noticia.id === noticiaSeleccionada.id ? noticiaSeleccionada : noticia
           )
         );
 
-        // Mostrar confirmación de éxito
         Swal.fire('Actualizado', 'La noticia ha sido actualizada exitosamente.', 'success');
         handleCloseModal();
       } catch (error) {
@@ -116,7 +111,6 @@ const DetalleNoticia: React.FC = () => {
     }
   };
 
-  // Función para manejar la eliminación de noticias con SweetAlert
   const handleEliminar = (id: string) => {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -146,12 +140,36 @@ const DetalleNoticia: React.FC = () => {
     <div>
       <Navbar />
       <Container maxWidth="md" sx={{ marginTop: 4 }}>
+        {/* Botón de Regresar */}
+        <Box display="flex" justifyContent="flex-start" mb={2}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+          >
+            Regresar
+          </Button>
+        </Box>
+
         <Typography variant="h4" align="center" gutterBottom>
           Listado de Noticias
         </Typography>
+
+        {/* Botón para crear una nueva noticia debajo del título */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate('/crear-noticia')}
+          >
+            Crear Nueva Noticia
+          </Button>
+        </Box>
+
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 2 }}>
           {loading && <CircularProgress />}
         </Box>
+
         {!loading && (
           <TableContainer component={Paper} elevation={3}>
             <Table aria-label="table of noticias">
@@ -168,13 +186,14 @@ const DetalleNoticia: React.FC = () => {
                   <StyledTableRow key={noticia.id}>
                     <TableCell>{noticia.titulo}</TableCell>
                     <TableCell>{noticia.descripcion}</TableCell>
-                    <TableCell>{new Date(noticia.fecha).toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}</TableCell>
+                    <TableCell>
+                      {new Date(noticia.fecha).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </TableCell>
                     <TableCell align="center">
-                      {/* Botón para abrir el modal de edición */}
                       <IconButton
                         color="primary"
                         aria-label="editar noticia"
@@ -183,7 +202,6 @@ const DetalleNoticia: React.FC = () => {
                       >
                         <EditIcon />
                       </IconButton>
-                      {/* Botón para eliminar */}
                       <IconButton
                         color="secondary"
                         aria-label="eliminar noticia"
@@ -198,6 +216,7 @@ const DetalleNoticia: React.FC = () => {
             </Table>
           </TableContainer>
         )}
+
         {!loading && noticias.length === 0 && (
           <Typography variant="h6" align="center" sx={{ marginTop: 2 }}>
             No se encontraron noticias.

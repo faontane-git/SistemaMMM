@@ -1,21 +1,93 @@
-import React, { useState } from 'react';
-import { Container, Typography, Box, Link, TextField, Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Container, Typography, Box, TextField, Button, IconButton } from '@mui/material';
 import Navbar from '../Navbar';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useNavigate } from 'react-router-dom';
+import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const Rutas: React.FC = () => {
-  const [direccion, setDireccion] = useState('Estamos Ubicados en la Cdla. Vergeles, Av. Francisco de Orellana y Callejón 23 (Alado de Urgentito)');
-  const [gpsLink, setGpsLink] = useState('https://maps.app.goo.gl/5T8qgD1newABiDHQ9');
-  const [videoLink, setVideoLink] = useState('https://fb.watch/uilFjkFkEn/');
-  const [buses, setBuses] = useState('64B, 63A, 85, 131, 143');
+  const [direccion, setDireccion] = useState('');
+  const [gpsLink, setGpsLink] = useState('');
+  const [videoLink, setVideoLink] = useState('');
+  const [buses, setBuses] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const db = getFirestore();
+        const docRef = doc(db, 'rutas', 'ubicacionInfo');
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setDireccion(data.direccion);
+          setGpsLink(data.gpsLink);
+          setVideoLink(data.videoLink);
+          setBuses(data.buses);
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleUpdate = async () => {
+    try {
+      const db = getFirestore();
+      const docRef = doc(db, 'rutas', 'ubicacionInfo');
+      await updateDoc(docRef, {
+        direccion,
+        gpsLink,
+        videoLink,
+        buses,
+      });
+      alert('Datos actualizados correctamente');
+    } catch (error) {
+      console.error("Error actualizando los datos: ", error);
+      alert('Error al actualizar los datos');
+    }
+  };
 
   return (
     <div>
       <Navbar />
-      <Container maxWidth="md" sx={{ mt: 5 }}>
-        <Typography variant="h4" align="center" gutterBottom>
-          Rutas
+      <Container maxWidth="sm" sx={{ mt: 6, position: 'relative' }}>
+        {/* Botón de Regresar */}
+        <Box display="flex" justifyContent="flex-start" mb={2}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+          >
+            Regresar
+          </Button>
+        </Box>
+
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: 'bold', color: '#3a6073', fontSize: '24px' }}
+        >
+          Rutas y Ubicación
         </Typography>
-        <Box sx={{ mt: 2 }}>
+        <Typography variant="body1" align="center" color="textSecondary" sx={{ mb: 4 }}>
+          Encuentra nuestra ubicación y la forma de llegar fácilmente.
+        </Typography>
+
+        <Box
+          sx={{
+            backgroundColor: '#f9f9f9',
+            p: 3,
+            borderRadius: 2,
+            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+          }}
+        >
           <TextField
             label="Dirección"
             fullWidth
@@ -48,9 +120,21 @@ const Rutas: React.FC = () => {
             onChange={(e) => setBuses(e.target.value)}
           />
         </Box>
-        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-          <Button variant="contained" color="primary">
-            Guardar Cambios
+
+        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+          <Button
+            variant="contained"
+            onClick={handleUpdate}
+            sx={{
+              backgroundColor: '#3a6073',
+              color: '#fff',
+              px: 4,
+              py: 1.5,
+              fontSize: '16px',
+              '&:hover': { backgroundColor: '#2e4e5e' },
+            }}
+          >
+            Actualizar Datos
           </Button>
         </Box>
       </Container>

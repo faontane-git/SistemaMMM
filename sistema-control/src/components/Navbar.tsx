@@ -48,7 +48,7 @@ const Navbar: React.FC = () => {
           >
             Publicar
           </Button>
-          {/* 
+
           <Button
             variant="outlined"
             color="inherit"
@@ -57,11 +57,11 @@ const Navbar: React.FC = () => {
               borderRadius: 2,
               '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
             }}
-            onClick={() => handleNavigation('/iglesias')}
+            onClick={() => handleNavigation('/personas')}
           >
-            Iglesias
+            Personas
           </Button>
-          */}
+
           {/* Icono de configuración pegado a los botones */}
           <IconButton color="inherit" onClick={() => handleNavigation('/settings')} sx={{ ml: 1 }}>
             <SettingsIcon fontSize="large" />

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import { getFirestore, getDocs, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import {
@@ -23,6 +24,8 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Swal from 'sweetalert2';
 import { styled } from '@mui/system';
 
@@ -45,50 +48,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const DetalleAudio: React.FC = () => {
-  const [audios, setAudios] = useState<Audio[]>([
-    {
-      id: '1',
-      titulo: 'Sermón de Domingo',
-      descripcion: 'Un sermón inspirador sobre la fe y la comunidad.',
-      url: 'https://example.com/audio/sermon-domingo.mp3'
-    },
-    {
-      id: '2',
-      titulo: 'Alabanza Matutina',
-      descripcion: 'Un audio especial para empezar el día con gratitud.',
-      url: 'https://example.com/audio/alabanza-matutina.mp3'
-    },
-    {
-      id: '3',
-      titulo: 'Testimonio de María',
-      descripcion: 'María nos cuenta su inspiradora historia de superación.',
-      url: 'https://example.com/audio/testimonio-maria.mp3'
-    },
-    {
-      id: '4',
-      titulo: 'Clase sobre el Éxodo',
-      descripcion: 'Estudio detallado sobre el libro del Éxodo.',
-      url: 'https://example.com/audio/clase-exodo.mp3'
-    },
-    {
-      id: '5',
-      titulo: 'Reflexión sobre la Esperanza',
-      descripcion: 'Una breve reflexión sobre el poder de la esperanza.',
-      url: 'https://example.com/audio/reflexion-esperanza.mp3'
-    },
-    {
-      id: '6',
-      titulo: 'Oración por la Paz',
-      descripcion: 'Oración especial por la paz en el mundo.',
-      url: 'https://example.com/audio/oracion-paz.mp3'
-    },
-    {
-      id: '7',
-      titulo: 'Invitación a la Vigilia',
-      descripcion: 'Te invitamos a nuestra vigilia mensual el próximo viernes.',
-      url: 'https://example.com/audio/invitacion-vigilia.mp3'
-    }
-  ]);
+  const navigate = useNavigate();
+  const [audios, setAudios] = useState<Audio[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [audioSeleccionado, setAudioSeleccionado] = useState<Audio | null>(null);
@@ -157,9 +118,33 @@ const DetalleAudio: React.FC = () => {
     <div>
       <Navbar />
       <Container maxWidth="md" sx={{ marginTop: 4 }}>
+        {/* Botón de regresar */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+          >
+            Regresar
+          </Button>
+        </Box>
+
         <Typography variant="h4" align="center" gutterBottom>
-          Actualización de Audios
+          Audios
         </Typography>
+        
+        {/* Botón para agregar nuevo audio */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/subir-audio')}
+          >
+            Agregar Nuevo Audio
+          </Button>
+        </Box>
+        
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 2 }}>
           {loading && <CircularProgress />}
         </Box>

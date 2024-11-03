@@ -16,7 +16,6 @@ const Settings: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    console.log('Sesión cerrada');
     navigate('/'); // Redirigir a la pantalla de login
   };
 
@@ -26,74 +25,69 @@ const Settings: React.FC = () => {
 
   return (
     <div>
-      {/* Incluimos el Navbar */}
       <Navbar />
 
-      {/* Contenedor principal con fondo blanco */}
       <Box
         sx={{
           minHeight: '100vh',
-          backgroundColor: '#f0f0f0', // Un color de fondo más suave para hacer contraste con las tarjetas
+          background: 'linear-gradient(135deg, #f9f4ef, #e6dfd4)',
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'flex-start', // Alinear el contenido hacia arriba
-          padding: 3, // Reducir el padding para subir el contenido
-          pt: 8, // Ajustar el padding top para un mejor espaciado superior
+          alignItems: 'flex-start',
+          padding: 4,
+          pt: 8,
         }}
       >
-        {/* Contenedor de la tarjeta */}
         <Container maxWidth="md">
-          {/* Título de la configuración */}
           <Typography
             variant="h4"
             component="h1"
             align="center"
             gutterBottom
-            sx={{ fontWeight: 'bold', color: '#3a6073', mb: 4 }}
+            sx={{ fontWeight: '600', color: '#3e4a59', mb: 6 }}
           >
             Configuración de Usuario
           </Typography>
 
-          {/* Opciones de configuración organizadas en un Grid */}
           <Grid container spacing={4} justifyContent="center">
-            {/* Tarjeta de Métricas */}
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={5}>
               <Card
                 sx={{
-                  backgroundColor: '#ffffff',
-                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #ffffff, #f3f3f3)',
+                  borderRadius: '20px',
                   textAlign: 'center',
-                  padding: 4,
-                  boxShadow: '0px 6px 14px rgba(0, 0, 0, 0.1)',
+                  padding: 3,
+                  boxShadow: '0px 12px 24px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.4s ease',
                   '&:hover': {
-                    boxShadow: '0px 8px 18px rgba(0, 0, 0, 0.15)',
-                    transform: 'scale(1.03)',
+                    boxShadow: '0px 16px 32px rgba(0, 0, 0, 0.15)',
+                    transform: 'scale(1.05)',
                   },
-                  transition: 'all 0.3s ease-in-out',
-                  minHeight: '300px',
+                  height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                 }}
               >
                 <CardContent>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#3a6073', mb: 2 }}>
+                  <Typography variant="h5" sx={{ fontWeight: '600', color: '#3e4a59', mb: 2 }}>
                     Métricas
                   </Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
-                    Mira las métricas de almacenamiento y consultas.
+                  <Typography variant="body1" color="text.secondary">
+                    Consulta el rendimiento y uso de almacenamiento de la aplicación.
                   </Typography>
                 </CardContent>
-                <CardActions sx={{ justifyContent: 'center', mt: 'auto' }}>
+                <CardActions sx={{ justifyContent: 'center', mt: 2 }}>
                   <Button
                     variant="contained"
-                    color="primary"
                     onClick={goToMetrics}
                     sx={{
-                      backgroundColor: '#3a7bd5',
-                      '&:hover': { backgroundColor: '#3a6073' },
-                      fontSize: '16px',
-                      padding: '10px 20px',
+                      backgroundColor: '#5a8f7b',
+                      color: '#fff',
+                      fontWeight: 'bold',
+                      padding: '10px 24px',
+                      borderRadius: '50px',
+                      '&:hover': { backgroundColor: '#487461' },
                     }}
                   >
                     Ver métricas
@@ -102,44 +96,44 @@ const Settings: React.FC = () => {
               </Card>
             </Grid>
 
-            {/* Tarjeta de Cerrar Sesión */}
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={5}>
               <Card
                 sx={{
-                  backgroundColor: '#ffffff',
-                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #ffffff, #f3f3f3)',
+                  borderRadius: '20px',
                   textAlign: 'center',
-                  padding: 4,
-                  boxShadow: '0px 6px 14px rgba(0, 0, 0, 0.1)',
+                  padding: 3,
+                  boxShadow: '0px 12px 24px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.4s ease',
                   '&:hover': {
-                    boxShadow: '0px 8px 18px rgba(0, 0, 0, 0.15)',
-                    transform: 'scale(1.03)',
+                    boxShadow: '0px 16px 32px rgba(0, 0, 0, 0.15)',
+                    transform: 'scale(1.05)',
                   },
-                  transition: 'all 0.3s ease-in-out',
-                  minHeight: '300px',
+                  height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                 }}
               >
                 <CardContent>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#3a6073', mb: 2 }}>
+                  <Typography variant="h5" sx={{ fontWeight: '600', color: '#3e4a59', mb: 2 }}>
                     Cerrar Sesión
                   </Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
-                    Salir de la cuenta actual.
+                  <Typography variant="body1" color="text.secondary">
+                    Sal de tu cuenta de forma segura.
                   </Typography>
                 </CardContent>
-                <CardActions sx={{ justifyContent: 'center', mt: 'auto' }}>
+                <CardActions sx={{ justifyContent: 'center', mt: 2 }}>
                   <Button
                     variant="contained"
-                    color="error"
                     onClick={handleLogout}
                     sx={{
-                      backgroundColor: '#e53935',
-                      '&:hover': { backgroundColor: '#d32f2f' },
-                      fontSize: '16px',
-                      padding: '10px 20px',
+                      backgroundColor: '#d9534f',
+                      color: '#fff',
+                      fontWeight: 'bold',
+                      padding: '10px 24px',
+                      borderRadius: '50px',
+                      '&:hover': { backgroundColor: '#c9302c' },
                     }}
                   >
                     Cerrar Sesión

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import {
   Container,
@@ -19,6 +20,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 
@@ -26,16 +28,17 @@ interface Contacto {
   id: string;
   nombre: string;
   telefono: string;
-  foto: string; // La imagen en formato Base64 o URL
+  foto: string;
 }
 
 const Contactos: React.FC = () => {
+  const navigate = useNavigate();
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [contactoSeleccionado, setContactoSeleccionado] = useState<Contacto | null>(null);
   const [openEditar, setOpenEditar] = useState(false);
   const [openCrear, setOpenCrear] = useState(false);
   const [nuevoContacto, setNuevoContacto] = useState<Contacto>({ id: '', nombre: '', telefono: '', foto: '' });
-  const [nombreArchivo, setNombreArchivo] = useState<string | null>(null); // Estado para mostrar el nombre del archivo
+  const [nombreArchivo, setNombreArchivo] = useState<string | null>(null);
 
   useEffect(() => {
     const obtenerContactos = async () => {
@@ -58,7 +61,7 @@ const Contactos: React.FC = () => {
 
   const handleEditar = (contacto: Contacto) => {
     setContactoSeleccionado(contacto);
-    setNombreArchivo(null); // Resetear el nombre del archivo al abrir la edición
+    setNombreArchivo(null);
     setOpenEditar(true);
   };
 
@@ -70,13 +73,13 @@ const Contactos: React.FC = () => {
   const handleCloseEditar = () => {
     setOpenEditar(false);
     setContactoSeleccionado(null);
-    setNombreArchivo(null); // Limpiar el nombre del archivo al cerrar el modal
+    setNombreArchivo(null);
   };
 
   const handleCloseCrear = () => {
     setOpenCrear(false);
     setNuevoContacto({ id: '', nombre: '', telefono: '', foto: '' });
-    setNombreArchivo(null); // Limpiar el nombre del archivo al cerrar el modal
+    setNombreArchivo(null);
   };
 
   const handleChangeEditar = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +96,6 @@ const Contactos: React.FC = () => {
     });
   };
 
-  // Función para manejar la subida de la imagen y convertirla a Base64
   const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>, modo: 'crear' | 'editar') => {
     const file = e.target.files?.[0];
     if (file) {
@@ -105,9 +107,7 @@ const Contactos: React.FC = () => {
           setContactoSeleccionado({ ...contactoSeleccionado, foto: reader.result as string });
         }
       };
-      reader.readAsDataURL(file); // Convertir la imagen a Base64
-
-      // Mostrar el nombre del archivo seleccionado
+      reader.readAsDataURL(file);
       setNombreArchivo(file.name);
     }
   };
@@ -130,12 +130,7 @@ const Contactos: React.FC = () => {
         );
 
         handleCloseEditar();
-        Swal.fire({
-          title: 'Contacto actualizado',
-          text: 'El contacto ha sido actualizado exitosamente.',
-          icon: 'success',
-          confirmButtonText: 'Aceptar',
-        });
+        Swal.fire('Contacto actualizado', 'El contacto ha sido actualizado exitosamente.', 'success');
       } catch (error) {
         console.error('Error al actualizar el contacto:', error);
       }
@@ -155,28 +150,13 @@ const Contactos: React.FC = () => {
         setContactos([...contactos, { ...nuevoContacto, id: docRef.id }]);
 
         handleCloseCrear();
-        Swal.fire({
-          title: 'Contacto creado',
-          text: 'El nuevo contacto ha sido creado exitosamente.',
-          icon: 'success',
-          confirmButtonText: 'Aceptar',
-        });
+        Swal.fire('Contacto creado', 'El nuevo contacto ha sido creado exitosamente.', 'success');
       } catch (error) {
         console.error('Error al crear el contacto:', error);
-        Swal.fire({
-          title: 'Error',
-          text: 'Hubo un problema al crear el contacto. Por favor, inténtelo de nuevo.',
-          icon: 'error',
-          confirmButtonText: 'Aceptar',
-        });
+        Swal.fire('Error', 'Hubo un problema al crear el contacto. Por favor, inténtelo de nuevo.', 'error');
       }
     } else {
-      Swal.fire({
-        title: 'Campos incompletos',
-        text: 'Por favor, completa todos los campos para crear el contacto.',
-        icon: 'warning',
-        confirmButtonText: 'Aceptar',
-      });
+      Swal.fire('Campos incompletos', 'Por favor, completa todos los campos para crear el contacto.', 'warning');
     }
   };
 
@@ -195,23 +175,11 @@ const Contactos: React.FC = () => {
         try {
           const db = getFirestore();
           await deleteDoc(doc(db, 'Contactos', contacto.id));
-
           setContactos(contactos.filter((c) => c.id !== contacto.id));
-
-          Swal.fire({
-            title: 'Eliminado',
-            text: `El contacto ${contacto.nombre} ha sido eliminado.`,
-            icon: 'success',
-            confirmButtonText: 'Aceptar',
-          });
+          Swal.fire('Eliminado', `El contacto ${contacto.nombre} ha sido eliminado.`, 'success');
         } catch (error) {
           console.error('Error al eliminar el contacto:', error);
-          Swal.fire({
-            title: 'Error',
-            text: 'Hubo un problema al eliminar el contacto. Por favor, inténtelo de nuevo.',
-            icon: 'error',
-            confirmButtonText: 'Aceptar',
-          });
+          Swal.fire('Error', 'Hubo un problema al eliminar el contacto. Por favor, inténtelo de nuevo.', 'error');
         }
       }
     });
@@ -221,6 +189,17 @@ const Contactos: React.FC = () => {
     <div>
       <Navbar />
       <Container maxWidth="md" sx={{ mt: 5 }}>
+        {/* Botón de Regresar en la parte superior izquierda */}
+        <Box display="flex" justifyContent="flex-start" mb={2}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+          >
+            Regresar
+          </Button>
+        </Box>
+
         <Typography variant="h4" align="center" gutterBottom sx={{ fontSize: '18px' }}>
           Contactos
         </Typography>
@@ -291,7 +270,6 @@ const Contactos: React.FC = () => {
               onChange={handleChangeEditar}
               sx={{ mb: 2 }}
             />
-            {/* Input de archivo para subir la imagen */}
             <Button
               variant="contained"
               component="label"
@@ -301,7 +279,6 @@ const Contactos: React.FC = () => {
               Reemplazar Foto
               <input type="file" hidden accept="image/*" onChange={(e) => handleUploadImage(e, 'editar')} />
             </Button>
-            {/* Mostrar el nombre del archivo seleccionado como feedback */}
             {nombreArchivo && (
               <Typography variant="body2" sx={{ mt: 1 }}>
                 Archivo seleccionado: {nombreArchivo}
@@ -340,7 +317,6 @@ const Contactos: React.FC = () => {
               onChange={handleChangeCrear}
               sx={{ mb: 2 }}
             />
-            {/* Input de archivo para subir la imagen */}
             <Button
               variant="contained"
               component="label"
@@ -350,7 +326,6 @@ const Contactos: React.FC = () => {
               Subir Foto
               <input type="file" hidden accept="image/*" onChange={(e) => handleUploadImage(e, 'crear')} />
             </Button>
-            {/* Mostrar el nombre del archivo seleccionado como feedback */}
             {nombreArchivo && (
               <Typography variant="body2" sx={{ mt: 1 }}>
                 Archivo seleccionado: {nombreArchivo}

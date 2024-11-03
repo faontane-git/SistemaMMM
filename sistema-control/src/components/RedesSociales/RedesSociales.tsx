@@ -30,6 +30,8 @@ import MailIcon from '@mui/icons-material/Mail';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useNavigate } from 'react-router-dom';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 import Navbar from '../Navbar';
@@ -49,6 +51,7 @@ const RedesSociales: React.FC = () => {
   const [openEditar, setOpenEditar] = useState(false);
   const [openCrear, setOpenCrear] = useState(false);
   const [nuevaRedSocial, setNuevaRedSocial] = useState<RedSocial>({ id: '', tipo: '', nombre: '', url: '', usuario: '', correo: '' });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const obtenerRedesSociales = async () => {
@@ -226,6 +229,17 @@ const RedesSociales: React.FC = () => {
     <div>
       <Navbar />
       <Container maxWidth="lg" sx={{ mt: 5 }}>
+        {/* Botón de Regresar */}
+        <Box display="flex" justifyContent="flex-start" mb={2}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+          >
+            Regresar
+          </Button>
+        </Box>
+
         <Typography variant="h4" align="center" gutterBottom sx={{ fontSize: '18px' }}>
           Redes Sociales
         </Typography>

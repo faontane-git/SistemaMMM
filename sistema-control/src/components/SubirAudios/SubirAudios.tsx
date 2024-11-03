@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
-import { Container, Typography, TextField, Box, Button } from '@mui/material';
+import { Container, Typography, TextField, Box, Button, IconButton, Card, CardContent } from '@mui/material';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
+import AudiotrackIcon from '@mui/icons-material/Audiotrack';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const SubirAudio: React.FC = () => {
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [archivo, setArchivo] = useState<File | null>(null);
+  const navigate = useNavigate();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -27,13 +32,11 @@ const SubirAudio: React.FC = () => {
     }
 
     try {
-      // Aquí podrías implementar la lógica para subir el archivo de audio a Firebase Storage
-      // y luego obtener la URL para almacenarla en Firestore junto con el título y la descripción.
       const db = getFirestore();
       await addDoc(collection(db, 'Audios'), {
         titulo,
         descripcion,
-        url: 'URL_DEL_AUDIO_SUBIDO', // Reemplaza esto con la URL del archivo subido
+        url: 'URL_DEL_AUDIO_SUBIDO',
       });
 
       Swal.fire({
@@ -61,51 +64,71 @@ const SubirAudio: React.FC = () => {
     <div>
       <Navbar />
       <Container maxWidth="sm" sx={{ mt: 5 }}>
-        <Typography variant="h4" align="center" gutterBottom>
-          Subir Audio
-        </Typography>
-        <Box component="form" noValidate sx={{ mt: 3 }}>
-          <TextField
-            label="Título del Audio"
-            fullWidth
-            variant="outlined"
-            value={titulo}
-            onChange={(e) => setTitulo(e.target.value)}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Descripción"
-            fullWidth
-            multiline
-            rows={4}
-            variant="outlined"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-            sx={{ mb: 2 }}
-          />
+        {/* Botón de regresar fuera del recuadro */}
+        <Box display="flex" justifyContent="flex-start" mb={2}>
           <Button
-            variant="contained"
-            component="label"
-            sx={{ mb: 2 }}
-            color="primary"
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
           >
-            Seleccionar Archivo
-            <input type="file" hidden accept="audio/*" onChange={handleFileChange} />
-          </Button>
-          {archivo && (
-            <Typography variant="body2" sx={{ mb: 2 }}>
-              Archivo seleccionado: {archivo.name}
-            </Typography>
-          )}
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={handleUpload}
-          >
-            Subir Audio
+            Regresar
           </Button>
         </Box>
+        
+        <Card elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+          <CardContent>
+            <Box display="flex" justifyContent="center" alignItems="center" mb={3}>
+              <AudiotrackIcon sx={{ fontSize: 40, color: 'primary.main', mr: 1 }} />
+              <Typography variant="h4" align="center">
+                Subir Audio
+              </Typography>
+            </Box>
+            <Box component="form" noValidate sx={{ mt: 2 }}>
+              <TextField
+                label="Título del Audio"
+                fullWidth
+                variant="outlined"
+                value={titulo}
+                onChange={(e) => setTitulo(e.target.value)}
+                sx={{ mb: 3 }}
+              />
+              <TextField
+                label="Descripción"
+                fullWidth
+                multiline
+                rows={4}
+                variant="outlined"
+                value={descripcion}
+                onChange={(e) => setDescripcion(e.target.value)}
+                sx={{ mb: 3 }}
+              />
+              <Box display="flex" alignItems="center" mb={2}>
+                <IconButton color="primary" component="label" sx={{ mr: 2 }}>
+                  <UploadFileIcon />
+                  <input type="file" hidden accept="audio/*" onChange={handleFileChange} />
+                </IconButton>
+                <Typography variant="body2" color="textSecondary">
+                  {archivo ? `Archivo seleccionado: ${archivo.name}` : 'No hay archivo seleccionado'}
+                </Typography>
+              </Box>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={handleUpload}
+                sx={{
+                  mt: 3,
+                  fontWeight: 'bold',
+                  fontSize: '16px',
+                  textTransform: 'none',
+                  padding: 1.5,
+                }}
+              >
+                Subir Audio
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
       </Container>
     </div>
   );
