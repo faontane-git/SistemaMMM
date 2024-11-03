@@ -14,13 +14,14 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  TextField,
 } from '@mui/material';
 import Navbar from '../Navbar';
 import { getFirestore, collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 
 interface PersonData {
-  id: string; // Add id to match Firestore document ID
+  id: string;
   nombres: string;
   apellidos: string;
   cedula: string;
@@ -49,10 +50,12 @@ interface PersonData {
 
 const PersonasList: React.FC = () => {
   const [data, setData] = useState<PersonData[]>([]);
+  const [filteredData, setFilteredData] = useState<PersonData[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<PersonData | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,6 +70,7 @@ const PersonasList: React.FC = () => {
         }));
 
         setData(personasArray);
+        setFilteredData(personasArray);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -74,6 +78,18 @@ const PersonasList: React.FC = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const results = data.filter(person =>
+      person.nombres.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      person.apellidos.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(results);
+  }, [searchTerm, data]);
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -126,7 +142,16 @@ const PersonasList: React.FC = () => {
           Lista de Personas
         </Typography>
 
-        {data.length > 0 ? (
+        <TextField
+          label="Buscar por nombre o apellido"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={searchTerm}
+          onChange={handleSearch}
+        />
+
+        {filteredData.length > 0 ? (
           <>
             <Table>
               <TableHead>
@@ -138,7 +163,7 @@ const PersonasList: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((person, index) => (
+                {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((person, index) => (
                   <TableRow key={index}>
                     <TableCell>{person.nombres}</TableCell>
                     <TableCell>{person.apellidos}</TableCell>
@@ -168,7 +193,7 @@ const PersonasList: React.FC = () => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={data.length}
+              count={filteredData.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
