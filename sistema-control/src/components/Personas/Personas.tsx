@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
+  Button,
   Table,
   TableHead,
   TableRow,
@@ -9,53 +10,34 @@ import {
   TableBody,
   TablePagination,
   Box,
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
+  Avatar,
 } from '@mui/material';
 import Navbar from '../Navbar';
-import { getFirestore, collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+import imageCompression from 'browser-image-compression';
 
 interface PersonData {
   id: string;
   nombres: string;
   apellidos: string;
   cedula: string;
-  fechaNacimiento: string;
-  sexo: string;
-  estadoCivil: string;
-  conyuge: string;
-  pais: string;
-  ciudadResidencia: string;
-  direccionDomicilio: string;
-  correo: string;
-  contactoPersonal: string;
-  contactoEmergencia: string;
-  iglesiaActual: string;
-  cargoIglesia: string;
-  bautizadoAgua: string;
-  fechaBautizo: string;
-  pastor: string;
-  iglesiaBautismo: string;
-  bautizadoEspirituSanto: string;
-  casadoEclesiasticamente: string;
-  fechaMatrimonio: string;
-  ministro: string;
-  iglesiaMatrimonio: string;
+  foto?: string;
 }
 
 const PersonasList: React.FC = () => {
   const [data, setData] = useState<PersonData[]>([]);
-  const [filteredData, setFilteredData] = useState<PersonData[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<PersonData | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [photo, setPhoto] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,7 +52,6 @@ const PersonasList: React.FC = () => {
         }));
 
         setData(personasArray);
-        setFilteredData(personasArray);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -79,42 +60,10 @@ const PersonasList: React.FC = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const results = data.filter(person =>
-      person.nombres.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      person.apellidos.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredData(results);
-  }, [searchTerm, data]);
-
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleOpenDialog = (person: PersonData) => {
-    setSelectedPerson(person);
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setSelectedPerson(null);
-  };
-
   const handleDelete = async (personId: string) => {
     try {
       const db = getFirestore();
       await deleteDoc(doc(db, 'Personas', personId));
-
       setData(data.filter((person) => person.id !== personId));
 
       Swal.fire({
@@ -134,6 +83,101 @@ const PersonasList: React.FC = () => {
     }
   };
 
+  const handleOpenModal = async (person: PersonData) => {
+    setSelectedPerson(person);
+    setPhoto(null); // Reinicia la foto
+
+    const db = getFirestore();
+    const personDocRef = doc(db, 'Personas', person.id);
+    const personDoc = await getDoc(personDocRef);
+
+    if (personDoc.exists() && personDoc.data().foto) {
+      setPhoto(personDoc.data().foto);
+    } else {
+      Swal.fire({
+        title: 'Foto no encontrada',
+        text: 'Hay que subir foto.',
+        icon: 'info',
+        confirmButtonText: 'Aceptar',
+      });
+    }
+
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedPerson(null);
+    setPhoto(null);
+    setOpenModal(false);
+  };
+
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const options = {
+          maxSizeMB: 0.5,
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+        };
+
+        const compressedFile = await imageCompression(file, options);
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPhoto(reader.result as string);
+        };
+        reader.readAsDataURL(compressedFile);
+      } catch (error) {
+        console.error('Error al comprimir la imagen:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo procesar la imagen. Por favor, intenta con otra.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+        });
+      }
+    }
+  };
+
+  const handleSavePhoto = async () => {
+    if (selectedPerson && photo) {
+      try {
+        const db = getFirestore();
+        const personDocRef = doc(db, 'Personas', selectedPerson.id);
+
+        await updateDoc(personDocRef, { foto: photo });
+
+        setData((prevData) =>
+          prevData.map((person) =>
+            person.id === selectedPerson.id ? { ...person, foto: photo } : person
+          )
+        );
+
+        Swal.fire({
+          title: 'Foto Subida',
+          text: 'La foto se ha subido correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+        });
+
+        handleCloseModal();
+      } catch (error) {
+        console.error('Error al subir la foto:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'Hubo un problema al subir la foto. Por favor, inténtalo de nuevo.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+        });
+      }
+    }
+  };
+
+  const openCrearPersonaPage = () => {
+    navigate('/crear-persona');
+  };
+
   return (
     <div>
       <Navbar />
@@ -142,20 +186,18 @@ const PersonasList: React.FC = () => {
           Lista de Personas
         </Typography>
 
-        <TextField
-          label="Buscar por nombre o apellido"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={searchTerm}
-          onChange={handleSearch}
-        />
+        <Box display="flex" justifyContent="center" mb={2}>
+          <Button variant="contained" color="primary" onClick={openCrearPersonaPage}>
+            Crear Persona
+          </Button>
+        </Box>
 
-        {filteredData.length > 0 ? (
+        {data.length > 0 ? (
           <>
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell>Foto</TableCell>
                   <TableCell>Nombres</TableCell>
                   <TableCell>Apellidos</TableCell>
                   <TableCell>Cédula</TableCell>
@@ -163,8 +205,15 @@ const PersonasList: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((person, index) => (
-                  <TableRow key={index}>
+                {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((person) => (
+                  <TableRow key={person.id}>
+                    <TableCell>
+                      {person.foto ? (
+                        <Avatar src={person.foto} alt={`${person.nombres} ${person.apellidos}`} />
+                      ) : (
+                        <Avatar>{person.nombres.charAt(0)}</Avatar>
+                      )}
+                    </TableCell>
                     <TableCell>{person.nombres}</TableCell>
                     <TableCell>{person.apellidos}</TableCell>
                     <TableCell>{person.cedula}</TableCell>
@@ -172,17 +221,25 @@ const PersonasList: React.FC = () => {
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleOpenDialog(person)}
                         sx={{ mr: 1 }}
+                        onClick={() => Swal.fire('Más Información', JSON.stringify(person), 'info')}
                       >
                         Más Información
                       </Button>
                       <Button
                         variant="contained"
                         color="secondary"
+                        sx={{ mr: 1 }}
                         onClick={() => handleDelete(person.id)}
                       >
                         Eliminar
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="info"
+                        onClick={() => handleOpenModal(person)}
+                      >
+                        Subir Foto
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -193,11 +250,14 @@ const PersonasList: React.FC = () => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={filteredData.length}
+              count={data.length}
               rowsPerPage={rowsPerPage}
               page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
+              onPageChange={(event, newPage) => setPage(newPage)}
+              onRowsPerPageChange={(event) => {
+                setRowsPerPage(parseInt(event.target.value, 10));
+                setPage(0);
+              }}
             />
           </>
         ) : (
@@ -206,42 +266,50 @@ const PersonasList: React.FC = () => {
           </Typography>
         )}
 
-        {/* Dialog for more information */}
-        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-          <DialogTitle>Información Completa</DialogTitle>
+        {/* Modal para subir foto */}
+        <Dialog open={openModal} onClose={handleCloseModal}>
+          <DialogTitle>Subir Foto</DialogTitle>
           <DialogContent>
             {selectedPerson && (
               <>
-                <Typography variant="subtitle1"><strong>Nombres:</strong> {selectedPerson.nombres}</Typography>
-                <Typography variant="subtitle1"><strong>Apellidos:</strong> {selectedPerson.apellidos}</Typography>
-                <Typography variant="subtitle1"><strong>Cédula:</strong> {selectedPerson.cedula}</Typography>
-                <Typography variant="subtitle1"><strong>Fecha de Nacimiento:</strong> {selectedPerson.fechaNacimiento}</Typography>
-                <Typography variant="subtitle1"><strong>Sexo:</strong> {selectedPerson.sexo}</Typography>
-                <Typography variant="subtitle1"><strong>Estado Civil:</strong> {selectedPerson.estadoCivil}</Typography>
-                <Typography variant="subtitle1"><strong>Conyuge:</strong> {selectedPerson.conyuge}</Typography>
-                <Typography variant="subtitle1"><strong>País:</strong> {selectedPerson.pais}</Typography>
-                <Typography variant="subtitle1"><strong>Ciudad de Residencia:</strong> {selectedPerson.ciudadResidencia}</Typography>
-                <Typography variant="subtitle1"><strong>Dirección de Domicilio:</strong> {selectedPerson.direccionDomicilio}</Typography>
-                <Typography variant="subtitle1"><strong>Correo:</strong> {selectedPerson.correo}</Typography>
-                <Typography variant="subtitle1"><strong>Contacto Personal:</strong> {selectedPerson.contactoPersonal}</Typography>
-                <Typography variant="subtitle1"><strong>Contacto de Emergencia:</strong> {selectedPerson.contactoEmergencia}</Typography>
-                <Typography variant="subtitle1"><strong>Iglesia Actual:</strong> {selectedPerson.iglesiaActual}</Typography>
-                <Typography variant="subtitle1"><strong>Cargo en la Iglesia:</strong> {selectedPerson.cargoIglesia}</Typography>
-                <Typography variant="subtitle1"><strong>Bautizado en Agua:</strong> {selectedPerson.bautizadoAgua}</Typography>
-                <Typography variant="subtitle1"><strong>Fecha de Bautizo:</strong> {selectedPerson.fechaBautizo}</Typography>
-                <Typography variant="subtitle1"><strong>Pastor:</strong> {selectedPerson.pastor}</Typography>
-                <Typography variant="subtitle1"><strong>Iglesia de Bautismo:</strong> {selectedPerson.iglesiaBautismo}</Typography>
-                <Typography variant="subtitle1"><strong>Bautizado en Espíritu Santo:</strong> {selectedPerson.bautizadoEspirituSanto}</Typography>
-                <Typography variant="subtitle1"><strong>Casado Eclesiásticamente:</strong> {selectedPerson.casadoEclesiasticamente}</Typography>
-                <Typography variant="subtitle1"><strong>Fecha de Matrimonio:</strong> {selectedPerson.fechaMatrimonio}</Typography>
-                <Typography variant="subtitle1"><strong>Ministro:</strong> {selectedPerson.ministro}</Typography>
-                <Typography variant="subtitle1"><strong>Iglesia de Matrimonio:</strong> {selectedPerson.iglesiaMatrimonio}</Typography>
+                <Typography variant="subtitle1">
+                  {selectedPerson.nombres} {selectedPerson.apellidos}
+                </Typography>
+                <Typography variant="subtitle2">Cédula: {selectedPerson.cedula}</Typography>
               </>
             )}
+            <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
+              {photo ? (
+                <Avatar
+                  src={photo}
+                  alt="Preview"
+                  sx={{ width: 150, height: 150, mb: 2, borderRadius: 0 }}
+                />
+              ) : (
+                <Typography color="textSecondary" mt={2}>
+                  Hay que subir foto.
+                </Typography>
+              )}
+              <Button
+                variant="contained"
+                component="label"
+                disabled={!!photo}
+              >
+                Seleccionar Foto
+                <input type="file" hidden accept="image/*" onChange={handlePhotoChange} />
+              </Button>
+            </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseDialog} color="primary">
-              Cerrar
+            <Button onClick={handleCloseModal} color="secondary">
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSavePhoto}
+              color="primary"
+              disabled={!photo}
+            >
+              Guardar
             </Button>
           </DialogActions>
         </Dialog>

@@ -18,6 +18,7 @@ import Rutas from './components/Rutas/Rutas';
 import SubirAudio from './components/SubirAudios/SubirAudios';
 import DetalleAudio from './components/DetalleAudios/DetalleAudios';
 import Personas from './components/Personas/Personas';
+import CrearPersonaForm from './components/Personas/CrearPersonaForm';
 
 const App: React.FC = () => {
   return (
@@ -39,6 +40,7 @@ const App: React.FC = () => {
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/redes-sociales" element={<RedesSociales />} />
           <Route path="/personas" element={<Personas />} />
+          <Route path="/crear-persona" element={<CrearPersonaForm />} />
         </Routes>
       </Router>
     </ThemeProvider>
