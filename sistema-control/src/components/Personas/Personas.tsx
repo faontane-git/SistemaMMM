@@ -15,6 +15,7 @@ import {
   DialogContent,
   DialogActions,
   Avatar,
+  CircularProgress
 } from '@mui/material';
 import Navbar from '../Navbar';
 import { getFirestore, collection, getDocs, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
@@ -37,11 +38,14 @@ const PersonasList: React.FC = () => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<PersonData | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // Orden inicial ascendente
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const db = getFirestore();
         const personasCollection = collection(db, 'Personas');
         const querySnapshot = await getDocs(personasCollection);
@@ -51,41 +55,66 @@ const PersonasList: React.FC = () => {
           ...(doc.data() as Omit<PersonData, 'id'>),
         }));
 
-        setData(personasArray);
+        // Orden ascendente por defecto
+        const sortedData = personasArray.sort((a, b) => (a.nombres < b.nombres ? -1 : 1));
+        setData(sortedData);
       } catch (error) {
         console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  const handleDelete = async (personId: string) => {
-    try {
-      const db = getFirestore();
-      await deleteDoc(doc(db, 'Personas', personId));
-      setData(data.filter((person) => person.id !== personId));
+  const handleSort = () => {
+    const sortedData = [...data].sort((a, b) => {
+      if (a.nombres < b.nombres) return sortOrder === 'asc' ? -1 : 1;
+      if (a.nombres > b.nombres) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+    setData(sortedData);
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); // Alterna el orden
+  };
 
-      Swal.fire({
-        title: 'Eliminado',
-        text: 'El registro ha sido eliminado exitosamente.',
-        icon: 'success',
-        confirmButtonText: 'Aceptar',
-      });
-    } catch (error) {
-      console.error('Error deleting document:', error);
-      Swal.fire({
-        title: 'Error',
-        text: 'Hubo un problema al eliminar el registro. Por favor, inténtalo de nuevo.',
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-      });
+  const handleDelete = async (personId: string) => {
+    const confirmed = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Esta acción no se puede deshacer.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (confirmed.isConfirmed) {
+      try {
+        const db = getFirestore();
+        await deleteDoc(doc(db, 'Personas', personId));
+        setData(data.filter((person) => person.id !== personId));
+
+        Swal.fire({
+          title: 'Eliminado',
+          text: 'El registro ha sido eliminado exitosamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+        });
+      } catch (error) {
+        console.error('Error deleting document:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'Hubo un problema al eliminar el registro. Por favor, inténtalo de nuevo.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+        });
+      }
     }
   };
 
   const handleOpenModal = async (person: PersonData) => {
     setSelectedPerson(person);
-    setPhoto(null); // Reinicia la foto
+    setPhoto(null);
 
     const db = getFirestore();
     const personDocRef = doc(db, 'Personas', person.id);
@@ -174,6 +203,10 @@ const PersonasList: React.FC = () => {
     }
   };
 
+  const handleEdit = (person: PersonData) => {
+    navigate(`/editar-persona/${person.id}`);
+  };
+
   const openCrearPersonaPage = () => {
     navigate('/crear-persona');
   };
@@ -192,13 +225,19 @@ const PersonasList: React.FC = () => {
           </Button>
         </Box>
 
-        {data.length > 0 ? (
+        {loading ? (
+          <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
+            <CircularProgress />
+          </Box>
+        ) : data.length > 0 ? (
           <>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>Foto</TableCell>
-                  <TableCell>Nombres</TableCell>
+                  <TableCell onClick={handleSort} style={{ cursor: 'pointer' }}>
+                    Nombres ▲
+                  </TableCell>
                   <TableCell>Apellidos</TableCell>
                   <TableCell>Cédula</TableCell>
                   <TableCell>Acciones</TableCell>
@@ -222,9 +261,9 @@ const PersonasList: React.FC = () => {
                         variant="contained"
                         color="primary"
                         sx={{ mr: 1 }}
-                        onClick={() => Swal.fire('Más Información', JSON.stringify(person), 'info')}
+                        onClick={() => handleEdit(person)}
                       >
-                        Más Información
+                        Editar
                       </Button>
                       <Button
                         variant="contained"
@@ -233,13 +272,6 @@ const PersonasList: React.FC = () => {
                         onClick={() => handleDelete(person.id)}
                       >
                         Eliminar
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="info"
-                        onClick={() => handleOpenModal(person)}
-                      >
-                        Subir Foto
                       </Button>
                     </TableCell>
                   </TableRow>

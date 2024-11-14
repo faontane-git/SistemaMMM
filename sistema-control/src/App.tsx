@@ -19,11 +19,12 @@ import SubirAudio from './components/SubirAudios/SubirAudios';
 import DetalleAudio from './components/DetalleAudios/DetalleAudios';
 import Personas from './components/Personas/Personas';
 import CrearPersonaForm from './components/Personas/CrearPersonaForm';
+import EditarPersona from './components/Personas/EditarPersona'; // Importa la página de edición
 
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline /> {/* Aplica estilos globales y fondo del tema */}
+      <CssBaseline />  
       <Router>
         <Routes>
           <Route path="/" element={<LoginForm />} />
@@ -41,6 +42,7 @@ const App: React.FC = () => {
           <Route path="/redes-sociales" element={<RedesSociales />} />
           <Route path="/personas" element={<Personas />} />
           <Route path="/crear-persona" element={<CrearPersonaForm />} />
+          <Route path="/editar-persona/:id" element={<EditarPersona />} />  
         </Routes>
       </Router>
     </ThemeProvider>
