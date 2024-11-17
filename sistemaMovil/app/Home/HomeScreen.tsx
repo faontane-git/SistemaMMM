@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getDocs, collection } from 'firebase/firestore';
-import { firestore } from '../../firebaseConfig'; // Asegúrate de importar `firestore` correctamente
+import { firestore } from '../../firebaseConfig'; // Asegúrate de importar correctamente `firestore`
 
 export default function HomeScreen() {
     const [noticias, setNoticias] = useState<any[]>([]);
@@ -52,6 +52,13 @@ export default function HomeScreen() {
                     />
                 </View>
                 <Text style={styles.headerText}>IGLESIA MMM</Text>
+                {/* Botón de inicio de sesión en el encabezado */}
+                <TouchableOpacity
+                    style={styles.loginButton}
+                    onPress={() => handleOptionPress('IniciarSesion/IniciarSesion')}
+                >
+                    <FontAwesome name="user-circle" size={24} color="white" />
+                </TouchableOpacity>
             </View>
 
             {/* Noticias y eventos */}
@@ -164,6 +171,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         flex: 1,
         textAlign: 'center',
+    },
+    loginButton: {
+        marginLeft: 10,
     },
     newsSection: {
         padding: 20,

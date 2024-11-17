@@ -1,46 +1,53 @@
 import React from "react";
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./Home/HomeScreen";
-import QuienesSomosScreen from "./QuienesSomos/QuienesSomosScreen";
-import RedesSocialesScreen from "./RedesSociales/RedesSocialesScreen";
-import RutasScreen from "./Rutas/RutasScreen";
-import AgendaScreen from "./Agenda/AgendaScreen";
-import DoctrinaScreen from "./Doctrina/DoctrinaScreen";
+import LoginScreen from "./IniciarSesion/IniciarSesion";
+import WelcomeScreen from "./Welcome/WelcomeScreen";
+import CarnetScreen from "./Carnet/CarnetScreen";
 
-const Stack = createNativeStackNavigator();
+// Definir los tipos de las rutas y sus parámetros
+export type RootStackParamList = {
+  "index": undefined; // No espera parámetros
+  "IniciarSesion/IniciarSesion": undefined; // No espera parámetros
+  "Welcome/WelcomeScreen": { cedula: string }; // Espera el parámetro 'cedula'
+  "Carnet/CarnetScreen": { cedula: string }; // Espera el parámetro 'cedula'
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const MainStack = () => {
   return (
     <Stack.Navigator>
+      {/* Pantalla principal */}
       <Stack.Screen
-        name='index'
+        name="index"
         component={HomeScreen}
         options={{ headerShown: false }}
       />
+
+      {/* Pantalla de Inicio de Sesión */}
       <Stack.Screen
-        name='QuienesSomos/QuienesSomosScreen'
-        component={QuienesSomosScreen}
+        name="IniciarSesion/IniciarSesion"
+        component={LoginScreen}
         options={{ headerShown: false }}
       />
+
+      {/* Pantalla de Bienvenida */}
       <Stack.Screen
-        name='RedesSociales/RedesSocialesScreen'
-        component={RedesSocialesScreen}
+        name="Welcome/WelcomeScreen"
+        component={WelcomeScreen}
         options={{ headerShown: false }}
       />
+
+      {/* Pantalla de Carnet */}
       <Stack.Screen
-        name='Rutas/RutasScreen'
-        component={RutasScreen}
-        options={{ headerShown: false }}
-      />    
-      <Stack.Screen
-        name='Agenda/AgendaScreen'
-        component={AgendaScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name='Doctrina/DoctrinaScreen'
-        component={DoctrinaScreen}
-        options={{ headerShown: false }}
+        name="Carnet/CarnetScreen"
+        component={CarnetScreen}
+        options={{
+          title: "Carnet",
+          headerShown: false,
+          animation: "slide_from_right", // Ejemplo de transición
+        }}
       />
     </Stack.Navigator>
   );
