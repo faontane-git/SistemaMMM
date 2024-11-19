@@ -5,12 +5,10 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { getDocs, query, collection, where } from 'firebase/firestore';
 import { firestore } from '../../firebaseConfig';
 
-// Ajustar el modelo para incluir apellidos y foto
 interface Persona {
     nombres: string;
     apellidos: string;
     cedula: string;
-    fechaMiembro: any; // Cambiar si tienes un tipo más específico
     foto: string; // Base64 de la imagen
 }
 
@@ -31,7 +29,6 @@ export default function CarnetScreen() {
                 const querySnapshot = await getDocs(q);
                 if (!querySnapshot.empty) {
                     const data = querySnapshot.docs[0].data() as Persona;
-                    console.log(data);
                     setPersona(data);
                 } else {
                     console.error('No se encontraron datos para la cédula:', cedula);
@@ -50,19 +47,11 @@ export default function CarnetScreen() {
         navigation.goBack();
     };
 
-    const formatFecha = (timestamp: any) => {
-        if (timestamp && timestamp.toDate) {
-            const date = timestamp.toDate();
-            return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-        }
-        return "Desconocido";
-    };
-
     if (loading) {
         return (
             <View style={styles.container}>
-                <ActivityIndicator size="large" color="#0000ff" />
-                <Text style={{ marginTop: 10 }}>Cargando datos...</Text>
+                <ActivityIndicator size="large" color="#ffffff" />
+                <Text style={styles.loadingText}>Cargando datos...</Text>
             </View>
         );
     }
@@ -78,6 +67,14 @@ export default function CarnetScreen() {
         );
     }
 
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+        JSON.stringify({
+            nombres: persona.nombres,
+            apellidos: persona.apellidos,
+            cedula: persona.cedula,
+        })
+    )}`;
+
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
@@ -85,12 +82,25 @@ export default function CarnetScreen() {
             </TouchableOpacity>
 
             <View style={styles.carnet}>
-                <Image
-                    source={{ uri: `data:image/jpeg;base64,${persona.foto}` }}
-                    style={styles.profileImage}
-                />
+                {/* Logo */}
+                <View style={styles.logoContainer}>
+                    <Image
+                        source={require('../../assets/logo.png')} // Reemplaza con la ruta al logo
+                        style={styles.logo}
+                    />
+                    <Text style={styles.title}>IGLESIA MMM FCO. DE ORELLANA</Text>
+                </View>
 
-                <Text style={styles.title}>Carnet de Feligrés</Text>
+                {/* Foto */}
+                <View style={styles.profileSection}>
+                    {persona.foto ? (
+                        <Image source={{ uri: persona.foto }} style={styles.profileImage} />
+                    ) : (
+                        <FontAwesome name="user-circle" size={100} color="#ccc" />
+                    )}
+                </View>
+
+                {/* Información */}
                 <View style={styles.infoContainer}>
                     <Text style={styles.infoLabel}>Nombre:</Text>
                     <Text style={styles.infoValue}>{persona.nombres}</Text>
@@ -103,9 +113,11 @@ export default function CarnetScreen() {
                     <Text style={styles.infoLabel}>Cédula:</Text>
                     <Text style={styles.infoValue}>{persona.cedula}</Text>
                 </View>
-                <View style={styles.infoContainer}>
-                    <Text style={styles.infoLabel}>Miembro desde:</Text>
-                    <Text style={styles.infoValue}>{formatFecha(persona.fechaMiembro)}</Text>
+
+                {/* Código QR */}
+                <View style={styles.qrContainer}>
+                    <Text style={styles.qrLabel}>Código QR:</Text>
+                    <Image source={{ uri: qrUrl }} style={styles.qrImage} />
                 </View>
             </View>
         </View>
@@ -115,11 +127,11 @@ export default function CarnetScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f8f9fa',
+        backgroundColor: '#003580', // Fondo azul
         padding: 20,
     },
     backButton: {
-        backgroundColor: '#2c3e50',
+        backgroundColor: '#0056b3',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 50,
@@ -133,30 +145,44 @@ const styles = StyleSheet.create({
     },
     carnet: {
         backgroundColor: 'white',
-        borderRadius: 10,
+        borderRadius: 15,
         padding: 20,
-        alignItems: 'center',
-        elevation: 3,
         shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.2,
-        shadowRadius: 5,
+        shadowRadius: 6,
+        elevation: 5,
     },
-    profileImage: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
+    logoContainer: {
+        alignItems: 'center',
         marginBottom: 20,
+    },
+    logo: {
+        width: 80,
+        height: 80,
+        resizeMode: 'contain',
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#2c3e50',
+        color: '#003580',
+        textAlign: 'center',
+        marginTop: 5,
+    },
+    profileSection: {
+        alignItems: 'center',
         marginBottom: 20,
+    },
+    profileImage: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        marginBottom: 10,
     },
     infoContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: '100%',
+        alignItems: 'center',
         marginBottom: 10,
     },
     infoLabel: {
@@ -167,11 +193,32 @@ const styles = StyleSheet.create({
     infoValue: {
         fontSize: 16,
         color: '#333',
+        textAlign: 'right',
+    },
+    qrContainer: {
+        marginTop: 20,
+        alignItems: 'center',
+    },
+    qrLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#555',
+        marginBottom: 10,
+    },
+    qrImage: {
+        width: 200,
+        height: 200,
     },
     errorText: {
         fontSize: 18,
-        color: 'red',
+        color: 'white',
         textAlign: 'center',
         marginBottom: 20,
+    },
+    loadingText: {
+        fontSize: 16,
+        color: 'white',
+        marginTop: 10,
+        textAlign: 'center',
     },
 });
