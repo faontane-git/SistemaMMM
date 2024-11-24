@@ -4,9 +4,7 @@ import { getDocs, collection, query, where } from 'firebase/firestore';
 import { firestore } from '../../firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../_layout'
-
-
+import { RootStackParamList } from '../_layout';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'IniciarSesion/IniciarSesion'>;
 
@@ -20,7 +18,7 @@ export default function LoginScreen() {
             Alert.alert('Error', 'Por favor, completa todos los campos.');
             return;
         }
-    
+
         try {
             const q = query(
                 collection(firestore, 'Feligreses'),
@@ -28,10 +26,13 @@ export default function LoginScreen() {
                 where('contraseña', '==', password)
             );
             const querySnapshot = await getDocs(q);
-    
+
             if (!querySnapshot.empty) {
-                console.log('Cédula encontrada:', cedula);
-                navigation.navigate('Carnet/CarnetScreen', { cedula });
+                const userData = querySnapshot.docs[0].data(); // Primer resultado
+                const { nombres, apellidos, cedula } = userData;
+
+                console.log('Datos del usuario:', nombres, apellidos, cedula);
+                navigation.navigate('MenuLogin/MenuScreen', { nombres, apellidos, cedula });
             } else {
                 Alert.alert('Error', 'Usuario o contraseña incorrectos.');
             }

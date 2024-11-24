@@ -77,48 +77,55 @@ export default function CarnetScreen() {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-                <FontAwesome name="arrow-left" size={24} color="white" />
-            </TouchableOpacity>
+            {/* Imagen de la credencial */}
+            <View style={styles.cardContainer}>
+                <Image
+                    source={require('../../assets/images/credencial.jpg')}
+                    style={styles.cardImage}
+                />
 
-            <View style={styles.carnet}>
-                {/* Logo */}
-                <View style={styles.logoContainer}>
-                    <Image
-                        source={require('../../assets/logo.png')} // Reemplaza con la ruta al logo
-                        style={styles.logo}
-                    />
-                    <Text style={styles.title}>IGLESIA MMM FCO. DE ORELLANA</Text>
-                </View>
+                {/* Contenido superpuesto */}
+                <View style={styles.overlay}>
+                    {/* Título */}
+                    <Text style={styles.title}>IGLESIA MMM</Text>
+                    <Text style={styles.subtitle}>FCO. DE ORELLANA</Text>
 
-                {/* Foto */}
-                <View style={styles.profileSection}>
-                    {persona.foto ? (
-                        <Image source={{ uri: persona.foto }} style={styles.profileImage} />
-                    ) : (
-                        <FontAwesome name="user-circle" size={100} color="#ccc" />
-                    )}
-                </View>
+                    {/* Foto de perfil */}
+                    <View style={styles.profileSection}>
+                        {persona.foto ? (
+                            <Image source={{ uri: persona.foto }} style={styles.profileImage} />
+                        ) : (
+                            <FontAwesome name="user-circle" size={100} color="#ccc" />
+                        )}
+                    </View>
 
-                {/* Información */}
-                <View style={styles.infoContainer}>
-                    <Text style={styles.infoLabel}>Nombre:</Text>
-                    <Text style={styles.infoValue}>{persona.nombres}</Text>
-                </View>
-                <View style={styles.infoContainer}>
-                    <Text style={styles.infoLabel}>Apellidos:</Text>
-                    <Text style={styles.infoValue}>{persona.apellidos}</Text>
-                </View>
-                <View style={styles.infoContainer}>
-                    <Text style={styles.infoLabel}>Cédula:</Text>
-                    <Text style={styles.infoValue}>{persona.cedula}</Text>
-                </View>
+                    {/* Información personal */}
+                    <View style={styles.infoContainer}>
+                        <Text style={styles.infoValue}>{persona.nombres}</Text>
+                    </View>
+                    <View style={styles.infoContainer}>
+                        <Text style={styles.infoValue}>{persona.apellidos}</Text>
+                    </View>
+                    <View style={styles.infoContainer}>
+                        <Text style={styles.infoValue}>{persona.cedula}</Text>
+                    </View>
+                    <View style={styles.infoContainer}>
+                        <Text style={styles.infoValue}>MIEMBRO ACTIVO</Text>
+                    </View>
 
-                {/* Código QR */}
-                <View style={styles.qrContainer}>
-                    <Text style={styles.qrLabel}>Código QR:</Text>
-                    <Image source={{ uri: qrUrl }} style={styles.qrImage} />
+                    {/* Código QR */}
+                    <View style={styles.qrContainer}>
+                        <Image source={{ uri: qrUrl }} style={styles.qrImage} />
+                    </View>
                 </View>
+            </View>
+
+            {/* Barra de menú inferior */}
+            <View style={styles.bottomMenu}>
+                <TouchableOpacity style={styles.menuButton} onPress={handleGoBack}>
+                    <FontAwesome name="arrow-left" size={24} color="white" />
+                    <Text style={styles.menuButtonText}>Regresar</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -127,87 +134,93 @@ export default function CarnetScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#003580', // Fondo azul
-        padding: 20,
-    },
-    backButton: {
-        backgroundColor: '#0056b3',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 50,
-        alignSelf: 'flex-start',
-        marginBottom: 20,
-    },
-    backButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    carnet: {
-        backgroundColor: 'white',
-        borderRadius: 15,
-        padding: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.2,
-        shadowRadius: 6,
-        elevation: 5,
-    },
-    logoContainer: {
+        justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20,
+        backgroundColor: '#003580',
     },
-    logo: {
-        width: 80,
-        height: 80,
-        resizeMode: 'contain',
+    cardContainer: {
+        width: '90%', // Reducimos el ancho del carnet
+        height: '82%', // Reducimos la altura del carnet
+        position: 'relative',
+    },
+    cardImage: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
+        borderRadius: 15,
+    },
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        padding: 10, // Ajustamos el padding para adaptarlo al nuevo tamaño
     },
     title: {
-        fontSize: 20,
+        top: 70,
+        fontSize: 18,
         fontWeight: 'bold',
-        color: '#003580',
+        color: '#FFFFFF',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 10,
+        marginBottom: 80, // Ajustamos para que el título no se superponga
         textAlign: 'center',
-        marginTop: 5,
+    },
+    subtitle: {
+        top: 0,
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 10,
+        marginBottom: 15, // Ajustamos para que el título no se superponga
+        textAlign: 'center',
     },
     profileSection: {
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 10,
     },
     profileImage: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
+        width: 100, // Reducimos el tamaño de la foto
+        height: 100,
+        borderRadius: 50,
         marginBottom: 10,
     },
     infoContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    infoLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#555',
+        justifyContent: 'center',
+        width: '100%',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        borderRadius: 10,
+        paddingVertical: 8, // Reducimos el padding
+        paddingHorizontal: 10,
+        marginVertical: 3,
     },
     infoValue: {
-        fontSize: 16,
+        fontSize: 14, // Reducimos el tamaño de la fuente
         color: '#333',
-        textAlign: 'right',
+        textAlign: 'center',
     },
     qrContainer: {
-        marginTop: 20,
+        marginTop: 15,
         alignItems: 'center',
     },
-    qrLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#555',
-        marginBottom: 10,
-    },
     qrImage: {
-        width: 200,
-        height: 200,
+        width: 120, // Reducimos el tamaño del QR
+        height: 120,
+    },
+    loadingText: {
+        fontSize: 16,
+        color: 'white',
+        marginTop: 10,
+        textAlign: 'center',
     },
     errorText: {
         fontSize: 18,
@@ -215,10 +228,37 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 20,
     },
-    loadingText: {
-        fontSize: 16,
+    backButton: {
+        backgroundColor: '#0056b3',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 50,
+        alignSelf: 'center',
+    },
+    backButtonText: {
         color: 'white',
-        marginTop: 10,
+        fontWeight: 'bold',
         textAlign: 'center',
+    },
+    bottomMenu: {
+        width: '100%',
+        height: 60,
+        backgroundColor: '#0056b3',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 0,
+    },
+    menuButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+    },
+    menuButtonText: {
+        color: 'white',
+        fontSize: 16,
+        marginLeft: 10,
+        fontWeight: 'bold',
     },
 });
