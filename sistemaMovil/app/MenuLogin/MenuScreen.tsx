@@ -37,7 +37,7 @@ export default function MenuScreen() {
         navigation.navigate('Carnet/CarnetScreen', { cedula });
     };
     const handleCambioPress = () => {
-        navigation.navigate('Cambio/CambioC');
+        navigation.navigate('Cambio/CambioC', { cedula });
     };
     return (
         <View style={styles.container}>

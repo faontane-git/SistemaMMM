@@ -25,7 +25,7 @@ export type RootStackParamList = {
   "Welcome/WelcomeScreen": { cedula: string }; // Espera el parámetro 'cedula'
   "MenuLogin/MenuScreen": { nombres: string, apellidos: string, cedula: string }; // Espera el parámetro 'cedula'
   "Carnet/CarnetScreen": { cedula: string }; // Espera el parámetro 'cedula'
-  "Cambio/CambioC": undefined;  
+  "Cambio/CambioC": { cedula: string };  
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

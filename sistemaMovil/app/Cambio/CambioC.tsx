@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+
+const db = getFirestore(); // Inicializa Firestore
 
 export default function ChangePasswordScreen() {
     const navigation = useNavigation();
+    const route = useRoute();
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const { cedula } = route.params as { cedula: string }; // Parámetro recibido de la navegación
 
     const handleGoBack = () => {
         if (navigation.canGoBack()) {
@@ -17,7 +22,7 @@ export default function ChangePasswordScreen() {
         }
     };
 
-    const handleChangePassword = () => {
+    const handleChangePassword = async () => {
         if (!oldPassword || !newPassword || !confirmPassword) {
             Alert.alert('Error', 'Por favor complete todos los campos.');
             return;
@@ -26,8 +31,41 @@ export default function ChangePasswordScreen() {
             Alert.alert('Error', 'Las nuevas contraseñas no coinciden.');
             return;
         }
-        Alert.alert('Éxito', 'La contraseña ha sido cambiada correctamente.');
-        // Aquí puedes añadir la lógica para cambiar la contraseña en tu base de datos
+
+        try {
+            // Buscar el documento del usuario en la colección Personas
+            const q = query(
+                collection(db, 'Feligreses'), // Reemplaza 'Personas' por el nombre correcto de tu colección
+                where('cedula', '==', cedula)
+            );
+
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                Alert.alert('Error', 'Usuario no encontrado.');
+                return;
+            }
+
+            // Obtener el primer documento encontrado
+            const userDoc = querySnapshot.docs[0];
+            const userData = userDoc.data();
+ 
+            // Verificar la antigua contraseña
+            if (userData.contraseña !== oldPassword) {
+                Alert.alert('Error', 'La antigua contraseña no es correcta.');
+                return;
+            }
+
+            // Actualizar la contraseña
+            const userRef = doc(db, 'Feligreses', userDoc.id);
+            await updateDoc(userRef, { password: newPassword });
+
+            Alert.alert('Éxito', 'La contraseña ha sido cambiada correctamente.');
+            navigation.goBack(); // Opcional, regresa a la pantalla anterior
+        } catch (error) {
+            console.error('Error al cambiar la contraseña:', error);
+            Alert.alert('Error', 'No se pudo cambiar la contraseña. Intente nuevamente.');
+        }
     };
 
     return (
@@ -44,6 +82,12 @@ export default function ChangePasswordScreen() {
                 <TouchableOpacity style={styles.backIcon} onPress={handleGoBack}>
                     <FontAwesome name="arrow-left" size={24} color="white" />
                 </TouchableOpacity>
+            </View>
+
+            {/* Mostrar Cédula */}
+            <View style={styles.cedulaContainer}>
+                <Text style={styles.cedulaLabel}>Cédula:</Text>
+                <Text style={styles.cedulaValue}>{cedula}</Text>
             </View>
 
             {/* Formulario */}
@@ -121,6 +165,19 @@ const styles = StyleSheet.create({
         backgroundColor: '#2980b9',
         padding: 10,
         borderRadius: 50,
+    },
+    cedulaContainer: {
+        paddingHorizontal: 20,
+        paddingBottom: 10,
+    },
+    cedulaLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    cedulaValue: {
+        fontSize: 16,
+        color: '#555',
     },
     form: {
         paddingHorizontal: 20,
