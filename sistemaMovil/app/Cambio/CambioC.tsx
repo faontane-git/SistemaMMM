@@ -84,12 +84,6 @@ export default function ChangePasswordScreen() {
                 </TouchableOpacity>
             </View>
 
-            {/* Mostrar Cédula */}
-            <View style={styles.cedulaContainer}>
-                <Text style={styles.cedulaLabel}>Cédula:</Text>
-                <Text style={styles.cedulaValue}>{cedula}</Text>
-            </View>
-
             {/* Formulario */}
             <View style={styles.form}>
                 <Text style={styles.label}>Antigua contraseña</Text>
