@@ -1,104 +1,170 @@
 import React, { useState } from 'react';
-import { Container, Typography, Card, CardContent, Grid, Button, Box, IconButton } from '@mui/material';
+import { Container, Typography, Box, Button, Paper } from '@mui/material';
 import Navbar from '../Navbar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
+import FullCalendar from '@fullcalendar/react';
+import timeGridPlugin from '@fullcalendar/timegrid'; // Importar el plugin TimeGrid
+import esLocale from '@fullcalendar/core/locales/es'; // Importar el idioma español
 
 const Agenda: React.FC = () => {
-    const navigate = useNavigate();
-    const [diasCultos, setDiasCultos] = useState([
-        { dia: 'Martes', actividades: ['Ayuno, 9:00 am - 1:00 pm', 'Culto de Oración, 7:00 pm - 9:00 pm', 'Consejería Pastoral, 10:00 am - 12:00 pm'] },
-        { dia: 'Miércoles', actividades: ['Culto de Enseñanza, 7:00 pm - 9:00 pm', 'Consejería Pastoral, 7:00 pm - 8:00 pm'] },
-        { dia: 'Jueves', actividades: ['Culto de Caballeros, 7:00 pm - 9:00 pm'] },
-        { dia: 'Viernes', actividades: ['Culto de Damas, 7:00 pm - 9:00 pm'] },
-        { dia: 'Sábado', actividades: ['Culto de Jóvenes, 5:00 pm - 7:00 pm'] },
-        { dia: 'Domingo', actividades: ['Escuela Dominical, 9:30 am - 12:00 pm', '*Celebración Santa Cena (último domingo de cada mes)', 'Consejería Pastoral, 9:00 am - 10:00 am', 'Consejería Pastoral, 12:00 pm - 1:00 pm'] },
-    ]);
+  const navigate = useNavigate();
 
-    const handleAddSchedule = () => {
-        const nuevoHorario = { dia: 'Nuevo Día', actividades: ['Nueva Actividad, Hora'] };
-        setDiasCultos([...diasCultos, nuevoHorario]);
-    };
+  // Estado para determinar qué horario mostrar
+  const [selectedHorario, setSelectedHorario] = useState<string | null>(null);
 
-    return (
-        <div>
-            <Navbar />
-            <Container maxWidth="md" sx={{ mt: 5 }}>
-                {/* Botón de Regresar */}
-                <Box display="flex" justifyContent="flex-start" mb={2}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<ArrowBackIcon />}
-                        onClick={() => navigate(-1)}
-                    >
-                        Regresar
-                    </Button>
-                </Box>
+  // Horario de Cultos
+  const horarioCultos = [
+    { dia: 'Martes', actividades: ['Ayuno, 09:00 - 13:00', 'Culto de Oración, 19:00 - 21:00'] },
+    { dia: 'Miércoles', actividades: ['Culto de Enseñanza, 19:00 - 21:00'] },
+    { dia: 'Jueves', actividades: ['Culto de Caballeros, 19:00 - 21:00'] },
+    { dia: 'Viernes', actividades: ['Culto de Damas, 19:00 - 21:00'] },
+    { dia: 'Sábado', actividades: ['Culto de Jóvenes, 17:00 - 19:00'] },
+    { dia: 'Domingo', actividades: ['Escuela Dominical, 09:30 - 12:00', 'Celebración Santa Cena (último domingo del mes)'] },
+  ];
 
-                <Typography
-                    variant="h4"
-                    align="center"
-                    gutterBottom
-                    sx={{ fontWeight: 'bold', color: '#3a6073', fontSize: '24px' }}
-                >
-                    Agenda de Horarios
-                </Typography>
+  // Horario de Consejería Pastoral
+  const horarioConsejeria = [
+    { dia: 'Martes', actividades: ['Consejería Pastoral, 10:00 - 12:00'] },
+    { dia: 'Miércoles', actividades: ['Consejería Pastoral, 19:00 - 20:00'] },
+    { dia: 'Domingo', actividades: ['Consejería Pastoral, 09:00 - 10:00', 'Consejería Pastoral, 12:00 - 13:00'] },
+  ];
 
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleAddSchedule}
-                        sx={{
-                            backgroundColor: '#3a6073',
-                            color: '#fff',
-                            '&:hover': { backgroundColor: '#2e4e5e' },
-                        }}
-                    >
-                        Agregar Nuevo Horario
-                    </Button>
-                </Box>
+  const getDayIndex = (dia: string): number => {
+    const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    return daysOfWeek.indexOf(dia);
+  };
 
-                <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 2, color: '#3a6073' }}>
-                    Local: Horario de Cultos y Consejería Pastoral
-                </Typography>
-                <Grid container spacing={3}>
-                    {diasCultos.map((dia, index) => (
-                        <Grid item xs={12} sm={6} md={4} key={index}>
-                            <Card
-                                sx={{
-                                    height: '100%',
-                                    boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)',
-                                    borderRadius: 3,
-                                    border: '2px solid #3a6073',
-                                    overflow: 'hidden',
-                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                                    '&:hover': {
-                                        transform: 'scale(1.05)',
-                                        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-                                    },
-                                    backgroundColor: '#ffffff',
-                                }}
-                            >
-                                <CardContent sx={{ p: 3 }}>
-                                    <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold', mb: 1 }}>
-                                        {dia.dia}
-                                    </Typography>
-                                    <Box sx={{ borderTop: '1px solid #ddd', pt: 1 }}>
-                                        {dia.actividades.map((actividad, idx) => (
-                                            <Typography key={idx} variant="body2" sx={{ color: '#555', mt: 1 }}>
-                                                {actividad}
-                                            </Typography>
-                                        ))}
-                                    </Box>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
-            </Container>
-        </div>
+  const convertToCalendarEvents = (horario: { dia: string; actividades: string[] }[]): any[] => {
+    return horario.flatMap((dia) =>
+      dia.actividades.map((actividad) => {
+        const [descripcion, hora] = actividad.split(',');
+        if (!descripcion || !hora) return null;
+
+        const [startTime, endTime] = hora.split(' - ').map((h) => h.trim());
+
+        return {
+          title: descripcion.trim(),
+          startTime,
+          endTime,
+          daysOfWeek: [getDayIndex(dia.dia)], // Día de la semana (0=Domingo, 1=Lunes, ...)
+          allDay: false,
+        };
+      }).filter(Boolean)
     );
+  };
+
+  if (selectedHorario === null) {
+    // Pantalla de selección de horario
+    return (
+      <div>
+        <Navbar />
+        <Container maxWidth="md" sx={{ mt: 5 }}>
+          <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold' }}>
+            Seleccione el tipo de horario
+          </Typography>
+          <Box display="flex" flexDirection="column" alignItems="center" gap={2} mt={4}>
+            <Button
+              variant="contained"
+              onClick={() => setSelectedHorario('cultos')}
+              sx={{
+                width: '50%',
+                backgroundColor: '#1976d2',
+                color: '#fff',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                '&:hover': { backgroundColor: '#145ca0' },
+              }}
+            >
+              Horario de Cultos
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => setSelectedHorario('consejeria')}
+              sx={{
+                width: '50%',
+                backgroundColor: '#4caf50',
+                color: '#fff',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                '&:hover': { backgroundColor: '#388e3c' },
+              }}
+            >
+              Consejería Pastoral
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => setSelectedHorario('consejeria')}
+              sx={{
+                width: '50%',
+                backgroundColor: '#4caf50',
+                color: '#fff',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                '&:hover': { backgroundColor: '#388e3c' },
+              }}
+            >
+              Otros
+            </Button>
+          </Box>
+        </Container>
+      </div>
+    );
+  }
+
+  // Mostrar el horario seleccionado
+  return (
+    <div>
+      <Navbar />
+      <Container maxWidth="lg" sx={{ mt: 5 }}>
+        <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
+          <Box display="flex" justifyContent="flex-start" mb={2}>
+            <Button
+              variant="outlined"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => setSelectedHorario(null)} // Volver a la pantalla de selección
+              sx={{
+                color: '#1976d2',
+                borderColor: '#1976d2',
+                '&:hover': { backgroundColor: '#f5f5f5' },
+              }}
+            >
+              Regresar
+            </Button>
+          </Box>
+
+          <Typography
+            variant="h4"
+            align="center"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+              color: selectedHorario === 'cultos' ? '#1976d2' : '#4caf50',
+            }}
+          >
+            {selectedHorario === 'cultos' ? 'Horario de Cultos' : 'Horario de Consejería Pastoral'}
+          </Typography>
+          <FullCalendar
+            plugins={[timeGridPlugin]}
+            initialView="timeGridWeek"
+            events={convertToCalendarEvents(
+              selectedHorario === 'cultos' ? horarioCultos : horarioConsejeria
+            )}
+            firstDay={1} // Comienza el calendario con lunes
+            allDaySlot={false} // Elimina la fila "Todo el día"
+            slotMinTime="05:00:00" // La hora mínima visible (5:00 AM)
+            slotMaxTime="22:00:00" // La hora máxima visible (10:00 PM)
+            headerToolbar={{ left: '', center: '', right: '' }}
+            locale={esLocale} // Establece el idioma español
+            dayHeaderFormat={{ weekday: 'long' }}
+            height="auto"
+            contentHeight="auto"
+            eventColor={selectedHorario === 'cultos' ? '#1976d2' : '#4caf50'} // Color de eventos
+          />
+        </Paper>
+      </Container>
+    </div>
+  );
 };
 
 export default Agenda;

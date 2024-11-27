@@ -1,8 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
-import { Container, Typography, TextField, Box, Button, IconButton, Card, CardContent } from '@mui/material';
+import {
+  Container,
+  Typography,
+  TextField,
+  Box,
+  Button,
+  IconButton,
+  Card,
+  CardContent,
+  CircularProgress,
+  Backdrop,
+} from '@mui/material';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import Swal from 'sweetalert2';
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -12,14 +24,39 @@ const SubirAudio: React.FC = () => {
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [archivo, setArchivo] = useState<File | null>(null);
+  const [subiendo, setSubiendo] = useState(false);
   const navigate = useNavigate();
 
+  // Manejar selección de archivo
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setArchivo(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      const validTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg'];
+      if (!validTypes.includes(selectedFile.type)) {
+        Swal.fire({
+          title: 'Formato no válido',
+          text: 'Por favor, selecciona un archivo de audio válido (MP3, WAV, OGG).',
+          icon: 'warning',
+          confirmButtonText: 'Aceptar',
+        });
+        setArchivo(null);
+        return;
+      }
+      if (selectedFile.size > 10 * 1024 * 1024) {
+        Swal.fire({
+          title: 'Archivo demasiado grande',
+          text: 'El archivo no debe superar los 10 MB.',
+          icon: 'warning',
+          confirmButtonText: 'Aceptar',
+        });
+        setArchivo(null);
+        return;
+      }
+      setArchivo(selectedFile);
     }
   };
 
+  // Manejar subida del archivo
   const handleUpload = async () => {
     if (!titulo || !archivo) {
       Swal.fire({
@@ -31,40 +68,75 @@ const SubirAudio: React.FC = () => {
       return;
     }
 
+    setSubiendo(true);
+
     try {
-      const db = getFirestore();
-      await addDoc(collection(db, 'Audios'), {
-        titulo,
-        descripcion,
-        url: 'URL_DEL_AUDIO_SUBIDO',
-      });
+      const storage = getStorage();
+      const storageRef = ref(storage, `audios/${archivo.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, archivo);
 
-      Swal.fire({
-        title: 'Audio Subido',
-        text: 'El audio ha sido subido exitosamente.',
-        icon: 'success',
-        confirmButtonText: 'Aceptar',
-      });
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`Progreso de la subida: ${progress}%`);
+        },
+        (error) => {
+          console.error('Error durante la subida:', error);
+          Swal.fire({
+            title: 'Error al subir el audio',
+            text: `Detalles: ${error.message || 'Error desconocido.'}`,
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+          });
+          setSubiendo(false);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          console.log(downloadURL);
+          const db = getFirestore();
+          await addDoc(collection(db, 'Audios'), {
+            titulo,
+            descripcion,
+            url: downloadURL,
+            fecha: new Date().toISOString(),
+          });
 
-      setTitulo('');
-      setDescripcion('');
-      setArchivo(null);
-    } catch (error) {
+          Swal.fire({
+            title: 'Audio Subido',
+            text: 'El audio ha sido subido exitosamente.',
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+          });
+
+          setTitulo('');
+          setDescripcion('');
+          setArchivo(null);
+          setSubiendo(false);
+        }
+      );
+    } catch (error: any) {
       console.error('Error al subir el audio:', error);
       Swal.fire({
-        title: 'Error',
-        text: 'Hubo un problema al subir el audio. Por favor, inténtelo de nuevo.',
+        title: 'Error al subir el audio',
+        text: `Detalles: ${error.message || 'Error desconocido.'}`,
         icon: 'error',
         confirmButtonText: 'Aceptar',
       });
+      setSubiendo(false);
     }
   };
 
   return (
     <div>
       <Navbar />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={subiendo}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Container maxWidth="sm" sx={{ mt: 5 }}>
-        {/* Botón de regresar fuera del recuadro */}
         <Box display="flex" justifyContent="flex-start" mb={2}>
           <Button
             variant="outlined"
@@ -74,7 +146,6 @@ const SubirAudio: React.FC = () => {
             Regresar
           </Button>
         </Box>
-        
         <Card elevation={3} sx={{ p: 3, borderRadius: 2 }}>
           <CardContent>
             <Box display="flex" justifyContent="center" alignItems="center" mb={3}>
@@ -105,7 +176,12 @@ const SubirAudio: React.FC = () => {
               <Box display="flex" alignItems="center" mb={2}>
                 <IconButton color="primary" component="label" sx={{ mr: 2 }}>
                   <UploadFileIcon />
-                  <input type="file" hidden accept="audio/*" onChange={handleFileChange} />
+                  <input
+                    type="file"
+                    hidden
+                    accept="audio/*"
+                    onChange={handleFileChange}
+                  />
                 </IconButton>
                 <Typography variant="body2" color="textSecondary">
                   {archivo ? `Archivo seleccionado: ${archivo.name}` : 'No hay archivo seleccionado'}
@@ -116,6 +192,7 @@ const SubirAudio: React.FC = () => {
                 color="primary"
                 fullWidth
                 onClick={handleUpload}
+                disabled={!titulo || !archivo || subiendo}
                 sx={{
                   mt: 3,
                   fontWeight: 'bold',
@@ -124,7 +201,7 @@ const SubirAudio: React.FC = () => {
                   padding: 1.5,
                 }}
               >
-                Subir Audio
+                {subiendo ? 'Subiendo...' : 'Subir Audio'}
               </Button>
             </Box>
           </CardContent>
