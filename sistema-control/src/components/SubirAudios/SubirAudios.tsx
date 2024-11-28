@@ -14,12 +14,11 @@ import {
   Backdrop,
 } from '@mui/material';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import Swal from 'sweetalert2';
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-
+ 
 const SubirAudio: React.FC = () => {
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -42,7 +41,7 @@ const SubirAudio: React.FC = () => {
         setArchivo(null);
         return;
       }
-      if (selectedFile.size > 10 * 1024 * 1024) {
+      if (selectedFile.size > 10 * 1024 * 1024) {  // Máximo 10MB
         Swal.fire({
           title: 'Archivo demasiado grande',
           text: 'El archivo no debe superar los 10 MB.',
@@ -56,7 +55,8 @@ const SubirAudio: React.FC = () => {
     }
   };
 
-  // Manejar subida del archivo
+ 
+  // Subir el archivo comprimido a Firestore como base64
   const handleUpload = async () => {
     if (!titulo || !archivo) {
       Swal.fire({
@@ -68,63 +68,7 @@ const SubirAudio: React.FC = () => {
       return;
     }
 
-    setSubiendo(true);
-
-    try {
-      const storage = getStorage();
-      const storageRef = ref(storage, `audios/${archivo.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, archivo);
-
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`Progreso de la subida: ${progress}%`);
-        },
-        (error) => {
-          console.error('Error durante la subida:', error);
-          Swal.fire({
-            title: 'Error al subir el audio',
-            text: `Detalles: ${error.message || 'Error desconocido.'}`,
-            icon: 'error',
-            confirmButtonText: 'Aceptar',
-          });
-          setSubiendo(false);
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          console.log(downloadURL);
-          const db = getFirestore();
-          await addDoc(collection(db, 'Audios'), {
-            titulo,
-            descripcion,
-            url: downloadURL,
-            fecha: new Date().toISOString(),
-          });
-
-          Swal.fire({
-            title: 'Audio Subido',
-            text: 'El audio ha sido subido exitosamente.',
-            icon: 'success',
-            confirmButtonText: 'Aceptar',
-          });
-
-          setTitulo('');
-          setDescripcion('');
-          setArchivo(null);
-          setSubiendo(false);
-        }
-      );
-    } catch (error: any) {
-      console.error('Error al subir el audio:', error);
-      Swal.fire({
-        title: 'Error al subir el audio',
-        text: `Detalles: ${error.message || 'Error desconocido.'}`,
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-      });
-      setSubiendo(false);
-    }
+ 
   };
 
   return (
@@ -162,6 +106,7 @@ const SubirAudio: React.FC = () => {
                 value={titulo}
                 onChange={(e) => setTitulo(e.target.value)}
                 sx={{ mb: 3 }}
+                disabled={subiendo}
               />
               <TextField
                 label="Descripción"
@@ -172,6 +117,7 @@ const SubirAudio: React.FC = () => {
                 value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}
                 sx={{ mb: 3 }}
+                disabled={subiendo}
               />
               <Box display="flex" alignItems="center" mb={2}>
                 <IconButton color="primary" component="label" sx={{ mr: 2 }}>
@@ -181,6 +127,7 @@ const SubirAudio: React.FC = () => {
                     hidden
                     accept="audio/*"
                     onChange={handleFileChange}
+                    disabled={subiendo}
                   />
                 </IconButton>
                 <Typography variant="body2" color="textSecondary">

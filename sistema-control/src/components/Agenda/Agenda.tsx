@@ -1,57 +1,31 @@
 import React, { useState } from 'react';
-import { Container, Typography, Box, Button, Paper } from '@mui/material';
+import { Container, Typography, Box, Button, Paper, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Card, CardContent } from '@mui/material';
 import Navbar from '../Navbar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
-import FullCalendar from '@fullcalendar/react';
-import timeGridPlugin from '@fullcalendar/timegrid'; // Importar el plugin TimeGrid
-import esLocale from '@fullcalendar/core/locales/es'; // Importar el idioma español
+import { v4 as uuidv4 } from 'uuid'; // Para generar IDs únicos para cada actividad
 
 const Agenda: React.FC = () => {
     const navigate = useNavigate();
 
     // Estado para determinar qué horario mostrar
     const [selectedHorario, setSelectedHorario] = useState<string | null>(null);
+    const [openDialog, setOpenDialog] = useState(false); // Estado para controlar el diálogo
+    const [newActividad, setNewActividad] = useState({ descripcion: '', startTime: '', endTime: '' });
+    const [otrasActividades, setOtrasActividades] = useState<Array<{ id: string; descripcion: string; startTime: string; endTime: string }>>([]);
 
-    // Horario de Cultos
-    const horarioCultos = [
-        { dia: 'Martes', actividades: ['Ayuno, 09:00 - 13:00', 'Culto de Oración, 19:00 - 21:00'] },
-        { dia: 'Miércoles', actividades: ['Culto de Enseñanza, 19:00 - 21:00'] },
-        { dia: 'Jueves', actividades: ['Culto de Caballeros, 19:00 - 21:00'] },
-        { dia: 'Viernes', actividades: ['Culto de Damas, 19:00 - 21:00'] },
-        { dia: 'Sábado', actividades: ['Culto de Jóvenes, 17:00 - 19:00'] },
-        { dia: 'Domingo', actividades: ['Escuela Dominical, 09:30 - 12:00', 'Celebración Santa Cena (último domingo del mes)'] },
-    ];
+    // Función para abrir el diálogo de agregar actividad
+    const handleOpenDialog = () => setOpenDialog(true);
 
-    // Horario de Consejería Pastoral
-    const horarioConsejeria = [
-        { dia: 'Martes', actividades: ['Consejería Pastoral, 10:00 - 12:00'] },
-        { dia: 'Miércoles', actividades: ['Consejería Pastoral, 19:00 - 20:00'] },
-        { dia: 'Domingo', actividades: ['Consejería Pastoral, 09:00 - 10:00', 'Consejería Pastoral, 12:00 - 13:00'] },
-    ];
+    // Función para cerrar el diálogo de agregar actividad
+    const handleCloseDialog = () => setOpenDialog(false);
 
-    const getDayIndex = (dia: string): number => {
-        const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-        return daysOfWeek.indexOf(dia);
-    };
-
-    const convertToCalendarEvents = (horario: { dia: string; actividades: string[] }[]): any[] => {
-        return horario.flatMap((dia) =>
-            dia.actividades.map((actividad) => {
-                const [descripcion, hora] = actividad.split(',');
-                if (!descripcion || !hora) return null;
-
-                const [startTime, endTime] = hora.split(' - ').map((h) => h.trim());
-
-                return {
-                    title: descripcion.trim(),
-                    startTime,
-                    endTime,
-                    daysOfWeek: [getDayIndex(dia.dia)], // Día de la semana (0=Domingo, 1=Lunes, ...)
-                    allDay: false,
-                };
-            }).filter(Boolean)
-        );
+    // Función para agregar actividad
+    const handleAddActividad = () => {
+        const nuevaActividad = { ...newActividad, id: uuidv4() }; // Generar un ID único para cada actividad
+        setOtrasActividades([...otrasActividades, nuevaActividad]); // Agregar la actividad a la lista
+        setNewActividad({ descripcion: '', startTime: '', endTime: '' }); // Limpiar el formulario
+        handleCloseDialog(); // Cerrar el diálogo
     };
 
     if (selectedHorario === null) {
@@ -76,7 +50,7 @@ const Agenda: React.FC = () => {
                                 '&:hover': { backgroundColor: '#145ca0' },
                             }}
                         >
-                            Ver Horario de Cultos
+                            Horario de Cultos
                         </Button>
                         <Button
                             variant="contained"
@@ -90,7 +64,22 @@ const Agenda: React.FC = () => {
                                 '&:hover': { backgroundColor: '#388e3c' },
                             }}
                         >
-                            Ver Horario de Consejería Pastoral
+                            Horario de Consejería Pastoral
+                        </Button>
+                        {/* Botón adicional "Otros" */}
+                        <Button
+                            variant="contained"
+                            onClick={() => setSelectedHorario('otros')}
+                            sx={{
+                                width: '50%',
+                                backgroundColor: '#f39c12',
+                                color: '#fff',
+                                fontSize: '1rem',
+                                fontWeight: 'bold',
+                                '&:hover': { backgroundColor: '#e67e22' },
+                            }}
+                        >
+                            Otros
                         </Button>
                     </Box>
                 </Container>
@@ -98,59 +87,117 @@ const Agenda: React.FC = () => {
         );
     }
 
-    // Mostrar el horario seleccionado
-    return (
-        <div>
-            <Navbar />
-            <Container maxWidth="lg" sx={{ mt: 5 }}>
-                <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-                    <Box display="flex" justifyContent="flex-start" mb={2}>
-                        <Button
-                            variant="outlined"
-                            startIcon={<ArrowBackIcon />}
-                            onClick={() => setSelectedHorario(null)} // Volver a la pantalla de selección
+    // Mostrar la pantalla de "Otros Horarios"
+    if (selectedHorario === 'otros') {
+        return (
+            <div>
+                <Navbar />
+                <Container maxWidth="lg" sx={{ mt: 5 }}>
+                    <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
+                        <Box display="flex" justifyContent="flex-start" mb={2}>
+                            <Button
+                                variant="outlined"
+                                startIcon={<ArrowBackIcon />}
+                                onClick={() => setSelectedHorario(null)} // Volver a la pantalla de selección
+                                sx={{
+                                    color: '#1976d2',
+                                    borderColor: '#1976d2',
+                                    '&:hover': { backgroundColor: '#f5f5f5' },
+                                }}
+                            >
+                                Regresar
+                            </Button>
+                            {/* Botón "Agregar Actividad" */}
+                            <Button
+                                variant="contained"
+                                onClick={handleOpenDialog}
+                                sx={{
+                                    color: '#fff',
+                                    backgroundColor: '#28a745',
+                                    '&:hover': { backgroundColor: '#218838' },
+                                    marginLeft: 'auto',
+                                }}
+                            >
+                                Agregar Actividad
+                            </Button>
+                        </Box>
+
+                        <Typography
+                            variant="h4"
+                            align="center"
+                            gutterBottom
                             sx={{
-                                color: '#1976d2',
-                                borderColor: '#1976d2',
-                                '&:hover': { backgroundColor: '#f5f5f5' },
+                                fontWeight: 'bold',
+                                color: '#f39c12', // Color para la sección de "Otros Horarios"
                             }}
                         >
-                            Regresar
-                        </Button>
-                    </Box>
+                            Otros Horarios
+                        </Typography>
 
-                    <Typography
-                        variant="h4"
-                        align="center"
-                        gutterBottom
-                        sx={{
-                            fontWeight: 'bold',
-                            color: selectedHorario === 'cultos' ? '#1976d2' : '#4caf50',
-                        }}
-                    >
-                        {selectedHorario === 'cultos' ? 'Horario de Cultos' : 'Horario de Consejería Pastoral'}
-                    </Typography>
-                    <FullCalendar
-                        plugins={[timeGridPlugin]}
-                        initialView="timeGridWeek"
-                        events={convertToCalendarEvents(
-                            selectedHorario === 'cultos' ? horarioCultos : horarioConsejeria
-                        )}
-                        firstDay={1} // Comienza el calendario con lunes
-                        allDaySlot={false} // Elimina la fila "Todo el día"
-                        slotMinTime="05:00:00" // La hora mínima visible (5:00 AM)
-                        slotMaxTime="22:00:00" // La hora máxima visible (10:00 PM)
-                        headerToolbar={{ left: '', center: '', right: '' }}
-                        locale={esLocale} // Establece el idioma español
-                        dayHeaderFormat={{ weekday: 'long' }}
-                        height="auto"
-                        contentHeight="auto"
-                        eventColor={selectedHorario === 'cultos' ? '#1976d2' : '#4caf50'} // Color de eventos
-                    />
-                </Paper>
-            </Container>
-        </div>
-    );
+                        {/* Mostrar las actividades en tarjetas */}
+                        <Box display="flex" flexDirection="column" gap={2}>
+                            {otrasActividades.map((actividad) => (
+                                <Card key={actividad.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', p: 2 }}>
+                                    <CardContent>
+                                        <Typography variant="h6">{actividad.descripcion}</Typography>
+                                        <Typography variant="body2">{actividad.startTime} - {actividad.endTime}</Typography>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </Box>
+                    </Paper>
+                </Container>
+
+                {/* Diálogo para agregar una nueva actividad */}
+                <Dialog open={openDialog} onClose={handleCloseDialog}>
+                    <DialogTitle>Agregar Nueva Actividad</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            label="Descripción"
+                            fullWidth
+                            variant="outlined"
+                            value={newActividad.descripcion}
+                            onChange={(e) => setNewActividad({ ...newActividad, descripcion: e.target.value })}
+                            sx={{ mb: 2 }}
+                        />
+                        <TextField
+                            label="Hora de Inicio"
+                            fullWidth
+                            type="time"
+                            value={newActividad.startTime}
+                            onChange={(e) => setNewActividad({ ...newActividad, startTime: e.target.value })}
+                            sx={{ mb: 2 }}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
+                        <TextField
+                            label="Hora de Finalización"
+                            fullWidth
+                            type="time"
+                            value={newActividad.endTime}
+                            onChange={(e) => setNewActividad({ ...newActividad, endTime: e.target.value })}
+                            sx={{ mb: 2 }}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseDialog} color="primary">
+                            Cancelar
+                        </Button>
+                        <Button onClick={handleAddActividad} color="primary">
+                            Agregar
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        );
+    }
+
+    // Aquí manejarías otras secciones (como Cultos o Consejería) si fuera necesario.
+    return <div>Seleccione una opción válida</div>;
 };
 
 export default Agenda;
