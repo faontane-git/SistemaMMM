@@ -1,121 +1,185 @@
 import React, { useState } from 'react';
-import { Container, Typography, Box, Paper, Card, CardContent, Grid, Button } from '@mui/material';
 import FullCalendar from '@fullcalendar/react';
-import timeGridPlugin from '@fullcalendar/timegrid'; // Importar el plugin TimeGrid
-import esLocale from '@fullcalendar/core/locales/es'; // Importar el idioma español
+import timeGridPlugin from '@fullcalendar/timegrid';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import esLocale from '@fullcalendar/core/locales/es'; // Importa el locale en español
 
-// Definimos la interfaz para las props que recibirá el componente
-interface HorarioConsejeriaProps {
-  horario: { dia: string; actividades: string[] }[]; // Recibe el horario como prop
-}
+export const Horario: React.FC = () => {
+  const commonColor = '#FF5733'; // Color común para todos los eventos
 
-const HorarioConsejeria: React.FC<HorarioConsejeriaProps> = ({ horario }) => {
-  const [showActivities, setShowActivities] = useState<boolean>(false); // Estado para mostrar/ocultar actividades
+  const [events, setEvents] = useState<any[]>([
+    { id: 'event-0', materia: 'Consejería Individual', dia_num: '1', hora_inicio: '10:00', hora_final: '12:00', color: commonColor },
+    { id: 'event-1', materia: 'Consejería Grupal', dia_num: '2', hora_inicio: '14:00', hora_final: '16:00', color: commonColor },
+  ]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [newEvent, setNewEvent] = useState({ id: '', materia: '', dia_num: '', hora_inicio: '', hora_final: '', color: commonColor });
+  const [calendarKey, setCalendarKey] = useState(0); // Estado para forzar la actualización del calendario
 
-  // Función para obtener el índice del día (0=Domingo, 1=Lunes, ...)
-  const getDayIndex = (dia: string): number => {
-    const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-    return daysOfWeek.indexOf(dia);
+  // Función para manejar el clic sobre un evento y permitir su edición
+  const handleEventClick = (info: any) => {
+    const eventData = events.find(event => event.id === info.event.id);
+    if (eventData) {
+      setNewEvent(eventData); // Cargar los datos del evento seleccionado en el formulario
+      setOpenDialog(true); // Abrir el cuadro de diálogo para editar el evento
+    }
   };
 
-  // Convertir actividades de consejería a eventos para FullCalendar
-  const convertToCalendarEvents = (horario: { dia: string; actividades: string[] }[]): any[] => {
-    return horario.flatMap((dia) =>
-      dia.actividades.map((actividad) => {
-        // Aseguramos que actividad tiene una estructura válida
-        const parts = actividad.split(',');
-        if (parts.length !== 2) return null; // Si no tiene dos partes, no procesamos esta actividad
+  // Función para manejar el clic sobre el botón de "Guardar"
+  const handleAddEvent = () => {
+    if (newEvent.materia && newEvent.dia_num && newEvent.hora_inicio && newEvent.hora_final) {
+      const eventData = {
+        ...newEvent,
+        daysOfWeek: [Number(newEvent.dia_num)], // Día de la semana (0 = Domingo, 1 = Lunes, ...)
+        backgroundColor: newEvent.color,
+        borderColor: newEvent.color,
+        textColor: '#FFFFFF',
+        borderRadius: '8px', // Bordes redondeados para un look más moderno
+        boxShadow: `0px 4px 6px rgba(0, 0, 0, 0.1)`, // Sombra para los eventos
+      };
 
-        const descripcion = parts[0]?.trim();
-        const hora = parts[1]?.trim();
+      if (newEvent.id) {
+        // Si existe un ID, significa que estamos editando un evento
+        setEvents(prevEvents =>
+          prevEvents.map(event => (event.id === newEvent.id ? { ...event, ...eventData } : event))
+        );
+      } else {
+        // Si no existe un ID, es un nuevo evento
+        setEvents(prevEvents => [...prevEvents, { ...eventData, id: `event-${prevEvents.length}` }]);
+      }
 
-        if (!descripcion || !hora) return null; // Si no tenemos descripción o hora, no procesamos la actividad
+      // Forzar la actualización del calendario
+      setCalendarKey(prevKey => prevKey + 1);
 
-        const [startTime, endTime] = hora.split(' - ').map((h) => h.trim());
+      setOpenDialog(false); // Cierra el cuadro de diálogo
+    }
+  };
 
-        return {
-          title: descripcion,
-          startTime,
-          endTime,
-          daysOfWeek: [getDayIndex(dia.dia)], // Día de la semana (0=Domingo, 1=Lunes, ...)
-          allDay: false,
-        };
-      }).filter(Boolean)
-    );
+  // Función para eliminar un evento
+  const handleDeleteEvent = () => {
+    setEvents(prevEvents => prevEvents.filter(event => event.id !== newEvent.id)); // Elimina el evento seleccionado
+    setOpenDialog(false); // Cierra el cuadro de diálogo
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 5 }}>
-      <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold' }}>
-        Horario de Consejería Pastoral
-      </Typography>
+    <div>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          setNewEvent({ id: '', materia: '', dia_num: '', hora_inicio: '', hora_final: '', color: commonColor });
+          setOpenDialog(true);
+        }}
+        style={{ marginBottom: '1em' }}
+      >
+        Agregar Actividad
+      </Button>
 
-      {/* Botón para mostrar/ocultar actividades */}
-      <Box textAlign="center" sx={{ mb: 3 }}>
-        <Button
-          variant="contained"
-          onClick={() => setShowActivities((prev) => !prev)}
-          sx={{
-            backgroundColor: '#4caf50',
-            color: '#fff',
-            '&:hover': { backgroundColor: '#388e3c' },
-          }}
-        >
-          {showActivities ? 'Ocultar Actividades' : 'Mostrar Actividades'}
-        </Button>
-      </Box>
-
-      {/* Mostrar actividades en tarjetas solo si showActivities es true */}
-      {showActivities && (
-        <Grid container spacing={3}>
-          {horario.map((horario, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  {horario.dia}
-                </Typography>
-                {horario.actividades.map((actividad, idx) => {
-                  const parts = actividad.split(',');
-                  const descripcion = parts[0]?.trim();
-                  const hora = parts[1]?.trim();
-
-                  // Verificar si la descripción o la hora están vacías
-                  if (!descripcion || !hora) return null;
-
-                  return (
-                    <Card key={idx} sx={{ mb: 2 }}>
-                      <CardContent>
-                        <Typography variant="body1">
-                          <strong>{descripcion}</strong> - {hora}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-      )}
-
-      {/* Calendario */}
       <FullCalendar
+        key={calendarKey} // Usamos la prop 'key' para forzar la actualización
         plugins={[timeGridPlugin]}
-        initialView="timeGridWeek"
-        events={convertToCalendarEvents(horario)}
-        firstDay={1} // Comienza el calendario con lunes
-        allDaySlot={false} // Elimina la fila "Todo el día"
-        slotMinTime="05:00:00" // La hora mínima visible (5:00 AM)
-        slotMaxTime="22:00:00" // La hora máxima visible (10:00 PM)
-        headerToolbar={{ left: '', center: '', right: '' }}
-        locale={esLocale} // Establece el idioma español
-        dayHeaderFormat={{ weekday: 'long' }}
-        height="auto"
-        contentHeight="auto"
-        eventColor="#4caf50" // Color de eventos
+        initialView="timeGridWeek" // Vista de semana con horas
+        events={events.map((item) => ({
+          id: item.id,
+          title: item.materia,
+          daysOfWeek: [Number(item.dia_num)], // Día de la semana (0 = Domingo, 1 = Lunes, ...)
+          startTime: item.hora_inicio,
+          endTime: item.hora_final,
+          backgroundColor: item.color, // Aplica el mismo color a todos los eventos
+          borderColor: item.color,
+          textColor: '#FFFFFF',
+          borderRadius: '8px', // Bordes redondeados
+          boxShadow: `0px 4px 6px rgba(0, 0, 0, 0.1)`, // Sombra en los eventos
+          // Transición para el hover
+          hoverBackgroundColor: '#444',
+        }))} // Convertir los eventos en el formato adecuado para FullCalendar
+        locale={esLocale}
+        dayHeaderFormat={{ weekday: 'long' }} // Mostrar los días de la semana con nombres largos
+        headerToolbar={{ left: '', center: '', right: '' }}  
+        allDaySlot={false} // Elimina la opción "Todo el día"
+        eventClick={handleEventClick} // Permite seleccionar y editar eventos
+
+        // Limitar las horas visibles en el calendario
+        slotMinTime="05:00:00"
+        slotMaxTime="22:00:00"
+
+        // Formato de las horas en la primera fila (usando dos dígitos)
+        slotLabelFormat={{
+          hour: '2-digit',
+          minute: '2-digit',
+          meridiem: 'short'
+        }}
+
+        // Estilo adicional para las actividades (hover y foco)
+        eventMouseEnter={(info) => {
+          info.el.style.transform = 'scale(1.05)'; // Aumentar ligeramente el tamaño al pasar el ratón
+          info.el.style.transition = 'transform 0.2s ease-in-out';
+        }}
+        eventMouseLeave={(info) => {
+          info.el.style.transform = 'scale(1)'; // Volver al tamaño original al quitar el ratón
+        }}
       />
-    </Container>
+
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>{newEvent.id ? 'Editar Actividad' : 'Agregar Actividad'}</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Materia"
+            fullWidth
+            value={newEvent.materia}
+            onChange={(e) => setNewEvent({ ...newEvent, materia: e.target.value })}
+          />
+          <FormControl fullWidth style={{ marginTop: '1em' }}>
+            <InputLabel>Día de la semana</InputLabel>
+            <Select
+              value={newEvent.dia_num}
+              onChange={(e) => setNewEvent({ ...newEvent, dia_num: e.target.value })}
+            >
+              <MenuItem value="1">Lunes</MenuItem>
+              <MenuItem value="2">Martes</MenuItem>
+              <MenuItem value="3">Miércoles</MenuItem>
+              <MenuItem value="4">Jueves</MenuItem>
+              <MenuItem value="5">Viernes</MenuItem>
+              <MenuItem value="6">Sábado</MenuItem>
+              <MenuItem value="0">Domingo</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            label="Hora de inicio"
+            fullWidth
+            type="time"
+            value={newEvent.hora_inicio}
+            onChange={(e) => setNewEvent({ ...newEvent, hora_inicio: e.target.value })}
+            style={{ marginTop: '1em' }}
+          />
+          <TextField
+            label="Hora de fin"
+            fullWidth
+            type="time"
+            value={newEvent.hora_final}
+            onChange={(e) => setNewEvent({ ...newEvent, hora_final: e.target.value })}
+            style={{ marginTop: '1em' }}
+          />
+          <TextField
+            label="Color"
+            fullWidth
+            type="color"
+            value={newEvent.color}
+            onChange={(e) => setNewEvent({ ...newEvent, color: e.target.value })}
+            style={{ marginTop: '1em' }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
+          {newEvent.id && (
+            <Button onClick={handleDeleteEvent} color="error">
+              Eliminar
+            </Button>
+          )}
+          <Button onClick={handleAddEvent}>Guardar</Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
 };
 
-export default HorarioConsejeria;
+export default Horario;

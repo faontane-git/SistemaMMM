@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import HorarioCultos from './HorarioCultos';
 import HorarioConsejeria from './HorarioConsejeria';
 import HorarioOtros from './HorarioOtros';
+import CalendarApp from './HorarioConsejeria';
 
 // Definición de la interfaz Actividad directamente aquí
 interface Actividad {
@@ -113,7 +114,7 @@ const Agenda: React.FC = () => {
           Volver
         </Button>
         {selectedHorario === 'cultos' && <HorarioCultos horario={horarioCultos} />}
-        {selectedHorario === 'consejeria' && <HorarioConsejeria horario={horarioConsejeria} />}
+        {selectedHorario === 'consejeria' && <CalendarApp/>}
         {selectedHorario === 'otros' && <HorarioOtros horario={horarioOtros} />}
       </Container>
     </div>
