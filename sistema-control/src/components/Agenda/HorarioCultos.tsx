@@ -1,244 +1,223 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import timeGridPlugin from '@fullcalendar/timegrid';
 import {
-  Container,
-  Typography,
-  Box,
-  Paper,
-  Card,
-  CardContent,
-  Grid,
   Button,
-  TextField,
-  MenuItem,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
-  Checkbox,
+  TextField,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  Typography,
 } from '@mui/material';
-import FullCalendar from '@fullcalendar/react';
-import timeGridPlugin from '@fullcalendar/timegrid'; // Importar el plugin TimeGrid
-import esLocale from '@fullcalendar/core/locales/es'; // Importar el idioma español
-import EditIcon from '@mui/icons-material/Edit'; // Icono para editar
-import DeleteIcon from '@mui/icons-material/Delete'; // Icono para eliminar
+import esLocale from '@fullcalendar/core/locales/es';
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { firestore } from '../../firebase';
 
-// Definimos la interfaz para las props que recibirá el componente
-interface HorarioCultosProps {
-  horario: { dia: string; actividades: string[] }[]; // Recibe el horario como prop
-}
+export const Horario: React.FC = () => {
+  const colorOptions = [
+    { label: 'Rojo', value: '#FF5733' },
+    { label: 'Azul', value: '#007BFF' },
+    { label: 'Verde', value: '#28A745' },
+    { label: 'Amarillo', value: '#FFC107' },
+    { label: 'Púrpura', value: '#6F42C1' },
+  ];
 
-const HorarioCultos: React.FC<HorarioCultosProps> = ({ horario }) => {
-  const [openDialog, setOpenDialog] = useState<boolean>(false); // Estado para abrir/cerrar el pop-up
-  const [editingActividad, setEditingActividad] = useState<{ index?: number; dia?: string; descripcion?: string; horaInicio?: string; horaFin?: string } | null>(null); // Estado para editar actividad
-  const [newActividad, setNewActividad] = useState<{ dia: string; descripcion: string; horaInicio: string; horaFin: string }>({
-    dia: '',
-    descripcion: '',
-    horaInicio: '',
-    horaFin: '',
-  }); // Estado para agregar nueva actividad
-  const [horarioState, setHorario] = useState<HorarioCultosProps['horario']>(horario); // Estado local para manejar el horario
+  const commonColor = colorOptions[0].value; // Color por defecto
+  const [events, setEvents] = useState<any[]>([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [newEvent, setNewEvent] = useState({ id: '', materia: '', dia_num: '', hora_inicio: '', hora_final: '', color: commonColor });
 
-  // Convertir actividades de cultos a eventos para FullCalendar
-  const convertToCalendarEvents = (horario: { dia: string; actividades: string[] }[]): any[] => {
-    return horario.flatMap((dia) =>
-      dia.actividades.map((actividad, actividadIndex) => {
-        const parts = actividad.split(',');
-        const descripcion = parts[0]?.trim();
-        const hora = parts[1]?.trim();
-        const [horaInicio, horaFin] = hora.split(' - ').map((h) => h.trim());
+  const actividadesCollection = collection(firestore, 'cultos'); // Colección en Firestore
 
-        return {
-          title: descripcion,
-          start: `${dia.dia} ${horaInicio}`,
-          end: `${dia.dia} ${horaFin}`,
-          diaIndex: horario.indexOf(dia),
-          actividadIndex: actividadIndex,
-        };
-      }).filter(Boolean)
-    );
+  // Cargar datos desde Firestore
+  const loadEventsFromFirestore = async () => {
+    try {
+      const querySnapshot = await getDocs(actividadesCollection);
+      const fetchedEvents = querySnapshot.docs.map((doc) => ({
+        id: doc.id, // ID del documento Firestore
+        ...doc.data(),
+      }));
+      setEvents(fetchedEvents);
+    } catch (error) {
+      console.error('Error al cargar actividades desde Firestore:', error);
+    }
   };
 
-  // Manejar el clic en una actividad del calendario
-  const handleEventClick = (info: any) => {
-    const { diaIndex, actividadIndex } = info.event.extendedProps;
-    const actividad = horarioState[diaIndex].actividades[actividadIndex];
-    const [descripcion, hora] = actividad.split(',');
-    const [horaInicio, horaFin] = hora.split(' - ');
+  // Guardar nuevo evento o actualizar evento existente en Firestore
+  const saveEventToFirestore = async () => {
+    try {
+      const eventData = {
+        materia: newEvent.materia.trim(),
+        dia_num: newEvent.dia_num.trim(),
+        hora_inicio: newEvent.hora_inicio.trim(),
+        hora_final: newEvent.hora_final.trim(),
+        color: newEvent.color,
+      };
 
-    setEditingActividad({
-      dia: horarioState[diaIndex].dia,
-      descripcion: descripcion.trim(),
-      horaInicio: horaInicio.trim(),
-      horaFin: horaFin.trim(),
-      index: actividadIndex,
-    });
-    setOpenDialog(true);
-  };
-
-  // Agregar nueva actividad
-  const addActividad = () => {
-    if (newActividad.dia && newActividad.descripcion && newActividad.horaInicio && newActividad.horaFin) {
-      // Hacer una copia del horario
-      const updatedHorario = [...horarioState];
-
-      const diaIndex = updatedHorario.findIndex((h) => h.dia === newActividad.dia);
-
-      if (diaIndex >= 0) {
-        updatedHorario[diaIndex].actividades.push(`${newActividad.descripcion}, ${newActividad.horaInicio} - ${newActividad.horaFin}`);
+      if (newEvent.id) {
+        // Si el evento ya tiene un ID, actualizamos el documento existente
+        const eventDoc = doc(firestore, 'cultos', newEvent.id);
+        await updateDoc(eventDoc, eventData);
       } else {
-        updatedHorario.push({
-          dia: newActividad.dia,
-          actividades: [`${newActividad.descripcion}, ${newActividad.horaInicio} - ${newActividad.horaFin}`],
-        });
+        // Si no tiene un ID, creamos un nuevo documento
+        await addDoc(actividadesCollection, eventData);
       }
 
-      // Actualizar el estado con el nuevo horario
-      setHorario(updatedHorario);
-
-      // Limpiar los campos de la actividad y cerrar el diálogo
-      setNewActividad({ dia: '', descripcion: '', horaInicio: '', horaFin: '' });
-      setOpenDialog(false);
+      await loadEventsFromFirestore(); // Recargar eventos
+      setOpenDialog(false); // Cerrar el diálogo
+    } catch (error) {
+      console.error('Error al guardar la actividad en Firestore:', error);
     }
   };
 
-  // Actualizar actividad después de editar
-  const updateActividad = () => {
-    if (editingActividad && editingActividad.dia) {
-      // Hacer una copia del horario
-      const updatedHorario = [...horarioState];
-
-      // Crear la nueva actividad con la descripción y horas actualizadas
-      const actividad = `${editingActividad.descripcion}, ${editingActividad.horaInicio} - ${editingActividad.horaFin}`;
-
-      // Encontrar el índice del día correspondiente
-      const diaIndex = updatedHorario.findIndex((h) => h.dia === editingActividad.dia);
-
-      // Reemplazar la actividad editada con la nueva
-      if (diaIndex !== -1) {
-        updatedHorario[diaIndex].actividades = updatedHorario[diaIndex].actividades.map((act, idx) => {
-          return idx === editingActividad.index ? actividad : act;
-        });
+  // Eliminar evento de Firestore
+  const deleteEventFromFirestore = async () => {
+    try {
+      if (newEvent.id) {
+        const eventDoc = doc(firestore, 'cultos', newEvent.id);
+        await deleteDoc(eventDoc); // Eliminar el documento
+        await loadEventsFromFirestore(); // Recargar eventos
+        setOpenDialog(false); // Cerrar el diálogo
       }
-
-      // Actualizar el estado con el horario modificado
-      setHorario(updatedHorario);
-
-      // Restablecer el estado de la actividad que se está editando
-      setEditingActividad(null);
-      setOpenDialog(false);
+    } catch (error) {
+      console.error('Error al eliminar la actividad en Firestore:', error);
     }
   };
+
+  // Manejar clic sobre un evento para editarlo
+  const handleEventClick = (info: any) => {
+    const eventData = events.find((event) => event.id === info.event.id);
+    if (eventData) {
+      setNewEvent(eventData); // Cargar los datos del evento seleccionado
+      setOpenDialog(true); // Abrir el diálogo para edición
+    }
+  };
+
+  useEffect(() => {
+    loadEventsFromFirestore();
+  }, []);
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 5 }}>
-      <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold' }}>
+    <div style={{ textAlign: 'center', padding: '20px' }}>
+      {/* Título centrado */}
+      <Typography variant="h4" gutterBottom>
         Horario de Cultos
       </Typography>
 
-      {/* Botón para abrir el pop-up para agregar actividad */}
-      <Box textAlign="center" sx={{ mb: 3 }}>
-        <Button
-          variant="contained"
-          onClick={() => setOpenDialog(true)} // Abre el pop-up en modo agregar actividad
-          sx={{
-            backgroundColor: '#1976d2',
-            color: '#fff',
-            '&:hover': { backgroundColor: '#145ca0' },
-          }}
-        >
-          Agregar Actividad
-        </Button>
-      </Box>
+      {/* Botón centrado */}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          setNewEvent({ id: '', materia: '', dia_num: '', hora_inicio: '', hora_final: '', color: commonColor });
+          setOpenDialog(true);
+        }}
+        style={{ marginBottom: '2em' }}
+      >
+        Agregar Actividad
+      </Button>
 
-      {/* Mostrar calendario */}
+      {/* Calendario */}
       <FullCalendar
         plugins={[timeGridPlugin]}
         initialView="timeGridWeek"
-        events={convertToCalendarEvents(horarioState)}
-        locale={esLocale} // Español
-        eventClick={handleEventClick} // Añadir evento para hacer clic en una actividad
+        events={events.map((item) => ({
+          id: item.id,
+          title: item.materia,
+          daysOfWeek: [Number(item.dia_num)],
+          startTime: item.hora_inicio,
+          endTime: item.hora_final,
+          backgroundColor: item.color,
+          borderColor: item.color,
+          textColor: '#FFFFFF',
+        }))}
+        locale={esLocale}
+        dayHeaderFormat={{ weekday: 'long' }}
+        headerToolbar={{ left: '', center: '', right: '' }}
+        allDaySlot={false}
+         // Formato de las horas en la primera fila (usando dos dígitos)
+         slotLabelFormat={{
+          hour: '2-digit',
+          minute: '2-digit',
+          meridiem: 'short',
+        }}
+        slotMinTime="05:00:00"
+        slotMaxTime="22:00:00"
+        eventClick={handleEventClick}
       />
 
       {/* Diálogo para agregar/editar actividad */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>{editingActividad ? 'Editar Actividad' : 'Agregar Actividad'}</DialogTitle>
+        <DialogTitle>{newEvent.id ? 'Editar Actividad' : 'Agregar Actividad'}</DialogTitle>
         <DialogContent>
           <TextField
+            label="Materia"
             fullWidth
-            select
-            label="Día"
-            value={editingActividad ? editingActividad.dia : newActividad.dia}
-            onChange={(e) => {
-              const newDia = e.target.value;
-              setNewActividad({ ...newActividad, dia: newDia });
-              setEditingActividad({ ...editingActividad, dia: newDia });
-            }}
-            name="dia"
-            sx={{ mb: 2 }}
-          >
-            {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map((day) => (
-              <MenuItem key={day} value={day}>
-                {day}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            fullWidth
-            label="Descripción"
-            value={editingActividad ? editingActividad.descripcion : newActividad.descripcion}
-            onChange={(e) => {
-              const newDescripcion = e.target.value;
-              setNewActividad({ ...newActividad, descripcion: newDescripcion });
-              setEditingActividad({ ...editingActividad, descripcion: newDescripcion });
-            }}
-            name="descripcion"
-            sx={{ mb: 2 }}
+            value={newEvent.materia}
+            onChange={(e) => setNewEvent({ ...newEvent, materia: e.target.value })}
           />
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Hora Inicio"
-                value={editingActividad ? editingActividad.horaInicio : newActividad.horaInicio}
-                onChange={(e) => {
-                  const newHoraInicio = e.target.value;
-                  setNewActividad({ ...newActividad, horaInicio: newHoraInicio });
-                  setEditingActividad({ ...editingActividad, horaInicio: newHoraInicio });
-                }}
-                name="horaInicio"
-                type="time"
-                sx={{ mb: 2 }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Hora Fin"
-                value={editingActividad ? editingActividad.horaFin : newActividad.horaFin}
-                onChange={(e) => {
-                  const newHoraFin = e.target.value;
-                  setNewActividad({ ...newActividad, horaFin: newHoraFin });
-                  setEditingActividad({ ...editingActividad, horaFin: newHoraFin });
-                }}
-                name="horaFin"
-                type="time"
-                sx={{ mb: 2 }}
-              />
-            </Grid>
-          </Grid>
+          <FormControl fullWidth style={{ marginTop: '1em' }}>
+            <InputLabel>Día de la semana</InputLabel>
+            <Select
+              value={newEvent.dia_num}
+              onChange={(e) => setNewEvent({ ...newEvent, dia_num: e.target.value })}
+            >
+              <MenuItem value="0">Domingo</MenuItem>
+              <MenuItem value="1">Lunes</MenuItem>
+              <MenuItem value="2">Martes</MenuItem>
+              <MenuItem value="3">Miércoles</MenuItem>
+              <MenuItem value="4">Jueves</MenuItem>
+              <MenuItem value="5">Viernes</MenuItem>
+              <MenuItem value="6">Sábado</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            label="Hora de inicio"
+            fullWidth
+            type="time"
+            value={newEvent.hora_inicio}
+            onChange={(e) => setNewEvent({ ...newEvent, hora_inicio: e.target.value })}
+            style={{ marginTop: '1em' }}
+          />
+          <TextField
+            label="Hora de fin"
+            fullWidth
+            type="time"
+            value={newEvent.hora_final}
+            onChange={(e) => setNewEvent({ ...newEvent, hora_final: e.target.value })}
+            style={{ marginTop: '1em' }}
+          />
+          <FormControl fullWidth style={{ marginTop: '1em' }}>
+            <InputLabel>Color</InputLabel>
+            <Select
+              value={newEvent.color}
+              onChange={(e) => setNewEvent({ ...newEvent, color: e.target.value })}
+            >
+              {colorOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="secondary">
-            Cancelar
-          </Button>
-          <Button onClick={editingActividad ? updateActividad : addActividad} color="primary">
-            {editingActividad ? 'Actualizar' : 'Agregar'}
-          </Button>
+          <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
+          {newEvent.id && (
+            <Button onClick={deleteEventFromFirestore} color="error">
+              Eliminar
+            </Button>
+          )}
+          <Button onClick={saveEventToFirestore}>Guardar</Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </div>
   );
 };
 
-export default HorarioCultos;
+export default Horario;

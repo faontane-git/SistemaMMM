@@ -21,27 +21,6 @@ const Agenda: React.FC = () => {
   // Estado para determinar qué horario mostrar
   const [selectedHorario, setSelectedHorario] = useState<string | null>(null);
 
-  // Horario de Cultos (con la interfaz Actividad)
-  const horarioCultos: { dia: string; actividades: string[] }[] = [
-    { dia: 'Lunes', actividades: ['Consejería Individual, 10:00 - 12:00'] },
-    { dia: 'Miércoles', actividades: ['Consejería Grupal, 14:00 - 16:00'] },
-    { dia: 'Viernes', actividades: ['Consejería de Parejas, 18:00 - 20:00'] },
-  ];
-
-  // Horario de Consejería Pastoral
-  const horarioConsejeria: { dia: string; actividades: string[] }[] = [
-    { dia: 'Lunes', actividades: ['Consejería Individual, 10:00 - 12:00'] },
-    { dia: 'Miércoles', actividades: ['Consejería Grupal, 14:00 - 16:00'] },
-    { dia: 'Viernes', actividades: ['Consejería de Parejas, 18:00 - 20:00'] },
-  ];
-
-  // Horario de Otros
-  const horarioOtros: { dia: string; actividades: Actividad[] }[] = [
-    { dia: 'Lunes', actividades: [{ nombre: 'Reunión de Equipos', lugar: 'Salón de reuniones', fechas: '15:00 - 17:00' }] },
-    { dia: 'Jueves', actividades: [{ nombre: 'Taller de Desarrollo Personal', lugar: 'Auditorio', fechas: '18:00 - 20:00' }] },
-    { dia: 'Sábado', actividades: [{ nombre: 'Actividad Recreativa', lugar: 'Parque Central', fechas: '10:00 - 12:00' }] },
-  ];
-
   // Si no se ha seleccionado un horario, mostramos la pantalla de selección
   if (selectedHorario === null) {
     return (
@@ -113,9 +92,9 @@ const Agenda: React.FC = () => {
         >
           Volver
         </Button>
-        {selectedHorario === 'cultos' && <HorarioCultos horario={horarioCultos} />}
+        {selectedHorario === 'cultos' && <HorarioCultos/>}
         {selectedHorario === 'consejeria' && <CalendarApp/>}
-        {selectedHorario === 'otros' && <HorarioOtros horario={horarioOtros} />}
+        {selectedHorario === 'otros' && <HorarioOtros/>}
       </Container>
     </div>
   );
