@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "react-native-qrcode-svg": "^6.3.12",
-    "react-native-svg": "^15.9.0"
-  }
-}
