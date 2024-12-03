@@ -54,14 +54,6 @@ export default function ActividadesScreen() {
           <Text style={styles.buttonText}>Otros</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Actividades */}
-      <ScrollView style={styles.contentSection}>
-        <Text style={styles.sectionTitle}>Actividades</Text>
-        <Text style={styles.sectionDescription}>
-          Descubre todas las actividades disponibles para fortalecer tu fe.
-        </Text>
-      </ScrollView>
     </View>
   );
 }
@@ -111,7 +103,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#1B4F72', // Azul oscuro
+    fontSize: 16,
+    fontWeight: 'bold',
+    backgroundColor: '#0000aa', // Azul oscuro
     paddingHorizontal: 40,
     paddingVertical: 15,
     borderRadius: 10,

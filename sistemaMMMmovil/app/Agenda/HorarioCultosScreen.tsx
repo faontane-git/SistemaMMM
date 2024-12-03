@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../firebaseConfig'; // Asegúrate de ajustar la ruta según tu proyecto
 
 type Actividad = {
-    dia_num: string;
+    dia_num: string; // Día de la semana (0-6)
     materia: string;
     hora_inicio: string;
     hora_final: string;
@@ -38,7 +38,6 @@ export default function HorarioCultosScreen({ navigation }: any) {
 
         fetchActividades();
     }, []);
-
 
     const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
@@ -101,12 +100,25 @@ export default function HorarioCultosScreen({ navigation }: any) {
                 </TouchableOpacity>
             </View>
 
-            {/* Lista de actividades */}
-            <FlatList
-                data={datos}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.dia}
-            />
+            {/* Título */}
+            <Text style={styles.titleText}>Horario de Cultos</Text>
+
+            {/* Horario semanal */}
+            <ScrollView style={styles.scheduleContainer}>
+                {datos.map((item, index) => (
+                    <View key={index} style={styles.dayContainer}>
+                        <Text style={styles.dayText}>{item.dia}</Text>
+                        {item.actividades.map((actividad, idx) => (
+                            <View key={idx} style={[styles.activityCard, { backgroundColor: actividad.color }]}>
+                                <Text style={styles.activityText}>{actividad.materia}</Text>
+                                <Text style={styles.activityText}>
+                                    {actividad.hora_inicio} - {actividad.hora_final}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                ))}
+            </ScrollView>
         </View>
     );
 }
@@ -115,7 +127,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#ecf0f1',
-    },
+     },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -149,22 +161,53 @@ const styles = StyleSheet.create({
     loginButton: {
         padding: 10,
     },
-    dayContainer: {
+    titleText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: '#2C3E50',
+        marginVertical: 20,
+    },
+    scheduleContainer: {
+        flex: 1,
         marginBottom: 20,
     },
+    dayContainer: {
+        marginBottom: 15,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 3, // Da sombra a las tarjetas de actividad
+    },
     dayText: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
-        color: '#2C3E50',
+        textAlign: 'center',
         marginBottom: 10,
+        color: '#34495e', // Un color más neutro para los días
     },
     activityCard: {
         padding: 15,
         borderRadius: 10,
         marginBottom: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 3, // Da sombra a las tarjetas de actividad
     },
     activityText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: 14,
+        textAlign: 'center',
+    },
+    noActivities: {
+        textAlign: 'center',
+        color: '#95a5a6',
+        fontStyle: 'italic',
     },
 });
