@@ -45,10 +45,10 @@ export default function ActividadesScreen() {
       {/* Botones */}
       <View style={styles.buttonSection}>
         <TouchableOpacity style={styles.button} onPress={handleHorarioCultos}>
-          <Text style={styles.buttonText}>Horario Cultos</Text>
+          <Text style={styles.buttonText}>Horario de Cultos</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleHorarioActividades}>
-          <Text style={styles.buttonText}>Horario Actividades</Text>
+          <Text style={styles.buttonText}>Horario de Consejería Pastoral</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleOtros}>
           <Text style={styles.buttonText}>Otros</Text>
