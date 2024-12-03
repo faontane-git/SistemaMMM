@@ -16,8 +16,14 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  IconButton,
+  CircularProgress,
 } from '@mui/material';
 import Navbar from '../Navbar'; // Importación del componente Navbar
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import Swal from 'sweetalert2';
+import { styled } from '@mui/system';
 
 interface Audio {
   id: string;
@@ -26,6 +32,17 @@ interface Audio {
   url: string;
   uploadedAt: string;
 }
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  fontWeight: 'bold',
+  color: theme.palette.primary.main,
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+}));
 
 const SubirMusica: React.FC = () => {
   const [audios, setAudios] = useState<Audio[]>([]);
@@ -36,6 +53,7 @@ const SubirMusica: React.FC = () => {
     url: '',
     uploadedAt: '',
   });
+  const [loading, setLoading] = useState(false);
 
   // Datos de ejemplo
   useEffect(() => {
@@ -79,6 +97,25 @@ const SubirMusica: React.FC = () => {
     handleCloseDialog(); // Cerrar el pop-up
   };
 
+  // Eliminar audio
+  const handleEliminarAudio = (id: string) => {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará el audio de manera permanente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setAudios(audios.filter((audio) => audio.id !== id));
+        Swal.fire('Eliminado', 'El audio ha sido eliminado.', 'success');
+      }
+    });
+  };
+
   return (
     <div>
       {/* Navbar */}
@@ -99,6 +136,11 @@ const SubirMusica: React.FC = () => {
           </Button>
         </Box>
 
+        {/* Cargando datos */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 2 }}>
+          {loading && <CircularProgress />}
+        </Box>
+
         {/* Tabla de audios */}
         <Typography variant="h5" gutterBottom>
           Lista de Audios
@@ -107,15 +149,16 @@ const SubirMusica: React.FC = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell><strong>Nombre</strong></TableCell>
-                <TableCell><strong>Descripción</strong></TableCell>
-                <TableCell><strong>Fecha</strong></TableCell>
-                <TableCell><strong>URL</strong></TableCell>
+                <StyledTableCell><strong>Nombre</strong></StyledTableCell>
+                <StyledTableCell><strong>Descripción</strong></StyledTableCell>
+                <StyledTableCell><strong>Fecha</strong></StyledTableCell>
+                <StyledTableCell><strong>URL</strong></StyledTableCell>
+                <StyledTableCell><strong>Acciones</strong></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {audios.map((audio) => (
-                <TableRow key={audio.id}>
+                <StyledTableRow key={audio.id}>
                   <TableCell>{audio.name}</TableCell>
                   <TableCell>{audio.description}</TableCell>
                   <TableCell>
@@ -130,11 +173,20 @@ const SubirMusica: React.FC = () => {
                       Ver Archivo
                     </a>
                   </TableCell>
-                </TableRow>
+                  <TableCell>
+                    <IconButton color="primary" onClick={() => alert(`Editando ${audio.name}`)} sx={{ marginRight: 1 }}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton color="secondary" onClick={() => handleEliminarAudio(audio.id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </StyledTableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
+
         {audios.length === 0 && (
           <Typography variant="h6" align="center" sx={{ mt: 2 }}>
             No hay audios subidos.
