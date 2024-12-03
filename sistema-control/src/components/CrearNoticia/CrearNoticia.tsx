@@ -2,18 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Swal from 'sweetalert2';
-import {
-  Box,
-  Container,
-  TextField,
-  Typography,
-  Button,
-  Grid,
-  IconButton,
-} from '@mui/material';
+import { Box, Container, TextField, Typography, Button, Grid } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import imageCompression from 'browser-image-compression';
 
 const CrearNoticia: React.FC = () => {
   const [titulo, setTitulo] = useState('');
@@ -32,27 +24,62 @@ const CrearNoticia: React.FC = () => {
     }
   };
 
+  // Función para comprimir la imagen y convertirla a base64
+  const compressAndConvertToBase64 = async (file: File): Promise<string> => {
+    try {
+      const options = {
+        maxSizeMB: 1, // tamaño máximo de la imagen (1 MB)
+        maxWidthOrHeight: 1024, // máximo ancho o altura de la imagen
+        useWebWorker: true, // utilizar worker web para la compresión
+      };
+
+      const compressedFile = await imageCompression(file, options);
+
+      // Convertir la imagen comprimida a base64
+      const reader = new FileReader();
+      reader.readAsDataURL(compressedFile);
+
+      return new Promise((resolve, reject) => {
+        reader.onloadend = () => {
+          resolve(reader.result as string);
+        };
+        reader.onerror = (error) => reject(error);
+      });
+    } catch (error) {
+      throw new Error('Error al comprimir la imagen');
+    }
+  };
+
   // Función para manejar el envío del formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!titulo || !descripcion || !fecha) {
+      Swal.fire({
+        title: 'Campos incompletos',
+        text: 'Por favor, completa todos los campos.',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+      });
+      return;
+    }
 
     try {
       const db = getFirestore();
       const noticiasCollection = collection(db, 'Noticias');
 
-      let fotoURL = '';
+      let fotoBase64 = '';
       if (foto) {
-        const storage = getStorage();
-        const fotoRef = ref(storage, `noticias/${Date.now()}_${foto.name}`);
-        await uploadBytes(fotoRef, foto);
-        fotoURL = await getDownloadURL(fotoRef);
+        // Comprimir y convertir la foto a base64
+        fotoBase64 = await compressAndConvertToBase64(foto);
       }
 
+      // Guardar en Firestore
       await addDoc(noticiasCollection, {
         titulo,
         descripcion,
         fecha,
-        fotoURL,
+        fotoBase64, // Guardar el string base64 comprimido
       });
 
       Swal.fire({
@@ -61,7 +88,7 @@ const CrearNoticia: React.FC = () => {
         icon: 'success',
         confirmButtonText: 'Aceptar',
       }).then(() => {
-        navigate('/noticia-eventos');
+        navigate('/detalle-noticia');
       });
     } catch (error) {
       console.error('Error al crear la noticia:', error);

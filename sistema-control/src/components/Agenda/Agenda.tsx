@@ -35,12 +35,23 @@ const Agenda: React.FC = () => {
               variant="contained"
               onClick={() => setSelectedHorario('cultos')}
               sx={{
-                width: '50%',
+                width: '60%',
                 backgroundColor: '#1976d2',
                 color: '#fff',
-                fontSize: '1rem',
+                fontSize: '1.1rem',
                 fontWeight: 'bold',
-                '&:hover': { backgroundColor: '#1565c0' },
+                padding: '12px 0',
+                borderRadius: '12px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  backgroundColor: '#1565c0',
+                  boxShadow: '0 6px 10px rgba(0, 0, 0, 0.2)',
+                  transform: 'scale(1.05)',
+                },
+                '&:active': {
+                  transform: 'scale(0.98)',
+                },
               }}
             >
               Horario de Cultos
@@ -49,12 +60,23 @@ const Agenda: React.FC = () => {
               variant="contained"
               onClick={() => setSelectedHorario('consejeria')}
               sx={{
-                width: '50%',
+                width: '60%',
                 backgroundColor: '#4caf50',
                 color: '#fff',
-                fontSize: '1rem',
+                fontSize: '1.1rem',
                 fontWeight: 'bold',
-                '&:hover': { backgroundColor: '#388e3c' },
+                padding: '12px 0',
+                borderRadius: '12px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  backgroundColor: '#388e3c',
+                  boxShadow: '0 6px 10px rgba(0, 0, 0, 0.2)',
+                  transform: 'scale(1.05)',
+                },
+                '&:active': {
+                  transform: 'scale(0.98)',
+                },
               }}
             >
               Horario de Consejería Pastoral
@@ -63,12 +85,23 @@ const Agenda: React.FC = () => {
               variant="contained"
               onClick={() => setSelectedHorario('otros')}
               sx={{
-                width: '50%',
+                width: '60%',
                 backgroundColor: '#ff9800',
                 color: '#fff',
-                fontSize: '1rem',
+                fontSize: '1.1rem',
                 fontWeight: 'bold',
-                '&:hover': { backgroundColor: '#f57c00' },
+                padding: '12px 0',
+                borderRadius: '12px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  backgroundColor: '#f57c00',
+                  boxShadow: '0 6px 10px rgba(0, 0, 0, 0.2)',
+                  transform: 'scale(1.05)',
+                },
+                '&:active': {
+                  transform: 'scale(0.98)',
+                },
               }}
             >
               Horario de Otros
@@ -88,13 +121,13 @@ const Agenda: React.FC = () => {
           variant="text"
           onClick={() => setSelectedHorario(null)}
           startIcon={<ArrowBackIcon />}
-          sx={{ color: '#1976d2' }}
+          sx={{ color: '#1976d2', fontWeight: 'bold' }}
         >
           Volver
         </Button>
-        {selectedHorario === 'cultos' && <HorarioCultos/>}
-        {selectedHorario === 'consejeria' && <CalendarApp/>}
-        {selectedHorario === 'otros' && <HorarioOtros/>}
+        {selectedHorario === 'cultos' && <HorarioCultos />}
+        {selectedHorario === 'consejeria' && <CalendarApp />}
+        {selectedHorario === 'otros' && <HorarioOtros />}
       </Container>
     </div>
   );

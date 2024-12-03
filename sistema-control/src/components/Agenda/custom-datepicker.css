@@ -1,0 +1,20 @@
+ /* custom-datepicker.css */
+
+/* Estilo base para el campo de fechas */
+.custom-datepicker {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #1976d2;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  /* Estilo cuando el campo está enfocado */
+  .custom-datepicker:focus {
+    border-color: #1565c0;
+    box-shadow: 0 0 8px rgba(21, 101, 192, 0.5);
+  }
+  

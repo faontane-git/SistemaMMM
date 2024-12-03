@@ -13,6 +13,7 @@ import {
   InputLabel,
   FormControl,
   Typography,
+  FormHelperText
 } from '@mui/material';
 import esLocale from '@fullcalendar/core/locales/es';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
@@ -31,8 +32,8 @@ export const Horario: React.FC = () => {
   const [events, setEvents] = useState<any[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [newEvent, setNewEvent] = useState({ id: '', materia: '', dia_num: '', hora_inicio: '', hora_final: '', color: commonColor });
-
   const actividadesCollection = collection(firestore, 'cultos'); // Colección en Firestore
+  const [errors, setErrors] = useState<any>({}); // Este estado almacenará los errores de los campos
 
   // Cargar datos desde Firestore
   const loadEventsFromFirestore = async () => {
@@ -48,8 +49,36 @@ export const Horario: React.FC = () => {
     }
   };
 
+  const validateFields = () => {
+    const newErrors: any = {}; // Almacenará los errores de los campos
+
+    // Validar que todos los campos estén completos
+    if (!newEvent.materia.trim()) {
+      newErrors.materia = 'La actividad es obligatoria';
+    }
+    if (!newEvent.dia_num) {
+      newErrors.dia_num = 'El día de la semana es obligatorio';
+    }
+    if (!newEvent.hora_inicio) {
+      newErrors.hora_inicio = 'La hora de inicio es obligatoria';
+    }
+    if (!newEvent.hora_final) {
+      newErrors.hora_final = 'La hora de fin es obligatoria';
+    }
+    if (!newEvent.color) {
+      newErrors.color = 'El color es obligatorio';
+    }
+    setErrors(newErrors); // Actualizar el estado con los errores
+    // Si no hay errores, retornamos true
+    return Object.keys(newErrors).length === 0;
+  };
+
+
   // Guardar nuevo evento o actualizar evento existente en Firestore
   const saveEventToFirestore = async () => {
+    if (!validateFields()) {
+      return; // Si los campos no son válidos, no proceder
+    }
     try {
       const eventData = {
         materia: newEvent.materia.trim(),
@@ -140,8 +169,8 @@ export const Horario: React.FC = () => {
         dayHeaderFormat={{ weekday: 'long' }}
         headerToolbar={{ left: '', center: '', right: '' }}
         allDaySlot={false}
-         // Formato de las horas en la primera fila (usando dos dígitos)
-         slotLabelFormat={{
+        // Formato de las horas en la primera fila (usando dos dígitos)
+        slotLabelFormat={{
           hour: '2-digit',
           minute: '2-digit',
           meridiem: 'short',
@@ -156,12 +185,14 @@ export const Horario: React.FC = () => {
         <DialogTitle>{newEvent.id ? 'Editar Actividad' : 'Agregar Actividad'}</DialogTitle>
         <DialogContent>
           <TextField
-            label="Materia"
+            label="Actividad"
             fullWidth
             value={newEvent.materia}
             onChange={(e) => setNewEvent({ ...newEvent, materia: e.target.value })}
+            error={Boolean(errors.materia)} // Si hay un error, mostrar el campo en rojo
+            helperText={errors.materia} // Mostrar el mensaje de error
           />
-          <FormControl fullWidth style={{ marginTop: '1em' }}>
+          <FormControl fullWidth style={{ marginTop: '1em' }} error={Boolean(errors.dia_num)}>
             <InputLabel>Día de la semana</InputLabel>
             <Select
               value={newEvent.dia_num}
@@ -175,6 +206,7 @@ export const Horario: React.FC = () => {
               <MenuItem value="5">Viernes</MenuItem>
               <MenuItem value="6">Sábado</MenuItem>
             </Select>
+            <FormHelperText>{errors.dia_num}</FormHelperText>
           </FormControl>
           <TextField
             label="Hora de inicio"
@@ -183,6 +215,8 @@ export const Horario: React.FC = () => {
             value={newEvent.hora_inicio}
             onChange={(e) => setNewEvent({ ...newEvent, hora_inicio: e.target.value })}
             style={{ marginTop: '1em' }}
+            error={Boolean(errors.hora_inicio)} // Si hay error, mostrar en rojo
+            helperText={errors.hora_inicio} // Mostrar el mensaje de error
           />
           <TextField
             label="Hora de fin"
@@ -191,8 +225,10 @@ export const Horario: React.FC = () => {
             value={newEvent.hora_final}
             onChange={(e) => setNewEvent({ ...newEvent, hora_final: e.target.value })}
             style={{ marginTop: '1em' }}
+            error={Boolean(errors.hora_final)} // Si hay error, mostrar en rojo
+            helperText={errors.hora_final} // Mostrar el mensaje de error
           />
-          <FormControl fullWidth style={{ marginTop: '1em' }}>
+          <FormControl fullWidth style={{ marginTop: '1em' }} error={Boolean(errors.color)}>
             <InputLabel>Color</InputLabel>
             <Select
               value={newEvent.color}
@@ -204,7 +240,9 @@ export const Horario: React.FC = () => {
                 </MenuItem>
               ))}
             </Select>
+            <FormHelperText>{errors.color}</FormHelperText>
           </FormControl>
+
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>

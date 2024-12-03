@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Paper, Grid, Button, TextField, Modal, IconButton } from '@mui/material';
+import { Container, Typography, Box, Paper, Grid, Button, TextField, Modal, IconButton, Alert } from '@mui/material';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase';
+import './custom-datepicker.css';
 
 interface Actividad {
   id?: string; // ID del documento Firestore
@@ -21,8 +22,11 @@ const HorarioOtros: React.FC = () => {
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [openModal, setOpenModal] = useState(false);
   const [selectedActividad, setSelectedActividad] = useState<Actividad | null>(null);
+  const [error, setError] = useState<string | null>(null);  // Estado para los errores de validación
 
   const actividadesCollection = collection(firestore, 'actividades_otros');
+
+
 
   // Cargar actividades desde Firestore
   const loadActividades = async () => {
@@ -40,7 +44,15 @@ const HorarioOtros: React.FC = () => {
 
   // Guardar o actualizar actividad en Firestore
   const saveActividad = async () => {
+    // Validar si todos los campos están completos
+    if (!newActividad.nombre.trim() || !newActividad.lugar.trim() || !startDate || !endDate) {
+      // Mostrar un mensaje de error si falta algún campo
+      setError('Todos los campos son obligatorios.');
+      return;
+    }
+
     try {
+      // Preparar el objeto de la actividad con las fechas formateadas
       const actividadConFechas = {
         nombre: newActividad.nombre.trim(),
         lugar: newActividad.lugar.trim(),
@@ -65,10 +77,24 @@ const HorarioOtros: React.FC = () => {
       setEndDate(undefined);
       setSelectedActividad(null);
       setOpenModal(false);
+      setError(null);  // Limpiar error
+
     } catch (error) {
       console.error('Error al guardar actividad:', error);
+      setError('Hubo un error al guardar la actividad. Intenta nuevamente.');
     }
   };
+
+
+
+  const handleDateChange = (date: Date | null, isStart: boolean) => {
+    if (isStart) {
+      setStartDate(date || new Date());  // Establece una fecha por defecto si es null
+    } else {
+      setEndDate(date || new Date());  // Establece una fecha por defecto si es null
+    }
+  };
+
 
   // Eliminar actividad de Firestore
   const deleteActividad = async () => {
@@ -119,27 +145,40 @@ const HorarioOtros: React.FC = () => {
         onClose={() => {
           setOpenModal(false);
           setSelectedActividad(null);
+          // Limpiar los campos al cerrar el modal
+          setNewActividad({ nombre: '', lugar: '', fechas: '' });
+          setStartDate(undefined);
+          setEndDate(undefined);
+          setError(null);  // Limpiar cualquier error
         }}
         sx={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          backdropFilter: 'blur(5px)',
         }}
       >
         <Box
           sx={{
             backgroundColor: 'white',
             padding: 4,
-            borderRadius: 2,
-            width: 450,
-            boxShadow: 3,
+            borderRadius: 3,
+            width: 500,
+            boxShadow: 24,
             maxHeight: '80%',
-            overflow: 'auto',
+            overflowY: 'auto',
+            transition: 'all 0.3s ease-in-out',
           }}
         >
-          <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', textAlign: 'center', mb: 3 }}>
             {selectedActividad ? 'Editar Actividad' : 'Agregar Nueva Actividad'}
           </Typography>
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          )}
 
           <TextField
             label="Nombre de la Actividad"
@@ -147,7 +186,10 @@ const HorarioOtros: React.FC = () => {
             value={newActividad.nombre}
             onChange={(e) => setNewActividad({ ...newActividad, nombre: e.target.value })}
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{ mb: 3 }}
+            InputLabelProps={{ shrink: true }}
+            error={!newActividad.nombre && !!error}
+            helperText={!newActividad.nombre && error && 'Este campo es obligatorio'}
           />
           <TextField
             label="Lugar de la Actividad"
@@ -155,43 +197,46 @@ const HorarioOtros: React.FC = () => {
             value={newActividad.lugar}
             onChange={(e) => setNewActividad({ ...newActividad, lugar: e.target.value })}
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{ mb: 3 }}
+            InputLabelProps={{ shrink: true }}
+            error={!newActividad.lugar && !!error}
+            helperText={!newActividad.lugar && error && 'Este campo es obligatorio'}
           />
 
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="body1" sx={{ color: '#1976d2' }}>
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body1" sx={{ color: '#1976d2', fontWeight: 'bold', mb: 1 }}>
               Seleccionar Fechas
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <DatePicker
-                  selected={startDate}
-                  onChange={(date: Date | null) => setStartDate(date || undefined)}
+                  selected={startDate && startDate instanceof Date && !isNaN(startDate.getTime()) ? startDate : null}
+                  onChange={(date: Date | null) => handleDateChange(date, true)} // Pasa la fecha al manejador
                   selectsStart
                   startDate={startDate}
                   endDate={endDate}
                   placeholderText="Fecha de inicio"
                   dateFormat="dd/MM/yyyy"
-                  className="react-datepicker__input"
+                  className="custom-datepicker"
                 />
               </Grid>
               <Grid item xs={6}>
                 <DatePicker
-                  selected={endDate}
-                  onChange={(date: Date | null) => setEndDate(date || undefined)}
+                  selected={endDate instanceof Date && !isNaN(endDate.getTime()) ? endDate : null}
+                  onChange={(date: Date | null) => handleDateChange(date, false)} // Pasa la fecha al manejador
                   selectsEnd
                   startDate={startDate}
                   endDate={endDate}
-                  minDate={startDate || undefined}
+                  minDate={startDate}
                   placeholderText="Fecha de fin"
                   dateFormat="dd/MM/yyyy"
-                  className="react-datepicker__input"
+                  className="custom-datepicker"
                 />
               </Grid>
             </Grid>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
             <Button
               variant="contained"
               onClick={saveActividad}
@@ -199,28 +244,36 @@ const HorarioOtros: React.FC = () => {
                 backgroundColor: '#1976d2',
                 color: '#fff',
                 '&:hover': { backgroundColor: '#1565c0' },
-                padding: '10px 20px',
-                fontSize: '14px',
+                padding: '12px 20px',
+                fontSize: '16px',
                 boxShadow: 3,
                 borderRadius: 2,
-                width: '45%',
+                width: '50%',
+                transition: '0.3s',
               }}
             >
               {selectedActividad ? 'Guardar Cambios' : 'Agregar Actividad'}
             </Button>
+          </Box>
 
-            {selectedActividad && (
+          {selectedActividad && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
               <IconButton
                 onClick={deleteActividad}
                 sx={{
                   color: '#d32f2f',
-                  '&:hover': { backgroundColor: '#f8d7da', borderRadius: '50%' },
+                  '&:hover': { backgroundColor: '#f8d7da', borderRadius: '50%', transition: '0.3s' },
+                  width: 48,
+                  height: 48,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 <DeleteIcon fontSize="large" />
               </IconButton>
-            )}
-          </Box>
+            </Box>
+          )}
         </Box>
       </Modal>
 
