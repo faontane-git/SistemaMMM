@@ -24,6 +24,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Swal from 'sweetalert2';
 import { styled } from '@mui/system';
+import { firestore } from "../../firebase"; // Asegúrate de que esta sea la configuración correcta
+import { collection, getDocs, doc, addDoc, deleteDoc  } from "firebase/firestore"; // Asegúrate de importar 'query' y 'where'
 
 interface Audio {
   id: string;
@@ -55,25 +57,25 @@ const SubirMusica: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  // Datos de ejemplo
+  // Obtener audios desde Firebase Firestore
   useEffect(() => {
-    const datosEjemplo: Audio[] = [
-      {
-        id: '1',
-        name: 'Canción 1',
-        description: 'Descripción de la canción 1',
-        url: 'https://example.com/cancion1.mp3',
-        uploadedAt: '2024-11-01T10:00:00Z',
-      },
-      {
-        id: '2',
-        name: 'Canción 2',
-        description: 'Descripción de la canción 2',
-        url: 'https://example.com/cancion2.mp3',
-        uploadedAt: '2024-11-15T12:00:00Z',
-      },
-    ];
-    setAudios(datosEjemplo);
+    const obtenerAudios = async () => {
+      setLoading(true);
+      try {
+        const querySnapshot = await getDocs(collection(firestore, 'Audios'));
+        const audiosData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Audio[];
+        setAudios(audiosData);
+      } catch (error) {
+        console.error('Error al obtener audios:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    obtenerAudios();
   }, []);
 
   // Abrir y cerrar el diálogo
@@ -83,22 +85,34 @@ const SubirMusica: React.FC = () => {
     setNewAudio({ name: '', description: '', url: '', uploadedAt: '' });
   };
 
-  // Guardar nuevo audio
-  const handleGuardarAudio = () => {
+  // Guardar nuevo audio en Firestore
+  const handleGuardarAudio = async () => {
     if (!newAudio.name || !newAudio.description || !newAudio.url || !newAudio.uploadedAt) {
       alert('Por favor, completa todos los campos.');
       return;
     }
 
-    const newId = (audios.length + 1).toString(); // Generar un ID simple
-    const audioConId: Audio = { id: newId, ...newAudio };
+    try {
+      // Guardar el audio en Firestore
+      const docRef = await addDoc(collection(firestore, 'Audios'), {
+        ...newAudio,
+        uploadedAt: new Date(newAudio.uploadedAt).toISOString(),
+      });
 
-    setAudios((prev) => [...prev, audioConId]);
-    handleCloseDialog(); // Cerrar el pop-up
+      // Agregar el audio con el ID generado por Firestore
+      setAudios((prev) => [
+        ...prev,
+        { id: docRef.id, ...newAudio },
+      ]);
+
+      handleCloseDialog(); // Cerrar el pop-up
+    } catch (error) {
+      console.error('Error al guardar el audio:', error);
+    }
   };
 
-  // Eliminar audio
-  const handleEliminarAudio = (id: string) => {
+  // Eliminar audio de Firestore
+  const handleEliminarAudio = async (id: string) => {
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'Esta acción eliminará el audio de manera permanente.',
@@ -108,10 +122,15 @@ const SubirMusica: React.FC = () => {
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar',
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        setAudios(audios.filter((audio) => audio.id !== id));
-        Swal.fire('Eliminado', 'El audio ha sido eliminado.', 'success');
+        try {
+          await deleteDoc(doc(firestore, 'Audios', id)); // Eliminar el audio de Firestore
+          setAudios(audios.filter((audio) => audio.id !== id));
+          Swal.fire('Eliminado', 'El audio ha sido eliminado.', 'success');
+        } catch (error) {
+          console.error('Error al eliminar el audio:', error);
+        }
       }
     });
   };
