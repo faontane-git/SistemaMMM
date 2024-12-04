@@ -30,6 +30,21 @@ const Agenda: React.FC = () => {
           <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold' }}>
             Seleccione el tipo de horario
           </Typography>
+    
+          {/* Botón "Atrás" colocado debajo del título */}
+          <Button
+            variant="text"
+            onClick={() => navigate(-1)}  // Navega hacia la página anterior
+            startIcon={<ArrowBackIcon />}
+            sx={{
+              color: '#1976d2',
+              fontWeight: 'bold',
+              marginBottom: 4,  // Espaciado entre el botón y los siguientes elementos
+            }}
+          >
+            Atrás
+          </Button>
+    
           <Box display="flex" flexDirection="column" alignItems="center" gap={2} mt={4}>
             <Button
               variant="contained"
@@ -110,6 +125,7 @@ const Agenda: React.FC = () => {
         </Container>
       </div>
     );
+    
   }
 
   // Si se ha seleccionado un horario, mostramos el horario correspondiente
@@ -121,7 +137,14 @@ const Agenda: React.FC = () => {
           variant="text"
           onClick={() => setSelectedHorario(null)}
           startIcon={<ArrowBackIcon />}
-          sx={{ color: '#1976d2', fontWeight: 'bold' }}
+          sx={{
+            color: '#1976d2',
+            fontWeight: 'bold',
+            position: 'fixed',
+            top: 16,
+            left: 16,
+            zIndex: 1000, // Aseguramos que el botón esté por encima de otros elementos
+          }}
         >
           Volver
         </Button>

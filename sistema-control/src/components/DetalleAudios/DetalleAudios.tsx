@@ -25,7 +25,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Swal from 'sweetalert2';
 import { styled } from '@mui/system';
 import { firestore } from "../../firebase"; // Asegúrate de que esta sea la configuración correcta
-import { collection, getDocs, doc, addDoc, deleteDoc  } from "firebase/firestore"; // Asegúrate de importar 'query' y 'where'
+import { collection, getDocs, doc, addDoc, deleteDoc } from "firebase/firestore"; // Asegúrate de importar 'query' y 'where'
 
 interface Audio {
   id: string;
@@ -149,8 +149,8 @@ const SubirMusica: React.FC = () => {
         </Paper>
 
         {/* Botón para Crear Audio */}
-        <Box display="flex" justifyContent="center" mb={3}>
-          <Button variant="contained" color="secondary" onClick={handleOpenDialog}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+          <Button variant="contained" color="primary" onClick={handleOpenDialog}>
             Crear Audio
           </Button>
         </Box>
