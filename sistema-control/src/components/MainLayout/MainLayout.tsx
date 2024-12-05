@@ -29,7 +29,7 @@ const MainLayout: React.FC = () => {
       <Box
         sx={{
           backgroundColor: '#f0f4fa',
-          padding: '60px 0',
+          padding: { xs: '40px 0', sm: '60px 0' }, // Ajuste de padding en móviles y pantallas grandes
           textAlign: 'center',
           borderBottom: '2px solid #cfd8dc',
         }}
@@ -41,7 +41,7 @@ const MainLayout: React.FC = () => {
             color: '#3f51b5',
             mb: 1,
             letterSpacing: 1,
-            fontSize: '2rem',
+            fontSize: { xs: '1.8rem', sm: '2rem' }, // Ajuste de tamaño de fuente para pantallas pequeñas
           }}
         >
           ¡Bienvenidos a nuestra Iglesia!
@@ -53,7 +53,7 @@ const MainLayout: React.FC = () => {
             fontStyle: 'italic',
             maxWidth: '700px',
             margin: '0 auto',
-            fontSize: '1.1rem',
+            fontSize: { xs: '1rem', sm: '1.1rem' }, // Ajuste de tamaño en dispositivos pequeños
           }}
         >
           Participa en nuestras actividades y únete a nuestra comunidad.
@@ -62,7 +62,7 @@ const MainLayout: React.FC = () => {
         </Typography>
       </Box>
 
-      <Container sx={{ mt: 4, maxWidth: '850px' }}>
+      <Container sx={{ mt: 4, maxWidth: '850px', px: { xs: 2, sm: 4 } }}> {/* Ajuste de padding para móvil */}
         <Carousel
           autoPlay
           interval={5000}
@@ -93,7 +93,7 @@ const MainLayout: React.FC = () => {
             <Paper
               key={item.id}
               sx={{
-                padding: '30px',
+                padding: { xs: '20px', sm: '30px' }, // Ajuste de padding en móvil
                 borderRadius: '12px',
                 boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)',
                 backgroundColor: '#ffffff',
@@ -108,6 +108,7 @@ const MainLayout: React.FC = () => {
                   letterSpacing: 0.5,
                   color: '#3f51b5',
                   mb: 2,
+                  fontSize: { xs: '1.5rem', sm: '1.75rem' }, // Ajuste de tamaño de título
                 }}
               >
                 {item.title}
@@ -120,6 +121,7 @@ const MainLayout: React.FC = () => {
                   maxWidth: '700px',
                   margin: '0 auto',
                   lineHeight: 1.6,
+                  fontSize: { xs: '0.95rem', sm: '1rem' }, // Ajuste de tamaño de fuente
                 }}
               >
                 {item.description}
