@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
-import { Box, Container, TextField, Typography, Button, Grid } from '@mui/material';
+import { Box, Container, TextField, Typography, Button, Grid, useMediaQuery, useTheme } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import imageCompression from 'browser-image-compression';
 
@@ -14,6 +14,8 @@ const CrearNoticia: React.FC = () => {
   const [foto, setFoto] = useState<File | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Función para manejar el cambio de archivo
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,7 +131,7 @@ const CrearNoticia: React.FC = () => {
           </Button>
         </Box>
 
-        <Container maxWidth="sm" sx={{ backgroundColor: '#fff', borderRadius: 3, boxShadow: 3, padding: 4 }}>
+        <Container maxWidth={isSmallScreen ? "xs" : "sm"} sx={{ backgroundColor: '#fff', borderRadius: 3, boxShadow: 3, padding: 4 }}>
           {/* Título del formulario */}
           <Typography variant="h4" component="h1" align="center" gutterBottom>
             Crear Nueva Noticia

@@ -21,6 +21,8 @@ import {
   DialogActions,
   TextField,
   Button,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -52,6 +54,8 @@ const DetalleNoticia: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [noticiaSeleccionada, setNoticiaSeleccionada] = useState<Noticia | null>(null);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const obtenerNoticias = async () => {
@@ -140,7 +144,6 @@ const DetalleNoticia: React.FC = () => {
     <div>
       <Navbar />
       <Container maxWidth="md" sx={{ marginTop: 4 }}>
-        {/* Botón de Regresar */}
         <Box display="flex" justifyContent="flex-start" mb={2}>
           <Button
             variant="outlined"
@@ -155,7 +158,6 @@ const DetalleNoticia: React.FC = () => {
           Listado de Noticias
         </Typography>
 
-        {/* Botón para crear una nueva noticia debajo del título */}
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
           <Button
             variant="contained"
@@ -171,50 +173,52 @@ const DetalleNoticia: React.FC = () => {
         </Box>
 
         {!loading && (
-          <TableContainer component={Paper} elevation={3}>
-            <Table aria-label="table of noticias">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>Título</StyledTableCell>
-                  <StyledTableCell>Descripción</StyledTableCell>
-                  <StyledTableCell>Fecha</StyledTableCell>
-                  <StyledTableCell align="center">Acciones</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {noticias.map((noticia) => (
-                  <StyledTableRow key={noticia.id}>
-                    <TableCell>{noticia.titulo}</TableCell>
-                    <TableCell>{noticia.descripcion}</TableCell>
-                    <TableCell>
-                      {new Date(noticia.fecha).toLocaleDateString('es-ES', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton
-                        color="primary"
-                        aria-label="editar noticia"
-                        onClick={() => handleOpenModal(noticia)}
-                        sx={{ marginRight: 1 }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        color="secondary"
-                        aria-label="eliminar noticia"
-                        onClick={() => handleEliminar(noticia.id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Box sx={{ overflowX: 'auto' }}>
+            <TableContainer component={Paper} elevation={3}>
+              <Table aria-label="table of noticias">
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell>Título</StyledTableCell>
+                    <StyledTableCell>Descripción</StyledTableCell>
+                    <StyledTableCell>Fecha</StyledTableCell>
+                    <StyledTableCell align="center">Acciones</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {noticias.map((noticia) => (
+                    <StyledTableRow key={noticia.id}>
+                      <TableCell>{noticia.titulo}</TableCell>
+                      <TableCell>{noticia.descripcion}</TableCell>
+                      <TableCell>
+                        {new Date(noticia.fecha).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </TableCell>
+                      <TableCell align="center">
+                        <IconButton
+                          color="primary"
+                          aria-label="editar noticia"
+                          onClick={() => handleOpenModal(noticia)}
+                          sx={{ marginRight: 1 }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          color="secondary"
+                          aria-label="eliminar noticia"
+                          onClick={() => handleEliminar(noticia.id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         )}
 
         {!loading && noticias.length === 0 && (
@@ -224,7 +228,6 @@ const DetalleNoticia: React.FC = () => {
         )}
       </Container>
 
-      {/* Modal de Edición */}
       <Dialog open={open} onClose={handleCloseModal} fullWidth maxWidth="sm">
         <DialogTitle>Editar Noticia</DialogTitle>
         <DialogContent>

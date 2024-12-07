@@ -240,74 +240,177 @@ const RedesSociales: React.FC = () => {
           </Button>
         </Box>
 
-        <Typography variant="h4" align="center" gutterBottom sx={{ fontSize: '18px' }}>
+        <Typography variant="h4" align="center" gutterBottom sx={{ fontSize: '24px' }}>
           Redes Sociales
         </Typography>
-        <Typography variant="body1" align="center" gutterBottom>
-          Aquí puedes ver todas las redes sociales de la iglesia y su comunidad.
-        </Typography>
-
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+        
+        {/* Botón de Crear */}
+        <Box display="flex" justifyContent="center" mb={3}>
           <Fab color="primary" aria-label="add" onClick={handleOpenCrear}>
             <AddIcon />
           </Fab>
         </Box>
 
-        <Grid container spacing={3} justifyContent="center">
+        {/* Redes Sociales */}
+        <Grid container spacing={3}>
           {redesSociales.map((redSocial) => (
             <Grid item xs={12} sm={6} md={4} key={redSocial.id}>
-              <Card
-                sx={{
-                  height: '200px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  textAlign: 'center',
-                  padding: 2,
-                  borderRadius: 2,
-                  boxShadow: 3,
-                  backgroundColor: '#f9f9f9',
-                  transition: 'transform 0.2s',
-                  '&:hover': { transform: 'scale(1.05)', boxShadow: 6 },
-                }}
-              >
+              <Card>
                 <CardContent>
-                  <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
                     {obtenerIconoRedSocial(redSocial.tipo)}
+                    <Box>
+                      <IconButton onClick={() => handleOpenEditar(redSocial)}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleEliminarRedSocial(redSocial)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
                   </Box>
-                  <Typography variant="h6" component="div" gutterBottom sx={{ fontSize: '16px' }}>
-                    {redSocial.nombre}
-                  </Typography>
-                  {redSocial.tipo?.toLowerCase() === 'correo' ? (
-                    <Typography variant="body2" color="text.secondary">
-                      Correo: {redSocial.correo}
-                    </Typography>
-                  ) : (
-                    <>
-                      <Typography variant="body2" color="text.secondary">
-                        Usuario: {redSocial.usuario}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                        <a href={redSocial.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: '#3b5998' }}>
-                          {redSocial.url}
-                        </a>
-                      </Typography>
-                    </>
-                  )}
+                  <Typography variant="h6">{redSocial.nombre}</Typography>
+                  <Typography variant="body2">{redSocial.url || redSocial.correo}</Typography>
                 </CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
-                  <IconButton color="primary" onClick={() => handleOpenEditar(redSocial)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton color="secondary" onClick={() => handleEliminarRedSocial(redSocial)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
               </Card>
             </Grid>
           ))}
         </Grid>
+
+        {/* Crear Red Social */}
+        <Dialog open={openCrear} onClose={handleCloseCrear}>
+          <DialogTitle>Crear Red Social</DialogTitle>
+          <DialogContent>
+            <Box component="form" noValidate autoComplete="off">
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="tipo-label">Tipo</InputLabel>
+                <Select
+                  labelId="tipo-label"
+                  id="tipo"
+                  name="tipo"
+                  value={nuevaRedSocial.tipo}
+                  label="Tipo"
+                  onChange={handleSelectChangeCrear}
+                >
+                  <MenuItem value="Facebook">Facebook</MenuItem>
+                  <MenuItem value="Instagram">Instagram</MenuItem>
+                  <MenuItem value="Twitter">Twitter</MenuItem>
+                  <MenuItem value="YouTube">YouTube</MenuItem>
+                  <MenuItem value="LinkedIn">LinkedIn</MenuItem>
+                  <MenuItem value="WhatsApp">WhatsApp</MenuItem>
+                  <MenuItem value="Correo">Correo</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                label="Nombre"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                name="nombre"
+                value={nuevaRedSocial.nombre}
+                onChange={handleTextFieldChangeCrear}
+              />
+              <TextField
+                label="URL"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                name="url"
+                value={nuevaRedSocial.url}
+                onChange={handleTextFieldChangeCrear}
+              />
+              <TextField
+                label="Usuario"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                name="usuario"
+                value={nuevaRedSocial.usuario}
+                onChange={handleTextFieldChangeCrear}
+              />
+              <TextField
+                label="Correo"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                name="correo"
+                value={nuevaRedSocial.correo}
+                onChange={handleTextFieldChangeCrear}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseCrear}>Cancelar</Button>
+            <Button onClick={handleCrearRedSocial} color="primary">Crear</Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Editar Red Social */}
+        <Dialog open={openEditar} onClose={handleCloseEditar}>
+          <DialogTitle>Editar Red Social</DialogTitle>
+          <DialogContent>
+            <Box component="form" noValidate autoComplete="off">
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="tipo-label">Tipo</InputLabel>
+                <Select
+                  labelId="tipo-label"
+                  id="tipo"
+                  name="tipo"
+                  value={redSocialSeleccionada?.tipo || ''}
+                  label="Tipo"
+                  onChange={handleSelectChange}
+                >
+                  <MenuItem value="Facebook">Facebook</MenuItem>
+                  <MenuItem value="Instagram">Instagram</MenuItem>
+                  <MenuItem value="Twitter">Twitter</MenuItem>
+                  <MenuItem value="YouTube">YouTube</MenuItem>
+                  <MenuItem value="LinkedIn">LinkedIn</MenuItem>
+                  <MenuItem value="WhatsApp">WhatsApp</MenuItem>
+                  <MenuItem value="Correo">Correo</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                label="Nombre"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                name="nombre"
+                value={redSocialSeleccionada?.nombre || ''}
+                onChange={handleTextFieldChange}
+              />
+              <TextField
+                label="URL"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                name="url"
+                value={redSocialSeleccionada?.url || ''}
+                onChange={handleTextFieldChange}
+              />
+              <TextField
+                label="Usuario"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                name="usuario"
+                value={redSocialSeleccionada?.usuario || ''}
+                onChange={handleTextFieldChange}
+              />
+              <TextField
+                label="Correo"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                name="correo"
+                value={redSocialSeleccionada?.correo || ''}
+                onChange={handleTextFieldChange}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseEditar}>Cancelar</Button>
+            <Button onClick={handleActualizarRedSocial} color="primary">Actualizar</Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     </div>
   );
