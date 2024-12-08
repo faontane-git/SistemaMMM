@@ -1,23 +1,21 @@
 import React, { useState } from "react";
-import { collection, getDocs, doc, updateDoc, deleteField, query, where } from "firebase/firestore"; // Asegúrate de importar 'query' y 'where'
-import { firestore } from "../../firebase"; // Asegúrate de que esta sea la configuración correcta
+import { collection, getDocs, doc, updateDoc, deleteField } from "firebase/firestore";
+import { firestore } from "../../firebase";
 import { TextField, Button, Typography, List, ListItem, ListItemText } from "@mui/material";
 
 const Consultas: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [results, setResults] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const today = new Date().toISOString().split("T")[0]; // Fecha de hoy en formato YYYY-MM-DD
 
     // Función para realizar la búsqueda de documentos por nombre
     const handleSearch = async () => {
         setLoading(true);
         try {
-            const q = query(
-                collection(firestore, "Feligreses"), // Cambia "Feligreses" por el nombre exacto de tu colección
-                where("nombre", "==", searchTerm) // Cambia "nombre" por el campo que deseas buscar
-            );
-            const querySnapshot = await getDocs(q);
-            const data = querySnapshot.docs.map((doc) => ({
+            const q = collection(firestore, "Feligreses");
+            const snapshot = await getDocs(q);
+            const data = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data(),
             }));
@@ -29,36 +27,8 @@ const Consultas: React.FC = () => {
         }
     };
 
-    // Función para agregar el campo 'activo' con valor 'true' en todos los documentos de la colección
-    const handleSetActivoTrue = async () => {
-        setLoading(true);
-        try {
-            const collectionRef = collection(firestore, "Personas");
-            const snapshot = await getDocs(collectionRef);
-
-            if (snapshot.empty) {
-                console.log("No hay documentos en la colección.");
-                return;
-            }
-
-            const promises = snapshot.docs.map((docSnapshot) => {
-                const docRef = doc(firestore, "Personas", docSnapshot.id);
-                return updateDoc(docRef, {
-                    activo: true, // Se agrega el campo 'activo' con el valor 'true'
-                });
-            });
-
-            await Promise.all(promises);
-            console.log("Campo 'activo' agregado con valor 'true' a todos los documentos.");
-        } catch (error) {
-            console.error("Error al agregar el campo 'activo':", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Función para eliminar el campo 'foto' de todos los documentos
-    const handleRemoveFoto = async () => {
+    // Función para eliminar la propiedad 'password'
+    const handleRemovePassword = async () => {
         setLoading(true);
         try {
             const collectionRef = collection(firestore, "Feligreses");
@@ -72,14 +42,42 @@ const Consultas: React.FC = () => {
             const promises = snapshot.docs.map((docSnapshot) => {
                 const docRef = doc(firestore, "Feligreses", docSnapshot.id);
                 return updateDoc(docRef, {
-                    foto: deleteField(), // Elimina la propiedad 'foto'
+                    password: deleteField(), // Elimina la propiedad 'password'
                 });
             });
 
             await Promise.all(promises);
-            console.log("Propiedad 'foto' eliminada de todos los documentos.");
+            console.log("Propiedad 'password' eliminada de todos los documentos.");
         } catch (error) {
-            console.error("Error al eliminar la propiedad 'foto':", error);
+            console.error("Error al eliminar la propiedad 'password':", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Función para agregar 'fechaNacimiento' con la fecha de hoy
+    const handleAddFechaNacimiento = async () => {
+        setLoading(true);
+        try {
+            const collectionRef = collection(firestore, "Feligreses");
+            const snapshot = await getDocs(collectionRef);
+
+            if (snapshot.empty) {
+                console.log("No hay documentos en la colección.");
+                return;
+            }
+
+            const promises = snapshot.docs.map((docSnapshot) => {
+                const docRef = doc(firestore, "Feligreses", docSnapshot.id);
+                return updateDoc(docRef, {
+                    fechaNacimiento: today, // Agrega el campo 'fechaNacimiento' con la fecha actual
+                });
+            });
+
+            await Promise.all(promises);
+            console.log(`Campo 'fechaNacimiento' agregado con valor: ${today}.`);
+        } catch (error) {
+            console.error("Error al agregar el campo 'fechaNacimiento':", error);
         } finally {
             setLoading(false);
         }
@@ -109,20 +107,20 @@ const Consultas: React.FC = () => {
             </Button>
             <Button
                 variant="contained"
-                color="secondary"
-                onClick={handleRemoveFoto}
+                color="error"
+                onClick={handleRemovePassword}
                 disabled={loading}
+                style={{ marginBottom: "10px" }}
             >
-                {loading ? "Eliminando..." : "Eliminar Propiedad 'foto'"}
+                {loading ? "Eliminando..." : "Eliminar Propiedad 'password'"}
             </Button>
             <Button
                 variant="contained"
                 color="success"
-                onClick={handleSetActivoTrue}
+                onClick={handleAddFechaNacimiento}
                 disabled={loading}
-                style={{ marginLeft: "10px" }}
             >
-                {loading ? "Estableciendo..." : "Establecer 'activo' en true"}
+                {loading ? "Agregando..." : `Agregar Fecha de Nacimiento (${today})`}
             </Button>
 
             <List>

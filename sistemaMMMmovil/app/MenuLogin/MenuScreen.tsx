@@ -1,14 +1,15 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../_layout'
+import { RootStackParamList } from '../_layout';
 
 type RouteParams = {
     cedula: string;
     nombres: string;
     apellidos: string;
+    fechaNacimiento: string;
 };
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'IniciarSesion/IniciarSesion'>;
@@ -16,57 +17,72 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, '
 export default function MenuScreen() {
     const navigation = useNavigation<LoginScreenNavigationProp>();
     const route = useRoute();
-    const { nombres, apellidos, cedula } = route.params as RouteParams;
+    const { nombres, apellidos, cedula, fechaNacimiento } = route.params as RouteParams;
 
-    const handleLogout = () => {
-        Alert.alert(
-            'Cerrar Sesión',
-            '¿Estás seguro que deseas cerrar sesión?',
-            [
-                { text: 'Cancelar', style: 'cancel' },
-                {
-                    text: 'Cerrar Sesión',
-                    onPress: () => {
-                    },
-                },
-            ]
-        );
+    const [isBirthdayModalVisible, setIsBirthdayModalVisible] = useState(false);
+
+    useEffect(() => {
+        const today = new Date();
+        const [year, month, day] = fechaNacimiento.split('-').map(Number);
+
+        if (month === today.getMonth() + 1 && day === today.getDate()) {
+            setIsBirthdayModalVisible(true);
+        }
+    }, [fechaNacimiento]);
+
+    const handleCloseBirthdayModal = () => {
+        setIsBirthdayModalVisible(false);
     };
 
     const handleOptionPress = () => {
         navigation.navigate('Carnet/CarnetScreen', { cedula });
     };
+
     const handleCambioPress = () => {
         navigation.navigate('Cambio/CambioC', { cedula });
     };
+
     return (
         <View style={styles.container}>
+            {/* Modal de cumpleaños */}
+            <Modal
+                visible={isBirthdayModalVisible}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={handleCloseBirthdayModal}
+            >
+                <View style={styles.modalBackground}>
+                    <View style={styles.birthdayModal}>
+                        <Text style={styles.birthdayTitle}>¡Feliz cumpleaños!</Text>
+                        <FontAwesome name="birthday-cake" size={80} color="#f39c12" style={styles.birthdayIcon} />
+                        <Text style={styles.birthdayMessage}>
+                            ¡Hoy es tu cumpleaños, {nombres}! Que tengas un gran día. 🥳
+                        </Text>
+                        <TouchableOpacity
+                            style={styles.birthdayButton}
+                            onPress={handleCloseBirthdayModal}
+                        >
+                            <Text style={styles.birthdayButtonText}>OK</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
             {/* Header */}
             <View style={styles.header}>
                 <View style={styles.logoContainer}>
-                    <Image
-                        source={require('../../assets/logo.png')} // Ruta de tu logo
-                        style={styles.logo}
-                    />
+                    <FontAwesome name="home" size={30} color="#fff" />
                 </View>
                 <Text style={styles.headerText}>Bienvenido</Text>
-                {/* Botón de cerrar sesión */}
-                <TouchableOpacity
-                    style={styles.logoutButton}
-                    onPress={handleLogout}
-                >
+                <TouchableOpacity style={styles.logoutButton}>
                     <FontAwesome name="sign-out" size={24} color="white" />
                 </TouchableOpacity>
             </View>
 
             {/* Bienvenida y opciones */}
             <View style={styles.body}>
-                <Text style={styles.nameText}>
-                    {nombres}
-                </Text>
-                <Text style={styles.nameText}>
-                    {apellidos}
-                </Text>
+                <Text style={styles.nameText}>{nombres}</Text>
+                <Text style={styles.nameText}>{apellidos}</Text>
                 <Text style={styles.subtitle}>Seleccione una opción</Text>
 
                 {/* Opciones */}
@@ -79,14 +95,14 @@ export default function MenuScreen() {
 
                 <TouchableOpacity
                     style={styles.optionButton}
-                    onPress={() => Alert.alert('Certificados', 'Esta opción aún no está implementada.')}
+                    onPress={() => alert('Certificados no disponibles.')}
                 >
                     <Text style={styles.optionText}>Certificado de Bautismo</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={styles.optionButton}
-                    onPress={() => Alert.alert('Certificados', 'Esta opción aún no está implementada.')}
+                    onPress={() => alert('Certificados no disponibles.')}
                 >
                     <Text style={styles.optionText}>Certificado de Matrimonio</Text>
                 </TouchableOpacity>
@@ -107,6 +123,47 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f8f9fa',
     },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    birthdayModal: {
+        width: '80%',
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        padding: 20,
+        alignItems: 'center',
+    },
+    birthdayTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#003580',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    birthdayIcon: {
+        marginBottom: 20,
+    },
+    birthdayMessage: {
+        fontSize: 16,
+        color: '#555',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    birthdayButton: {
+        backgroundColor: '#003580',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    birthdayButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -118,10 +175,6 @@ const styles = StyleSheet.create({
     logoContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    logo: {
-        width: 40,
-        height: 40,
     },
     headerText: {
         color: 'white',
@@ -138,13 +191,6 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         padding: 20,
-    },
-    welcomeText: {
-        fontSize: 24,
-        color: '#333',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 5,
     },
     nameText: {
         fontSize: 16,

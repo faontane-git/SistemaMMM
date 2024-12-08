@@ -26,13 +26,12 @@ export default function LoginScreen() {
                 where('contraseña', '==', password.trim())
             );
             const querySnapshot = await getDocs(q);
- 
+
             if (!querySnapshot.empty) {
                 const userData = querySnapshot.docs[0].data(); // Primer resultado
-                const { nombres, apellidos, cedula } = userData;
-
+                const { nombres, apellidos, cedula, fechaNacimiento } = userData;
                 console.log('Datos del usuario:', nombres, apellidos, cedula);
-                navigation.navigate('MenuLogin/MenuScreen', { nombres, apellidos, cedula });
+                navigation.navigate('MenuLogin/MenuScreen', { nombres, apellidos, cedula, fechaNacimiento });
             } else {
                 Alert.alert('Error', 'Usuario o contraseña incorrectos.');
             }

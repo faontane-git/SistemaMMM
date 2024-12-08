@@ -28,7 +28,7 @@ export type RootStackParamList = {
   "Cambio/CambioC": { cedula: string };
   "QuienesSomos/QuienesSomosScreen": undefined; // No espera parámetros
   "Doctrina/DoctrinaScreen": undefined; // No espera parámetros
-  "MenuLogin/MenuScreen": { nombres: string, apellidos: string, cedula: string }; // Espera el parámetro 'cedula'
+  "MenuLogin/MenuScreen": { nombres: string, apellidos: string, cedula: string, fechaNacimiento: string }; // Espera el parámetro 'cedula'
   "RedesSociales/RedesSocialesScreen": undefined; // No espera parámetros
 };
 
