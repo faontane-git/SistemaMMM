@@ -164,7 +164,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: '#FFFFFF',
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 10,
@@ -176,7 +175,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: '#FFFFFF',
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 10,
@@ -197,15 +195,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         width: '100%',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
         borderRadius: 10,
         paddingVertical: 8, // Reducimos el padding
         paddingHorizontal: 10,
         marginVertical: 3,
     },
     infoValue: {
-        fontSize: 14, // Reducimos el tamaño de la fuente
-        color: '#333',
+        fontSize: 16, // Reducimos el tamaño de la fuente
+        fontWeight: 'bold',
+        color: '#FFFFFF',
         textAlign: 'center',
     },
     qrContainer: {

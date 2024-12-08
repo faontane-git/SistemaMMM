@@ -49,7 +49,7 @@ export default function MenuScreen() {
                         style={styles.logo}
                     />
                 </View>
-                <Text style={styles.headerText}>IGLESIA MMM</Text>
+                <Text style={styles.headerText}>Bienvenido</Text>
                 {/* Botón de cerrar sesión */}
                 <TouchableOpacity
                     style={styles.logoutButton}
@@ -61,7 +61,6 @@ export default function MenuScreen() {
 
             {/* Bienvenida y opciones */}
             <View style={styles.body}>
-                <Text style={styles.welcomeText}>Bienvenido</Text>
                 <Text style={styles.nameText}>
                     {nombres}
                 </Text>
@@ -82,7 +81,14 @@ export default function MenuScreen() {
                     style={styles.optionButton}
                     onPress={() => Alert.alert('Certificados', 'Esta opción aún no está implementada.')}
                 >
-                    <Text style={styles.optionText}>Certificados</Text>
+                    <Text style={styles.optionText}>Certificado de Bautismo</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.optionButton}
+                    onPress={() => Alert.alert('Certificados', 'Esta opción aún no está implementada.')}
+                >
+                    <Text style={styles.optionText}>Certificado de Matrimonio</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -102,28 +108,26 @@ const styles = StyleSheet.create({
         backgroundColor: '#f8f9fa',
     },
     header: {
-        width: '100%',
-        height: 80,
-        backgroundColor: '#003580', // Azul oscuro
         flexDirection: 'row',
-        alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 15,
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        backgroundColor: '#003580',
     },
     logoContainer: {
-        flex: 0.2,
+        justifyContent: 'center',
         alignItems: 'center',
     },
     logo: {
         width: 40,
         height: 40,
-        resizeMode: 'contain',
     },
     headerText: {
-        flex: 0.6,
         color: 'white',
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: 'bold',
+        flex: 1,
         textAlign: 'center',
     },
     logoutButton: {
@@ -158,7 +162,7 @@ const styles = StyleSheet.create({
     optionButton: {
         width: '80%',
         height: 50,
-        backgroundColor: '#0000aa', // Azul oscuro
+        backgroundColor: '#003580', // Azul oscuro
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,

@@ -49,7 +49,7 @@ export default function MenuScreen() {
                         style={styles.logo}
                     />
                 </View>
-                <Text style={styles.headerText}>IGLESIA MMM</Text>
+                <Text style={styles.headerText}>Bienvenido</Text>
                 {/* Botón de cerrar sesión */}
                 <TouchableOpacity
                     style={styles.logoutButton}

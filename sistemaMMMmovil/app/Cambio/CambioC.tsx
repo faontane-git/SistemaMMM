@@ -136,9 +136,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 15,
-        paddingTop: 30,
-        backgroundColor: '#2c3e50',
-        marginBottom: 20,
+        backgroundColor: '#003580',
     },
     logoContainer: {
         justifyContent: 'center',
@@ -150,7 +148,7 @@ const styles = StyleSheet.create({
     },
     headerText: {
         color: 'white',
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 'bold',
         flex: 1,
         textAlign: 'center',
@@ -175,7 +173,7 @@ const styles = StyleSheet.create({
     },
     form: {
         paddingHorizontal: 20,
-        marginBottom: 20,
+        marginTop: 20,
     },
     label: {
         fontSize: 14,
@@ -194,7 +192,7 @@ const styles = StyleSheet.create({
     },
     button: {
         height: 50,
-        backgroundColor: '#0000aa', // Azul oscuro
+        backgroundColor: '#003580',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,

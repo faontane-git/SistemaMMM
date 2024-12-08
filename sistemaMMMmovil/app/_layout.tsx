@@ -13,6 +13,7 @@ import MenuScreen from "./MenuLogin/MenuScreen";
 import DoctrinaScreen from "./Doctrina/DoctrinaScreen";
 import QuienesSomosScreen from "./QuienesSomos/QuienesSomosScreen";
 import RedesSocialesScreen from "./RedesSociales/RedesSocialesScreen";
+import RutasScreen from "./Rutas/RutasScreen";
 
 export type RootStackParamList = {
   index: undefined; // No espera parámetros
@@ -20,6 +21,7 @@ export type RootStackParamList = {
   "Agenda/AgendaScreen": undefined; // No espera parámetros
   "Agenda/HorarioCultosScreen": undefined; // No espera parámetros
   "Agenda/HorarioActividadesScreen": undefined; // No espera parámetros
+  "Rutas/RutasScreen": undefined; // No espera parámetros
   "Agenda/HorarioOtrosScreen": undefined; // No espera parámetros
   "IniciarSesion/IniciarSesion": undefined; // No espera parámetros
   "Carnet/CarnetScreen": { cedula: string }; // Espera el parámetro 'cedula'
@@ -75,11 +77,7 @@ const MainStack = () => {
       <Stack.Screen
         name="Cambio/CambioC"
         component={ChangePasswordScreen}
-        options={{
-          title: "Cambio Contraseña",
-          headerShown: false,
-          animation: "slide_from_right", // Ejemplo de transición
-        }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name='RedesSociales/RedesSocialesScreen'
@@ -90,11 +88,12 @@ const MainStack = () => {
       <Stack.Screen
         name="Carnet/CarnetScreen"
         component={CarnetScreen}
-        options={{
-          title: "Carnet",
-          headerShown: false,
-          animation: "slide_from_right", // Ejemplo de transición
-        }}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='Rutas/RutasScreen'
+        component={RutasScreen}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name='Doctrina/DoctrinaScreen'
@@ -106,11 +105,7 @@ const MainStack = () => {
       <Stack.Screen
         name="MenuLogin/MenuScreen"
         component={MenuScreen}
-        options={{
-          title: "Carnet",
-          headerShown: false,
-          animation: "slide_from_right", // Ejemplo de transición
-        }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name='QuienesSomos/QuienesSomosScreen'
