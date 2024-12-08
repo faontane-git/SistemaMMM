@@ -105,18 +105,19 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    paddingTop: 30,
+    paddingTop: 10,
     backgroundColor: '#2c3e50',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   headerText: {
-    flex: 1,
     color: 'white',
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: 'bold',
+    flex: 1,
     textAlign: 'center',
   },
   backIcon: {

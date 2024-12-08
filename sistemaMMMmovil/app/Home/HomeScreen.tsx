@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image, Linking } from 'react-native'; // Importar Linking aquí
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getDocs, collection } from 'firebase/firestore';
@@ -7,7 +7,7 @@ import { firestore } from '../../firebaseConfig';
 
 export default function HomeScreen() {
     const [noticias, setNoticias] = useState<any[]>([]);
-    const [sermones, setSermones] = useState<any[]>([]); // Nuevo estado para los sermones
+    const [sermones, setSermones] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
 
@@ -27,11 +27,13 @@ export default function HomeScreen() {
 
         const obtenerSermones = async () => {
             try {
-                const querySnapshot = await getDocs(collection(firestore, 'Sermones')); // Cambia 'Sermones' por tu colección
+                const querySnapshot = await getDocs(collection(firestore, 'Audios'));
                 const sermonesArray = querySnapshot.docs.map((doc) => ({
                     id: doc.id,
                     ...doc.data(),
                 }));
+
+                console.log(sermonesArray);
                 setSermones(sermonesArray);
             } catch (error) {
                 console.error('Error al obtener sermones:', error);
@@ -45,14 +47,6 @@ export default function HomeScreen() {
     const handleOptionPress = (option: string) => {
         navigation.navigate(option as never);
     };
-
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-        );
-    }
 
     return (
         <View style={styles.container}>
@@ -93,13 +87,23 @@ export default function HomeScreen() {
                     <Text style={styles.sermonsTitle}>Últimos Sermones</Text>
                     {sermones.map((sermon) => (
                         <View key={sermon.id} style={styles.sermonItem}>
-                            <Text style={styles.sermonTitle}>{sermon.titulo}</Text>
+                            <Text style={styles.sermonTitle}>{sermon.name}</Text>
+                            <Text style={styles.sermonDescription}>
+                                Descripción:  {sermon.description}
+                            </Text>
+                            <Text style={styles.sermonDate}>
+                                Fecha de subida:  {new Date(sermon.uploadedAt).toLocaleDateString()}
+                            </Text>
+                            {/* Botón para abrir el enlace del audio */}
                             <TouchableOpacity
                                 style={styles.playButton}
-                                onPress={() => alert(`Reproduciendo: ${sermon.titulo}`)} // Aquí puedes integrar la lógica para reproducir el audio
+                                onPress={() => {
+                                    // Abrir el enlace de Google Drive en un navegador
+                                    Linking.openURL(sermon.url);  // Aquí se usa Linking
+                                }}
                             >
-                                <FontAwesome name="play" size={20} color="white" />
-                                <Text style={styles.playButtonText}>Reproducir</Text>
+                                <FontAwesome name="external-link" size={20} color="white" />
+                                <Text style={styles.playButtonText}>Escuchar en Google Drive</Text>
                             </TouchableOpacity>
                         </View>
                     ))}
@@ -163,9 +167,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 15,
-        paddingTop: 30,
+        paddingTop: 10,
         backgroundColor: '#2c3e50',
-        marginBottom: 20,
+        marginBottom: 10,
     },
     logoContainer: {
         justifyContent: 'center',
@@ -256,23 +260,19 @@ const styles = StyleSheet.create({
         backgroundColor: '#2980b9',
         padding: 15,
         borderRadius: 50,
-        shadowColor: '#000',
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-        elevation: 3,
+        width: '80%',
+        justifyContent: 'center',
     },
     doctrinaButtonText: {
         color: 'white',
+        fontSize: 18,
         marginLeft: 10,
-        fontSize: 16,
-        fontWeight: 'bold',
     },
     bottomMenu: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        alignItems: 'center',
-        backgroundColor: '#2c3e50',
         paddingVertical: 10,
+        backgroundColor: '#34495e',
     },
     menuItem: {
         alignItems: 'center',
@@ -281,6 +281,13 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 12,
         marginTop: 5,
-        textAlign: 'center',
+    }, sermonDescription: {
+        fontSize: 16,
+        color: '#555',
+        marginBottom: 10,
+    }, sermonDate: {
+        fontSize: 14,
+        color: '#777',
+        marginBottom: 10,
     },
 });

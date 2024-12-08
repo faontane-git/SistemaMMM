@@ -12,7 +12,7 @@ export default function WelcomeScreen() {
     const navigation = useNavigation();
 
     const handleContinue = () => {
-        navigation.navigate('Home/Welcome' as never);
+        navigation.navigate('Home/HomeScreen' as never);
     };
 
     return (

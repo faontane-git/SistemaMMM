@@ -16,7 +16,7 @@ import RedesSocialesScreen from "./RedesSociales/RedesSocialesScreen";
 
 export type RootStackParamList = {
   index: undefined; // No espera parámetros
-  "Home/Welcome": undefined; // No espera parámetros
+  "Home/HomeScreen": undefined; // No espera parámetros
   "Agenda/AgendaScreen": undefined; // No espera parámetros
   "Agenda/HorarioCultosScreen": undefined; // No espera parámetros
   "Agenda/HorarioActividadesScreen": undefined; // No espera parámetros
@@ -41,7 +41,7 @@ const MainStack = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Home/Welcome"
+        name="Home/HomeScreen"
         component={HomeScreen}
         options={{ headerShown: false }}
       />

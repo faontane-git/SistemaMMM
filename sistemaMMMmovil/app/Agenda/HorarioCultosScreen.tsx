@@ -91,7 +91,7 @@ export default function HorarioCultosScreen({ navigation }: any) {
                         style={styles.logo}
                     />
                 </View>
-                <Text style={styles.headerText}>IGLESIA MMM</Text>
+                <Text style={styles.headerText}>Horarios</Text>
                 <TouchableOpacity
                     style={styles.loginButton}
                     onPress={() => handleOptionPress('IniciarSesion/IniciarSesion')}
@@ -139,9 +139,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 15,
-        paddingTop: 30,
+        paddingTop: 10,
         backgroundColor: '#2c3e50',
-        marginBottom: 20,
+        marginBottom: 10,
     },
     logoContainer: {
         justifyContent: 'center',
@@ -152,10 +152,10 @@ const styles = StyleSheet.create({
         height: 40,
     },
     headerText: {
-        flex: 1,
         color: 'white',
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: 'bold',
+        flex: 1,
         textAlign: 'center',
     },
     loginButton: {
