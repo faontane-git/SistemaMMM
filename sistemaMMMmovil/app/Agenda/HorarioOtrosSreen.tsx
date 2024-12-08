@@ -15,6 +15,14 @@ export default function HorarioOtrosScreen({ navigation }: any) {
     const [actividades, setActividades] = useState<ActividadOtros[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
+    const handleGoBack = () => {
+        if (navigation.canGoBack()) {
+            navigation.goBack();
+        } else {
+            navigation.navigate('Home' as never);
+        }
+    };
+
     useEffect(() => {
         const fetchActividades = async () => {
             try {
@@ -64,12 +72,9 @@ export default function HorarioOtrosScreen({ navigation }: any) {
                         style={styles.logo}
                     />
                 </View>
-                <Text style={styles.headerText}>IGLESIA MMM</Text>
-                <TouchableOpacity
-                    style={styles.loginButton}
-                    onPress={() => handleOptionPress('IniciarSesion/IniciarSesion')}
-                >
-                    <FontAwesome name="user-circle" size={24} color="white" />
+                <Text style={styles.headerText}>Otros</Text>
+                <TouchableOpacity style={styles.backIcon} onPress={handleGoBack}>
+                    <FontAwesome name="arrow-left" size={24} color="white" />
                 </TouchableOpacity>
             </View>
 
@@ -97,24 +102,30 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 10,
+        paddingHorizontal: 20,
         paddingVertical: 15,
-        backgroundColor: '#1B4F72',
-        marginBottom: 20,
+        paddingTop: 10,
+        backgroundColor: '#2c3e50',
+        marginBottom: 10,
     },
     logoContainer: {
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    backIcon: {
+        backgroundColor: '#2980b9',
+        padding: 10,
+        borderRadius: 50,
     },
     logo: {
         width: 40,
         height: 40,
     },
     headerText: {
-        flex: 1,
         color: 'white',
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: 'bold',
+        flex: 1,
         textAlign: 'center',
     },
     loginButton: {

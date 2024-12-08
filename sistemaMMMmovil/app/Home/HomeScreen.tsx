@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image, Linking } from 'react-native'; // Importar Linking aquí
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    TouchableOpacity,
+    ActivityIndicator,
+    Image,
+    Linking,
+} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getDocs, collection } from 'firebase/firestore';
@@ -12,41 +21,43 @@ export default function HomeScreen() {
     const navigation = useNavigation();
 
     useEffect(() => {
-        const obtenerNoticias = async () => {
+        const fetchData = async () => {
             try {
-                const querySnapshot = await getDocs(collection(firestore, 'Noticias'));
-                const noticiasArray = querySnapshot.docs.map((doc) => ({
+                const noticiasSnapshot = await getDocs(collection(firestore, 'Noticias'));
+                const noticiasArray = noticiasSnapshot.docs.map((doc) => ({
                     id: doc.id,
                     ...doc.data(),
                 }));
                 setNoticias(noticiasArray);
-            } catch (error) {
-                console.error('Error al obtener noticias:', error);
-            }
-        };
 
-        const obtenerSermones = async () => {
-            try {
-                const querySnapshot = await getDocs(collection(firestore, 'Audios'));
-                const sermonesArray = querySnapshot.docs.map((doc) => ({
+                const sermonesSnapshot = await getDocs(collection(firestore, 'Audios'));
+                const sermonesArray = sermonesSnapshot.docs.map((doc) => ({
                     id: doc.id,
                     ...doc.data(),
                 }));
-
-                console.log(sermonesArray);
                 setSermones(sermonesArray);
             } catch (error) {
-                console.error('Error al obtener sermones:', error);
+                console.error('Error al cargar datos:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        obtenerNoticias();
-        obtenerSermones();
+        fetchData();
     }, []);
 
     const handleOptionPress = (option: string) => {
         navigation.navigate(option as never);
     };
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#2980b9" />
+                <Text style={styles.loadingText}>Cargando información...</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -56,10 +67,10 @@ export default function HomeScreen() {
                     <Image source={require('../../assets/logo.png')} style={styles.logo} />
                 </View>
                 <Text style={styles.headerText}>IGLESIA MMM</Text>
-                {/* Botón de inicio de sesión en el encabezado */}
                 <TouchableOpacity
                     style={styles.loginButton}
-                    onPress={() => handleOptionPress('IniciarSesion/IniciarSesion')}>
+                    onPress={() => handleOptionPress('IniciarSesion/IniciarSesion')}
+                >
                     <FontAwesome name="user-circle" size={24} color="white" />
                 </TouchableOpacity>
             </View>
@@ -71,8 +82,6 @@ export default function HomeScreen() {
                     <View key={noticia.id} style={styles.newsItem}>
                         <Text style={styles.newsItemTitle}>{noticia.titulo}</Text>
                         <Text style={styles.newsItemDescription}>{noticia.descripcion}</Text>
-
-                        {/* Mostrar la imagen si existe fotoBase64 */}
                         {noticia.fotoBase64 && (
                             <Image
                                 source={{ uri: `${noticia.fotoBase64}` }}
@@ -82,25 +91,21 @@ export default function HomeScreen() {
                     </View>
                 ))}
 
-                {/* Sección de sermones */}
+                {/* Sermones */}
                 <View style={styles.sermons}>
                     <Text style={styles.sermonsTitle}>Últimos Sermones</Text>
                     {sermones.map((sermon) => (
                         <View key={sermon.id} style={styles.sermonItem}>
                             <Text style={styles.sermonTitle}>{sermon.name}</Text>
                             <Text style={styles.sermonDescription}>
-                                Descripción:  {sermon.description}
+                                Descripción: {sermon.description}
                             </Text>
                             <Text style={styles.sermonDate}>
-                                Fecha de subida:  {new Date(sermon.uploadedAt).toLocaleDateString()}
+                                Fecha de subida: {new Date(sermon.uploadedAt).toLocaleDateString()}
                             </Text>
-                            {/* Botón para abrir el enlace del audio */}
                             <TouchableOpacity
                                 style={styles.playButton}
-                                onPress={() => {
-                                    // Abrir el enlace de Google Drive en un navegador
-                                    Linking.openURL(sermon.url);  // Aquí se usa Linking
-                                }}
+                                onPress={() => Linking.openURL(sermon.url)}
                             >
                                 <FontAwesome name="external-link" size={20} color="white" />
                                 <Text style={styles.playButtonText}>Escuchar en Google Drive</Text>
@@ -109,40 +114,45 @@ export default function HomeScreen() {
                     ))}
                 </View>
 
-                {/* Botón de Doctrina */}
+                {/* Botón de Ver Doctrina */}
                 <View style={styles.doctrinaSection}>
                     <TouchableOpacity
                         style={styles.doctrinaButton}
-                        onPress={() => handleOptionPress('Doctrina/DoctrinaScreen')}>
+                        onPress={() => handleOptionPress('Doctrina/DoctrinaScreen')}
+                    >
                         <FontAwesome name="book" size={20} color="white" />
                         <Text style={styles.doctrinaButtonText}>Ver Doctrina</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
 
-            {/* Barra de menú en la parte inferior */}
+            {/* Barra de menú inferior */}
             <View style={styles.bottomMenu}>
                 <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => handleOptionPress('QuienesSomos/QuienesSomosScreen')}>
+                    onPress={() => handleOptionPress('QuienesSomos/QuienesSomosScreen')}
+                >
                     <FontAwesome name="info-circle" size={24} color="white" />
                     <Text style={styles.menuItemText}>¿Quiénes somos?</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => handleOptionPress('Rutas/RutasScreen')}>
+                    onPress={() => handleOptionPress('Rutas/RutasScreen')}
+                >
                     <FontAwesome name="map-marker" size={24} color="white" />
                     <Text style={styles.menuItemText}>Rutas</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => handleOptionPress('Agenda/AgendaScreen')}>
+                    onPress={() => handleOptionPress('Agenda/AgendaScreen')}
+                >
                     <FontAwesome name="calendar" size={24} color="white" />
                     <Text style={styles.menuItemText}>Agenda</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => handleOptionPress('RedesSociales/RedesSocialesScreen')}>
+                    onPress={() => handleOptionPress('RedesSociales/RedesSocialesScreen')}
+                >
                     <FontAwesome name="share-alt" size={24} color="white" />
                     <Text style={styles.menuItemText}>Redes Sociales</Text>
                 </TouchableOpacity>
@@ -160,6 +170,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#f8f9fa',
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 18,
+        color: '#555',
     },
     header: {
         flexDirection: 'row',
@@ -167,9 +183,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 15,
-        paddingTop: 10,
         backgroundColor: '#2c3e50',
-        marginBottom: 10,
     },
     logoContainer: {
         justifyContent: 'center',
@@ -262,12 +276,12 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         width: '80%',
         justifyContent: 'center',
-    },
+     },
     doctrinaButtonText: {
         color: 'white',
         fontSize: 18,
         marginLeft: 10,
-    },
+     },
     bottomMenu: {
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -281,11 +295,13 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 12,
         marginTop: 5,
-    }, sermonDescription: {
+    },
+    sermonDescription: {
         fontSize: 16,
         color: '#555',
         marginBottom: 10,
-    }, sermonDate: {
+    },
+    sermonDate: {
         fontSize: 14,
         color: '#777',
         marginBottom: 10,

@@ -19,7 +19,16 @@ type DiaActividades = {
 
 export default function HorarioCultosScreen({ navigation }: any) {
     const [actividades, setActividades] = useState<Actividad[]>([]);
+    const [datos, setDatos] = useState<DiaActividades[]>([]); // Nuevo estado para las actividades agrupadas
     const [loading, setLoading] = useState<boolean>(true);
+
+    const handleGoBack = () => {
+        if (navigation.canGoBack()) {
+            navigation.goBack();
+        } else {
+            navigation.navigate('Home' as never);
+        }
+    };
 
     useEffect(() => {
         const fetchActividades = async () => {
@@ -28,7 +37,40 @@ export default function HorarioCultosScreen({ navigation }: any) {
                 const actividadesData: Actividad[] = querySnapshot.docs.map((doc) => ({
                     ...doc.data(),
                 })) as Actividad[];
+
                 setActividades(actividadesData);
+
+                // Obtener el día actual
+                const diaActual = new Date().getDay();
+
+                // Agrupar actividades por día
+                const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                const actividadesAgrupadas = actividadesData.reduce<Record<string, Actividad[]>>((acc, actividad) => {
+                    const diaNombre = diasSemana[parseInt(actividad.dia_num, 10)];
+                    if (!acc[diaNombre]) {
+                        acc[diaNombre] = [];
+                    }
+                    acc[diaNombre].push(actividad);
+                    return acc;
+                }, {});
+
+                // Convertir a un array y reorganizar para que el día actual esté primero
+                const datosOrdenados: DiaActividades[] = Object.keys(actividadesAgrupadas)
+                    .map((dia) => ({
+                        dia,
+                        actividades: actividadesAgrupadas[dia],
+                    }))
+                    .sort((a, b) => {
+                        const indexA = diasSemana.indexOf(a.dia);
+                        const indexB = diasSemana.indexOf(b.dia);
+                        return indexA === diaActual
+                            ? -1
+                            : indexB === diaActual
+                                ? 1
+                                : indexA - indexB;
+                    });
+
+                setDatos(datosOrdenados); // Actualiza el estado con los datos agrupados y ordenados
             } catch (error) {
                 console.error('Error fetching data from Firebase:', error);
             } finally {
@@ -38,22 +80,6 @@ export default function HorarioCultosScreen({ navigation }: any) {
 
         fetchActividades();
     }, []);
-
-    const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-
-    const actividadesAgrupadas = actividades.reduce<Record<string, Actividad[]>>((acc, actividad) => {
-        const diaNombre = diasSemana[parseInt(actividad.dia_num, 10)];
-        if (!acc[diaNombre]) {
-            acc[diaNombre] = [];
-        }
-        acc[diaNombre].push(actividad);
-        return acc;
-    }, {});
-
-    const datos: DiaActividades[] = Object.keys(actividadesAgrupadas).map((dia) => ({
-        dia,
-        actividades: actividadesAgrupadas[dia],
-    }));
 
     const renderItem = ({ item }: { item: DiaActividades }) => (
         <View style={styles.dayContainer}>
@@ -68,10 +94,6 @@ export default function HorarioCultosScreen({ navigation }: any) {
             ))}
         </View>
     );
-
-    const handleOptionPress = (route: string) => {
-        navigation.navigate(route);
-    };
 
     if (loading) {
         return (
@@ -91,17 +113,11 @@ export default function HorarioCultosScreen({ navigation }: any) {
                         style={styles.logo}
                     />
                 </View>
-                <Text style={styles.headerText}>Horarios</Text>
-                <TouchableOpacity
-                    style={styles.loginButton}
-                    onPress={() => handleOptionPress('IniciarSesion/IniciarSesion')}
-                >
-                    <FontAwesome name="user-circle" size={24} color="white" />
+                <Text style={styles.headerText}>Horarios de Cultos</Text>
+                <TouchableOpacity style={styles.backIcon} onPress={handleGoBack}>
+                    <FontAwesome name="arrow-left" size={24} color="white" />
                 </TouchableOpacity>
             </View>
-
-            {/* Título */}
-            <Text style={styles.titleText}>Horario de Cultos</Text>
 
             {/* Horario semanal */}
             <ScrollView style={styles.scheduleContainer}>
@@ -123,11 +139,13 @@ export default function HorarioCultosScreen({ navigation }: any) {
     );
 }
 
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#ecf0f1',
-     },
+    },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -157,6 +175,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         flex: 1,
         textAlign: 'center',
+    },
+    backIcon: {
+        backgroundColor: '#2980b9',
+        padding: 10,
+        borderRadius: 50,
     },
     loginButton: {
         padding: 10,

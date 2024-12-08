@@ -19,7 +19,16 @@ type DiaActividades = {
 
 export default function HorarioActividadesScreen({ navigation }: any) {
     const [actividades, setActividades] = useState<Actividad[]>([]);
+    const [datos, setDatos] = useState<DiaActividades[]>([]); // Nuevo estado para actividades agrupadas y ordenadas
     const [loading, setLoading] = useState<boolean>(true);
+
+    const handleGoBack = () => {
+        if (navigation.canGoBack()) {
+            navigation.goBack();
+        } else {
+            navigation.navigate('Home' as never);
+        }
+    };
 
     useEffect(() => {
         const fetchActividades = async () => {
@@ -28,7 +37,36 @@ export default function HorarioActividadesScreen({ navigation }: any) {
                 const actividadesData: Actividad[] = querySnapshot.docs.map((doc) => ({
                     ...doc.data(),
                 })) as Actividad[];
+
                 setActividades(actividadesData);
+
+                // Obtener el día actual y reorganizar las actividades
+                const diaActual = new Date().getDay();
+                const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+                const actividadesAgrupadas = actividadesData.reduce<Record<string, Actividad[]>>((acc, actividad) => {
+                    const diaNombre = diasSemana[parseInt(actividad.dia_num, 10)];
+                    if (!acc[diaNombre]) {
+                        acc[diaNombre] = [];
+                    }
+                    acc[diaNombre].push(actividad);
+                    return acc;
+                }, {});
+
+                // Convertir el objeto en un array ordenado comenzando desde el día actual
+                const datosOrdenados: DiaActividades[] = [];
+                for (let i = 0; i < diasSemana.length; i++) {
+                    const diaIndex = (diaActual + i) % diasSemana.length; // Índice rotado según el día actual
+                    const diaNombre = diasSemana[diaIndex];
+                    if (actividadesAgrupadas[diaNombre]) {
+                        datosOrdenados.push({
+                            dia: diaNombre,
+                            actividades: actividadesAgrupadas[diaNombre],
+                        });
+                    }
+                }
+
+                setDatos(datosOrdenados); // Actualiza el estado con los datos ordenados
             } catch (error) {
                 console.error('Error fetching data from Firebase:', error);
             } finally {
@@ -38,40 +76,6 @@ export default function HorarioActividadesScreen({ navigation }: any) {
 
         fetchActividades();
     }, []);
-
-    const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-
-    const actividadesAgrupadas = actividades.reduce<Record<string, Actividad[]>>((acc, actividad) => {
-        const diaNombre = diasSemana[parseInt(actividad.dia_num, 10)];
-        if (!acc[diaNombre]) {
-            acc[diaNombre] = [];
-        }
-        acc[diaNombre].push(actividad);
-        return acc;
-    }, {});
-
-    const datos: DiaActividades[] = Object.keys(actividadesAgrupadas).map((dia) => ({
-        dia,
-        actividades: actividadesAgrupadas[dia],
-    }));
-
-    const renderItem = ({ item }: { item: DiaActividades }) => (
-        <View style={styles.dayContainer}>
-            <Text style={styles.dayText}>{item.dia}</Text>
-            {item.actividades.map((actividad, index) => (
-                <View key={index} style={[styles.activityCard, { backgroundColor: actividad.color }]}>
-                    <Text style={styles.activityText}>{actividad.materia}</Text>
-                    <Text style={styles.activityText}>
-                        {actividad.hora_inicio} - {actividad.hora_final}
-                    </Text>
-                </View>
-            ))}
-        </View>
-    );
-
-    const handleOptionPress = (route: string) => {
-        navigation.navigate(route);
-    };
 
     if (loading) {
         return (
@@ -91,17 +95,11 @@ export default function HorarioActividadesScreen({ navigation }: any) {
                         style={styles.logo}
                     />
                 </View>
-                <Text style={styles.headerText}>IGLESIA MMM</Text>
-                <TouchableOpacity
-                    style={styles.loginButton}
-                    onPress={() => handleOptionPress('IniciarSesion/IniciarSesion')}
-                >
-                    <FontAwesome name="user-circle" size={24} color="white" />
+                <Text style={styles.headerText}>Horarios de Consejería Pastoral</Text>
+                <TouchableOpacity style={styles.backIcon} onPress={handleGoBack}>
+                    <FontAwesome name="arrow-left" size={24} color="white" />
                 </TouchableOpacity>
             </View>
-
-            {/* Título */}
-            <Text style={styles.titleText}>Horario de Actividades</Text>
 
             {/* Lista de actividades agrupadas por día */}
             <ScrollView style={styles.scheduleContainer}>
@@ -139,9 +137,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 15,
-        paddingTop: 30,
+        paddingTop: 10,
         backgroundColor: '#2c3e50',
-        marginBottom: 20,
+        marginBottom: 10,
     },
     logoContainer: {
         justifyContent: 'center',
@@ -152,21 +150,16 @@ const styles = StyleSheet.create({
         height: 40,
     },
     headerText: {
-        flex: 1,
         color: 'white',
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: 'bold',
+        flex: 1,
         textAlign: 'center',
     },
-    loginButton: {
+    backIcon: {
+        backgroundColor: '#2980b9',
         padding: 10,
-    },
-    titleText: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: '#2C3E50',
-        marginVertical: 20,
+        borderRadius: 50,
     },
     scheduleContainer: {
         flex: 1,
@@ -181,14 +174,14 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 3,
-        elevation: 3, // Da sombra a las tarjetas de actividad
+        elevation: 3,
     },
     dayText: {
         fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 10,
-        color: '#34495e', // Un color más neutro para los días
+        color: '#34495e',
     },
     activityCard: {
         padding: 15,
@@ -198,7 +191,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 3,
-        elevation: 3, // Da sombra a las tarjetas de actividad
+        elevation: 3,
     },
     activityText: {
         color: 'white',
