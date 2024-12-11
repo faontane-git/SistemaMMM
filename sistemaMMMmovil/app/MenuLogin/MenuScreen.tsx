@@ -37,6 +37,9 @@ export default function MenuScreen() {
     const handleOptionPress = () => {
         navigation.navigate('Carnet/CarnetScreen', { cedula });
     };
+    const handleOptionPress2 = () => {
+        navigation.navigate('Carnet/CertificadoBautismo');
+    };
 
     const handleCambioPress = () => {
         navigation.navigate('Cambio/CambioC', { cedula });
@@ -95,7 +98,7 @@ export default function MenuScreen() {
 
                 <TouchableOpacity
                     style={styles.optionButton}
-                    onPress={() => alert('Certificados no disponibles.')}
+                    onPress={handleOptionPress2}
                 >
                     <Text style={styles.optionText}>Certificado de Bautismo</Text>
                 </TouchableOpacity>
