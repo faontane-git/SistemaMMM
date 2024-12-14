@@ -114,7 +114,7 @@ export default function HorarioCultosScreen({ navigation }: any) {
                     />
                 </View>
                 <Text style={styles.headerText}>Horarios de Cultos</Text>
-                <TouchableOpacity style={styles.backIcon} onPress={handleGoBack}>
+                <TouchableOpacity onPress={handleGoBack}>
                     <FontAwesome name="arrow-left" size={24} color="white" />
                 </TouchableOpacity>
             </View>
@@ -175,11 +175,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         flex: 1,
         textAlign: 'center',
-    },
-    backIcon: {
-        backgroundColor: '#2980b9',
-        padding: 10,
-        borderRadius: 50,
     },
     loginButton: {
         padding: 10,

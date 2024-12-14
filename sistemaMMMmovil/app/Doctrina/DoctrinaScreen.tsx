@@ -25,7 +25,7 @@ export default function DoctrinaScreen() {
           />
         </View>
         <Text style={styles.headerText}>Doctrina</Text>
-        <TouchableOpacity style={styles.backIcon} onPress={handleGoBack}>
+        <TouchableOpacity onPress={handleGoBack}>
           <FontAwesome name="arrow-left" size={24} color="white" />
         </TouchableOpacity>
       </View>
@@ -89,9 +89,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    paddingTop: 30, // Espacio adicional en la parte superior
+    paddingTop: 10,
     backgroundColor: '#2c3e50',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   headerText: {
     color: 'white',
@@ -99,11 +99,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     flex: 1,
     textAlign: 'center',
-  },
-  backIcon: {
-    backgroundColor: '#2980b9',
-    padding: 10,
-    borderRadius: 50,
   },
   contentSection: {
     paddingHorizontal: 20,
