@@ -26,7 +26,7 @@ export type RootStackParamList = {
   "Agenda/HorarioOtrosScreen": undefined; // No espera parámetros
   "IniciarSesion/IniciarSesion": undefined; // No espera parámetros
   "Carnet/CarnetScreen": { cedula: string }; // Espera el parámetro 'cedula'
-  "Carnet/CertificadoBautismo": undefined; // Espera el parámetro 'cedula'
+  "Carnet/CertificadoBautismo": { cedula: string };  // Espera el parámetro 'cedula'
   "Cambio/CambioC": { cedula: string };
   "QuienesSomos/QuienesSomosScreen": undefined; // No espera parámetros
   "Doctrina/DoctrinaScreen": undefined; // No espera parámetros

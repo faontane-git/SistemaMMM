@@ -38,7 +38,7 @@ export default function MenuScreen() {
         navigation.navigate('Carnet/CarnetScreen', { cedula });
     };
     const handleOptionPress2 = () => {
-        navigation.navigate('Carnet/CertificadoBautismo');
+        navigation.navigate('Carnet/CertificadoBautismo', { cedula });
     };
 
     const handleCambioPress = () => {
