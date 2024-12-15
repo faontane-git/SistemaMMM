@@ -15,6 +15,7 @@ import QuienesSomosScreen from "./QuienesSomos/QuienesSomosScreen";
 import RedesSocialesScreen from "./RedesSociales/RedesSocialesScreen";
 import RutasScreen from "./Rutas/RutasScreen";
 import CertificadoBautismo from "./Carnet/CertificadoBautismo";
+import CertificadoMatrimonio from "./Carnet/CertificadoMatrimonio";
 
 export type RootStackParamList = {
   index: undefined; // No espera parámetros
@@ -27,6 +28,7 @@ export type RootStackParamList = {
   "IniciarSesion/IniciarSesion": undefined; // No espera parámetros
   "Carnet/CarnetScreen": { cedula: string }; // Espera el parámetro 'cedula'
   "Carnet/CertificadoBautismo": { cedula: string };  // Espera el parámetro 'cedula'
+  "Carnet/CertificadoMatrimonio": { cedula: string };  // Espera el parámetro 'cedula'
   "Cambio/CambioC": { cedula: string };
   "QuienesSomos/QuienesSomosScreen": undefined; // No espera parámetros
   "Doctrina/DoctrinaScreen": undefined; // No espera parámetros
@@ -95,6 +97,11 @@ const MainStack = () => {
       <Stack.Screen
         name="Carnet/CertificadoBautismo"
         component={CertificadoBautismo}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Carnet/CertificadoMatrimonio"
+        component={CertificadoMatrimonio}
         options={{ headerShown: false }}
       />
       <Stack.Screen

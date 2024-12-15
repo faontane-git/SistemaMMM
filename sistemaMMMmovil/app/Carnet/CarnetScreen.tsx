@@ -10,6 +10,7 @@ interface Persona {
     apellidos: string;
     cedula: string;
     foto: string; // Base64 de la imagen
+    cargoIglesia: string;
 }
 
 export default function CarnetScreen() {
@@ -110,7 +111,7 @@ export default function CarnetScreen() {
                         <Text style={styles.infoValue}>{persona.cedula}</Text>
                     </View>
                     <View style={styles.infoContainer}>
-                        <Text style={styles.infoValue}>MIEMBRO ACTIVO</Text>
+                        <Text style={styles.infoValue}>{persona.cargoIglesia}</Text>
                     </View>
 
                     {/* Código QR */}

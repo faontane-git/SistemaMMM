@@ -40,6 +40,9 @@ export default function MenuScreen() {
     const handleOptionPress2 = () => {
         navigation.navigate('Carnet/CertificadoBautismo', { cedula });
     };
+    const handleOptionPress3 = () => {
+        navigation.navigate('Carnet/CertificadoMatrimonio', { cedula });
+    };
 
     const handleCambioPress = () => {
         navigation.navigate('Cambio/CambioC', { cedula });
@@ -105,7 +108,7 @@ export default function MenuScreen() {
 
                 <TouchableOpacity
                     style={styles.optionButton}
-                    onPress={() => alert('Certificados no disponibles.')}
+                    onPress={handleOptionPress3}
                 >
                     <Text style={styles.optionText}>Certificado de Matrimonio</Text>
                 </TouchableOpacity>
