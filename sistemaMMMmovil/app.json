@@ -13,9 +13,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.faontane.sistemaMMMmovil"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +37,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "678bab0b-5fc6-4ac8-b0e3-5219fcda0204"
+      }
+    },
+    "owner": "faontane"
   }
 }
