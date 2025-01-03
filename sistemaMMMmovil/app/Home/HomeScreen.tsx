@@ -7,12 +7,13 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     Image,
-    Linking,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getDocs, collection } from 'firebase/firestore';
 import { firestore } from '../../firebaseConfig';
+import Noticias from './Noticias';
+import Sermones from './Sermones';
 
 export default function HomeScreen() {
     const [noticias, setNoticias] = useState<any[]>([]);
@@ -66,7 +67,7 @@ export default function HomeScreen() {
                 <View style={styles.logoContainer}>
                     <Image source={require('../../assets/logo.png')} style={styles.logo} />
                 </View>
-                <Text style={styles.headerText}>IGLESIA MMM</Text>
+                <Text style={styles.headerText}>MI IGLESIA MMM</Text>
                 <TouchableOpacity
                     style={styles.loginButton}
                     onPress={() => handleOptionPress('IniciarSesion/IniciarSesion')}
@@ -75,44 +76,21 @@ export default function HomeScreen() {
                 </TouchableOpacity>
             </View>
 
-            {/* Noticias y eventos */}
-            <ScrollView style={styles.newsSection}>
-                <Text style={styles.newsTitle}>Noticias y Eventos</Text>
-                {noticias.map((noticia) => (
-                    <View key={noticia.id} style={styles.newsItem}>
-                        <Text style={styles.newsItemTitle}>{noticia.titulo}</Text>
-                        <Text style={styles.newsItemDescription}>{noticia.descripcion}</Text>
-                        {noticia.fotoBase64 && (
-                            <Image
-                                source={{ uri: `${noticia.fotoBase64}` }}
-                                style={styles.newsImage}
-                            />
-                        )}
-                    </View>
-                ))}
+            {/* Contenido principal con ScrollView */}
+            <ScrollView style={styles.mainContent}>
+                {/* Noticias */}
+                {noticias.length > 0 ? (
+                    <Noticias noticias={noticias} handleOptionPress={handleOptionPress} />
+                ) : (
+                    <Text style={styles.noDataText}>No hay noticias disponibles.</Text>
+                )}
 
                 {/* Sermones */}
-                <View style={styles.sermons}>
-                    <Text style={styles.sermonsTitle}>Últimos Sermones</Text>
-                    {sermones.map((sermon) => (
-                        <View key={sermon.id} style={styles.sermonItem}>
-                            <Text style={styles.sermonTitle}>{sermon.name}</Text>
-                            <Text style={styles.sermonDescription}>
-                                Descripción: {sermon.description}
-                            </Text>
-                            <Text style={styles.sermonDate}>
-                                Fecha de subida: {new Date(sermon.uploadedAt).toLocaleDateString()}
-                            </Text>
-                            <TouchableOpacity
-                                style={styles.playButton}
-                                onPress={() => Linking.openURL(sermon.url)}
-                            >
-                                <FontAwesome name="external-link" size={20} color="white" />
-                                <Text style={styles.playButtonText}>Escuchar en Google Drive</Text>
-                            </TouchableOpacity>
-                        </View>
-                    ))}
-                </View>
+                {sermones.length > 0 ? (
+                    <Sermones sermones={sermones} handleMoreSermonsPress={() => { }} />
+                ) : (
+                    <Text style={styles.noDataText}>No hay sermones disponibles.</Text>
+                )}
 
                 {/* Botón de Ver Doctrina */}
                 <View style={styles.doctrinaSection}>
@@ -203,69 +181,12 @@ const styles = StyleSheet.create({
     loginButton: {
         marginLeft: 10,
     },
-    newsSection: {
-        padding: 20,
-    },
-    newsTitle: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    newsItem: {
-        marginBottom: 20,
-        padding: 15,
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        elevation: 2,
-    },
-    newsItemTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 5,
-    },
-    newsItemDescription: {
-        fontSize: 16,
-        color: '#555',
-    },
-    newsImage: {
-        width: '100%',
-        height: 200,
-        marginTop: 10,
-        borderRadius: 10,
-    },
-    sermons: {
-        padding: 20,
-        backgroundColor: '#ecf0f1',
-    },
-    sermonsTitle: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 15,
-    },
-    sermonItem: {
-        marginBottom: 20,
-    },
-    sermonTitle: {
-        fontSize: 18,
-        marginBottom: 10,
-    },
-    playButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#e74c3c',
+    mainContent: {
+        flex: 1,
         padding: 10,
-        borderRadius: 5,
-    },
-    playButtonText: {
-        color: 'white',
-        marginLeft: 10,
-        fontSize: 16,
     },
     doctrinaSection: {
-        marginVertical: 20,
+        marginVertical: 0,
         alignItems: 'center',
     },
     doctrinaButton: {
@@ -276,12 +197,12 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         width: '80%',
         justifyContent: 'center',
-     },
+    },
     doctrinaButtonText: {
         color: 'white',
         fontSize: 18,
         marginLeft: 10,
-     },
+    },
     bottomMenu: {
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -296,14 +217,10 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginTop: 5,
     },
-    sermonDescription: {
+    noDataText: {
         fontSize: 16,
-        color: '#555',
-        marginBottom: 10,
-    },
-    sermonDate: {
-        fontSize: 14,
         color: '#777',
-        marginBottom: 10,
+        textAlign: 'center',
+        marginVertical: 10,
     },
 });

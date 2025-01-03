@@ -51,7 +51,7 @@ export default function ActividadesScreen() {
           <Text style={styles.buttonText}>Horario de Consejería Pastoral</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleOtros}>
-          <Text style={styles.buttonText}>Otros</Text>
+          <Text style={styles.buttonText}>Actividades Nacionales</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -30,7 +30,6 @@ export default function HorarioOtrosScreen({ navigation }: any) {
                 const actividadesData: ActividadOtros[] = querySnapshot.docs.map((doc) => ({
                     ...doc.data(),
                 })) as ActividadOtros[];
-                console.log('Datos recuperados de Firebase:', actividadesData); // Imprimir en consola los datos
                 setActividades(actividadesData);
             } catch (error) {
                 console.error('Error fetching data from Firebase:', error);
@@ -72,7 +71,7 @@ export default function HorarioOtrosScreen({ navigation }: any) {
                         style={styles.logo}
                     />
                 </View>
-                <Text style={styles.headerText}>Otros</Text>
+                <Text style={styles.headerText}>Actividades Nacionales</Text>
                 <TouchableOpacity onPress={handleGoBack}>
                     <FontAwesome name="arrow-left" size={24} color="white" />
                 </TouchableOpacity>
@@ -83,6 +82,8 @@ export default function HorarioOtrosScreen({ navigation }: any) {
                 data={actividades}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
+                style={styles.dayContainer}
+
             />
         </View>
     );
@@ -128,22 +129,32 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: '#1B4F72',
-        padding: 20,
+        padding: 15,
         borderRadius: 10,
-        marginBottom: 15,
+        marginBottom: 10,
         shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
-        shadowRadius: 5,
+        shadowRadius: 3,
         elevation: 3,
     },
     cardTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#fff',
-        marginBottom: 10,
+        color: 'white',
+        fontSize: 14,
+    },
+    dayContainer: {
+        marginBottom: 15,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 3,
     },
     cardText: {
-        fontSize: 16,
+        fontSize: 14,
         color: '#fff',
     },
 });
