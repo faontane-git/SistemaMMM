@@ -150,10 +150,7 @@ export default function ContactosScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9f9f9',
-  },
+  container: { flex: 1, padding: 0, backgroundColor: '#F8F9FA' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
