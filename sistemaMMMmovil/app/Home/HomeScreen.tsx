@@ -3,7 +3,7 @@ import {
     View,
     Text,
     StyleSheet,
-    ScrollView,
+    FlatList,
     TouchableOpacity,
     ActivityIndicator,
     Image,
@@ -60,6 +60,39 @@ export default function HomeScreen() {
         );
     }
 
+    const renderHeader = () => (
+        <>
+            {/* Noticias */}
+            <View style={styles.section}>
+                {noticias.length > 0 ? (
+                    <Noticias noticias={noticias} handleOptionPress={handleOptionPress} />
+                ) : (
+                    <Text style={styles.noDataText}>No hay noticias disponibles.</Text>
+                )}
+            </View>
+
+            {/* Sermones */}
+            <View style={styles.section}>
+                {sermones.length > 0 ? (
+                    <Sermones sermones={sermones} handleMoreSermonsPress={handleOptionPress} />
+                ) : (
+                    <Text style={styles.noDataText}>No hay sermones disponibles.</Text>
+                )}
+            </View>
+
+            {/* Botón de Ver Doctrina */}
+            <View style={styles.doctrinaSection}>
+                <TouchableOpacity
+                    style={styles.doctrinaButton}
+                    onPress={() => handleOptionPress('Doctrina/DoctrinaScreen')}
+                >
+                    <FontAwesome name="book" size={20} color="white" />
+                    <Text style={styles.doctrinaButtonText}>Ver Doctrina</Text>
+                </TouchableOpacity>
+            </View>
+        </>
+    );
+
     return (
         <View style={styles.container}>
             {/* Header */}
@@ -76,38 +109,14 @@ export default function HomeScreen() {
                 </TouchableOpacity>
             </View>
 
-            {/* Contenido principal con ScrollView */}
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={styles.mainContent}>
-                {/* Sección de Noticias */}
-                <View style={styles.section}>
-                    {noticias.length > 0 ? (
-                        <Noticias noticias={noticias} handleOptionPress={handleOptionPress} />
-                    ) : (
-                        <Text style={styles.noDataText}>No hay noticias disponibles.</Text>
-                    )}
-                </View>
-
-                {/* Sección de Sermones */}
-                <View style={styles.section}>
-                    {sermones.length > 0 ? (
-                        <Sermones sermones={sermones} handleMoreSermonsPress={handleOptionPress} />
-                    ) : (
-                        <Text style={styles.noDataText}>No hay sermones disponibles.</Text>
-                    )}
-                </View>
-
-                {/* Botón de Ver Doctrina */}
-                <View style={styles.doctrinaSection}>
-                    <TouchableOpacity
-                        style={styles.doctrinaButton}
-                        onPress={() => handleOptionPress('Doctrina/DoctrinaScreen')}
-                    >
-                        <FontAwesome name="book" size={20} color="white" />
-                        <Text style={styles.doctrinaButtonText}>Ver Doctrina</Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
-
+            {/* Contenido Principal */}
+            <FlatList
+                data={[]} // Se usa FlatList pero no renderiza elementos directos
+                keyExtractor={(_, index) => index.toString()}
+                renderItem={null}
+                ListHeaderComponent={renderHeader}
+                contentContainerStyle={styles.mainContent}
+            />
 
             {/* Barra de menú inferior */}
             <View style={styles.bottomMenu}>
@@ -145,21 +154,9 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f8f9fa',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f8f9fa',
-    },
-    loadingText: {
-        marginTop: 10,
-        fontSize: 18,
-        color: '#555',
-    },
+    container: { flex: 1, backgroundColor: '#f8f9fa' },
+    loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    loadingText: { marginTop: 10, fontSize: 18, color: '#555' },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -168,28 +165,11 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         backgroundColor: '#2c3e50',
     },
-    logoContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    logo: {
-        width: 40,
-        height: 40,
-    },
-    headerText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-        flex: 1,
-        textAlign: 'center',
-    },
-    loginButton: {
-        marginLeft: 10,
-    },
-    mainContent: {
-        flex: 1,
-        padding: 10,
-    },
+    logoContainer: { justifyContent: 'center', alignItems: 'center' },
+    logo: { width: 40, height: 40 },
+    headerText: { color: 'white', fontSize: 16, fontWeight: 'bold', flex: 1, textAlign: 'center' },
+    loginButton: { marginLeft: 10 },
+    mainContent: { paddingBottom: 10 },
     section: {
         marginBottom: 5,
         padding: 5,
@@ -201,10 +181,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 3,
     },
-    doctrinaSection: {
-        marginVertical: 0,
-        alignItems: 'center',
-    },
+    doctrinaSection: { marginVertical: 0, alignItems: 'center' },
     doctrinaButton: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -214,29 +191,14 @@ const styles = StyleSheet.create({
         width: '80%',
         justifyContent: 'center',
     },
-    doctrinaButtonText: {
-        color: 'white',
-        fontSize: 18,
-        marginLeft: 10,
-    },
+    doctrinaButtonText: { color: 'white', fontSize: 18, marginLeft: 10 },
     bottomMenu: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         paddingVertical: 10,
         backgroundColor: '#34495e',
     },
-    menuItem: {
-        alignItems: 'center',
-    },
-    menuItemText: {
-        color: 'white',
-        fontSize: 12,
-        marginTop: 5,
-    },
-    noDataText: {
-        fontSize: 16,
-        color: '#777',
-        textAlign: 'center',
-        marginVertical: 10,
-    },
+    menuItem: { alignItems: 'center' },
+    menuItemText: { color: 'white', fontSize: 12, marginTop: 5 },
+    noDataText: { fontSize: 16, color: '#777', textAlign: 'center', marginVertical: 10 },
 });

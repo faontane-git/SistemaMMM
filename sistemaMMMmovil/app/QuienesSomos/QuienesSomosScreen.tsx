@@ -45,13 +45,20 @@ export default function ContactosScreen() {
       try {
         const contactosCollection = collection(db, 'Contactos');
         const querySnapshot = await getDocs(contactosCollection);
-        const contactosArray: Contacto[] = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Contacto[];
+
+        const contactosArray: Contacto[] = querySnapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          })) as Contacto[];
+
+        // Ordenar contactos por nombre
+        contactosArray.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
         setContactos(contactosArray);
       } catch (error) {
         console.error('Error al obtener los contactos:', error);
+        ToastAndroid.show('Error al cargar contactos', ToastAndroid.SHORT);
       } finally {
         setLoading(false);
       }
@@ -90,6 +97,16 @@ export default function ContactosScreen() {
           ]}
         />
       ))}
+    </View>
+  );
+
+  const ContactCard = ({ contacto }: { contacto: Contacto }) => (
+    <View style={styles.contactCard}>
+      <Image source={{ uri: contacto.foto }} style={styles.contactImage} />
+      <View style={styles.contactInfo}>
+        <Text style={styles.contactName}>{contacto.nombre}</Text>
+        <Text style={styles.contactPhone}>Teléfono: {contacto.telefono}</Text>
+      </View>
     </View>
   );
 
@@ -134,13 +151,7 @@ export default function ContactosScreen() {
           <View>
             <Text style={styles.contactHeader}>Contactos</Text>
             {contactos.map((contacto) => (
-              <View key={contacto.id} style={styles.contactCard}>
-                <Image source={{ uri: contacto.foto }} style={styles.contactImage} />
-                <View style={styles.contactInfo}>
-                  <Text style={styles.contactName}>{contacto.nombre}</Text>
-                  <Text style={styles.contactPhone}>Teléfono: {contacto.telefono}</Text>
-                </View>
-              </View>
+              <ContactCard key={contacto.id} contacto={contacto} />
             ))}
           </View>
         )}
