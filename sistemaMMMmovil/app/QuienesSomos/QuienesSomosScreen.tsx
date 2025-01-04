@@ -37,7 +37,7 @@ export default function ContactosScreen() {
     require('../../assets/images/galeria5.jpeg'),
     require('../../assets/images/galeria6.jpeg'),
   ]);
-  const [currentIndex, setCurrentIndex] = useState(0); // Estado para la paginación
+  const [currentIndex, setCurrentIndex] = useState(0);
   const db = getFirestore();
 
   useEffect(() => {
@@ -111,9 +111,20 @@ export default function ContactosScreen() {
           <Text style={styles.subtitle}>Francisco de Orellana-Vergeles</Text>
           <Image source={require('../../assets/images/logo-MMM.png')} style={styles.logoCuerpo} />
           <Text style={styles.description}>
-            Somos una organización sin fines de lucro, llevamos el mensaje de
-            Dios a las vidas necesitadas, y predicamos que la sangre de Cristo
-            puede transformar las vidas y los hogares destruidos.
+            Somos una organización sin fines de lucro, llevamos el mensaje de Dios a las vidas necesitadas,
+            y predicamos que la sangre de Cristo puede transformar las vidas y los hogares destruidos.
+          </Text>
+          <Text style={styles.missionTitle}>Misión:</Text>
+          <Text style={styles.description}>
+            Llevamos un enfoque en la pesca de almas para nuestro Señor Jesucristo, alcanzar jóvenes y
+            familias destruidas por las redes del enemigo, proclamar el evangelio llamando a nuevas
+            personas a la fe en Cristo.
+          </Text>
+          <Text style={styles.visionTitle}>Visión:</Text>
+          <Text style={styles.description}>
+            Está enfocada en reflejar nuestros valores fundamentales, metas espirituales y facilitar una
+            conexión con Dios, ser un lugar donde las personas puedan experimentar un cambio radical
+            en sus vidas a través de la fe en Jesucristo.
           </Text>
         </View>
 
@@ -147,7 +158,7 @@ export default function ContactosScreen() {
         <View style={styles.gallerySection}>
           <Text style={styles.galleryHeader}>Galería</Text>
           <Carousel
-            width={screenWidth * 0.95} // Reducir ancho del carrusel
+            width={screenWidth * 0.8}
             height={200}
             data={galeria}
             renderItem={({ item }) => renderItem(item)}
@@ -155,6 +166,7 @@ export default function ContactosScreen() {
             autoPlay
             autoPlayInterval={3000}
             onSnapToItem={(index) => setCurrentIndex(index)}
+            style={{ alignSelf: 'center' }}
           />
           {renderPagination()}
         </View>
@@ -182,6 +194,20 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: '700', color: '#2c3e50', textAlign: 'center' },
   subtitle: { fontSize: 16, color: '#7f8c8d', textAlign: 'center', marginBottom: 15 },
   description: { fontSize: 14, color: '#555', lineHeight: 22, textAlign: 'justify' },
+  missionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#3498db',
+    marginTop: 15,
+    marginBottom: 5,
+  },
+  visionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1abc9c',
+    marginTop: 15,
+    marginBottom: 5,
+  },
   contactHeader: { fontSize: 18, fontWeight: '700', color: '#2c3e50', marginBottom: 10 },
   contactCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', padding: 15, borderRadius: 8, marginBottom: 15 },
   contactImage: { width: 50, height: 50, borderRadius: 25, marginRight: 15 },
@@ -190,7 +216,7 @@ const styles = StyleSheet.create({
   contactPhone: { fontSize: 14, color: '#7f8c8d' },
   emailBox: { flexDirection: 'row', alignItems: 'center', padding: 15, backgroundColor: '#3498db', borderRadius: 10, marginTop: 20 },
   emailIcon: { marginRight: 8 },
-  emailText: { flex: 1, fontSize: 14, color: 'white' },
+  emailText: { flex: 1, fontSize: 16, color: 'white' },
   copyIcon: { padding: 8, backgroundColor: '#1abc9c', borderRadius: 5 },
   loadingIndicator: { marginVertical: 20 },
   gallerySection: { marginTop: 20, paddingBottom: 20 },
