@@ -5,8 +5,9 @@ import {
     StyleSheet,
     FlatList,
     TouchableOpacity,
-    Image,
     ActivityIndicator,
+    Image,
+    Linking,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getDocs, collection } from 'firebase/firestore';
@@ -15,10 +16,10 @@ import { FontAwesome } from '@expo/vector-icons';
 
 interface Sermon {
     id: string;
-    titulo: string;
-    audioUrl?: string;
-    descripcion?: string;
-    fecha?: string;
+    name: string;
+    description: string;
+    uploadedAt: string;
+    url: string;
 }
 
 export default function VerMasSermones() {
@@ -55,17 +56,17 @@ export default function VerMasSermones() {
 
     const renderSermonItem = ({ item }: { item: Sermon }) => (
         <View style={styles.sermonItem}>
-            <Text style={styles.title}>{item.titulo}</Text>
+            <Text style={styles.title}>{item.name}</Text>
             <Text style={styles.date}>
-                Publicado el: {new Date(item.fecha || Date.now()).toLocaleDateString()}
+                Publicado el: {new Date(item.uploadedAt).toLocaleDateString()}
             </Text>
-            <Text style={styles.description}>{item.descripcion}</Text>
+            <Text style={styles.description}>{item.description}</Text>
             <TouchableOpacity
                 style={styles.audioButton}
-                onPress={() => console.log('Reproducir:', item.audioUrl)}
+                onPress={() => Linking.openURL(item.url)}
             >
                 <FontAwesome name="play-circle" size={24} color="white" />
-                <Text style={styles.audioButtonText}>Reproducir Audio</Text>
+                <Text style={styles.audioButtonText}>Escuchar Sermón</Text>
             </TouchableOpacity>
         </View>
     );
