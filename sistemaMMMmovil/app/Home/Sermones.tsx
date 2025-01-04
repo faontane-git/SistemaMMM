@@ -17,7 +17,7 @@ interface SermonesProps {
         uploadedAt: string;
         url: string;
     }>;
-    handleMoreSermonsPress: () => void;
+    handleMoreSermonsPress: (option: string) => void;
 }
 
 const Sermones: React.FC<SermonesProps> = ({ sermones, handleMoreSermonsPress }) => {
@@ -40,7 +40,7 @@ const Sermones: React.FC<SermonesProps> = ({ sermones, handleMoreSermonsPress })
             </TouchableOpacity>
             <TouchableOpacity
                 style={styles.moreSermonsButton}
-                onPress={handleMoreSermonsPress}
+                onPress={() => handleMoreSermonsPress('Home/VerMasSermones')}
             >
                 <FontAwesome name="music" size={20} color="white" />
                 <Text style={styles.moreSermonsButtonText}>Escuchar más sermones</Text>
@@ -63,7 +63,7 @@ const Sermones: React.FC<SermonesProps> = ({ sermones, handleMoreSermonsPress })
 
 const styles = StyleSheet.create({
     container: {
-        padding: 15,
+        padding: 5,
         backgroundColor: '#F8F9FA',
         borderRadius: 10,
         marginBottom: 20,

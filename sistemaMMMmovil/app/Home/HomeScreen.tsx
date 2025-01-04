@@ -67,7 +67,7 @@ export default function HomeScreen() {
                 <View style={styles.logoContainer}>
                     <Image source={require('../../assets/logo.png')} style={styles.logo} />
                 </View>
-                <Text style={styles.headerText}>MI IGLESIA MMM</Text>
+                <Text style={styles.headerText}>Mi Iglesia MMM</Text>
                 <TouchableOpacity
                     style={styles.loginButton}
                     onPress={() => handleOptionPress('IniciarSesion/IniciarSesion')}
@@ -77,20 +77,24 @@ export default function HomeScreen() {
             </View>
 
             {/* Contenido principal con ScrollView */}
-            <ScrollView style={styles.mainContent}>
-                {/* Noticias */}
-                {noticias.length > 0 ? (
-                    <Noticias noticias={noticias} handleOptionPress={handleOptionPress} />
-                ) : (
-                    <Text style={styles.noDataText}>No hay noticias disponibles.</Text>
-                )}
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={styles.mainContent}>
+                {/* Sección de Noticias */}
+                <View style={styles.section}>
+                    {noticias.length > 0 ? (
+                        <Noticias noticias={noticias} handleOptionPress={handleOptionPress} />
+                    ) : (
+                        <Text style={styles.noDataText}>No hay noticias disponibles.</Text>
+                    )}
+                </View>
 
-                {/* Sermones */}
-                {sermones.length > 0 ? (
-                    <Sermones sermones={sermones} handleMoreSermonsPress={() => { }} />
-                ) : (
-                    <Text style={styles.noDataText}>No hay sermones disponibles.</Text>
-                )}
+                {/* Sección de Sermones */}
+                <View style={styles.section}>
+                    {sermones.length > 0 ? (
+                        <Sermones sermones={sermones} handleMoreSermonsPress={handleOptionPress} />
+                    ) : (
+                        <Text style={styles.noDataText}>No hay sermones disponibles.</Text>
+                    )}
+                </View>
 
                 {/* Botón de Ver Doctrina */}
                 <View style={styles.doctrinaSection}>
@@ -103,6 +107,7 @@ export default function HomeScreen() {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
+
 
             {/* Barra de menú inferior */}
             <View style={styles.bottomMenu}>
@@ -184,6 +189,17 @@ const styles = StyleSheet.create({
     mainContent: {
         flex: 1,
         padding: 10,
+    },
+    section: {
+        marginBottom: 5,
+        padding: 5,
+        backgroundColor: 'white',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     doctrinaSection: {
         marginVertical: 0,

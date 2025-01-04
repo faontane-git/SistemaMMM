@@ -53,7 +53,7 @@ const Noticias: React.FC<NoticiasProps> = ({ noticias, handleOptionPress }) => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 15,
+        padding: 5,
         backgroundColor: '#F8F9FA',
         borderRadius: 10,
         marginBottom: 20,

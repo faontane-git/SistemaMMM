@@ -17,6 +17,7 @@ import RutasScreen from "./Rutas/RutasScreen";
 import CertificadoBautismo from "./Carnet/CertificadoBautismo";
 import CertificadoMatrimonio from "./Carnet/CertificadoMatrimonio";
 import VerMasNoticias from "./Home/VerMasNoticias";
+import VerMasSermones from "./Home/VerMasSermones";
 
 export type RootStackParamList = {
   index: undefined;
@@ -41,6 +42,7 @@ export type RootStackParamList = {
   };
   "RedesSociales/RedesSocialesScreen": undefined;
   "Noticias/VerMasNoticias": undefined;
+  "Home/VerMasSermones": undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -76,7 +78,8 @@ const MainStack = () => {
 
       {/* Pantalla de Ver Más Noticias */}
       <Stack.Screen name="Noticias/VerMasNoticias" component={VerMasNoticias} />
-    </Stack.Navigator>
+      <Stack.Screen name="Home/VerMasSermones" component={VerMasSermones} />
+     </Stack.Navigator>
   );
 };
 

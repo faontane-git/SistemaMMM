@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   contactPhone: { fontSize: 14, color: '#7f8c8d' },
   emailBox: { flexDirection: 'row', alignItems: 'center', padding: 15, backgroundColor: '#3498db', borderRadius: 10, marginTop: 20 },
   emailIcon: { marginRight: 8 },
-  emailText: { flex: 1, fontSize: 16, color: 'white' },
+  emailText: { flex: 1, fontSize: 14, color: 'white' },
   copyIcon: { padding: 8, backgroundColor: '#1abc9c', borderRadius: 5 },
   loadingIndicator: { marginVertical: 20 },
   gallerySection: { marginTop: 20, paddingBottom: 20 },
