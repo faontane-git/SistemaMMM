@@ -52,8 +52,12 @@ export default function ContactosScreen() {
             ...doc.data(),
           })) as Contacto[];
 
-        // Ordenar contactos por nombre
-        contactosArray.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        // Ordenar contactos por ID de menor a mayor
+        contactosArray.sort((a, b) => {
+          const idA = parseInt(a.id, 10); // Asegúrate de que sea numérico
+          const idB = parseInt(b.id, 10); // Asegúrate de que sea numérico
+          return idA - idB;
+        });
 
         setContactos(contactosArray);
       } catch (error) {
@@ -66,6 +70,7 @@ export default function ContactosScreen() {
 
     obtenerContactos();
   }, []);
+
 
   const handleGoBack = () => {
     if (navigation.canGoBack()) {

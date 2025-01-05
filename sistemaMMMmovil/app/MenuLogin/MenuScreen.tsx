@@ -43,6 +43,9 @@ export default function MenuScreen() {
     const handleOptionPress3 = () => {
         navigation.navigate('Carnet/CertificadoMatrimonio', { cedula });
     };
+    const handleValidateCertificatesPress = () => {
+        navigation.navigate('Certificados/ValidarCertificados');
+    };
 
     const handleCambioPress = () => {
         navigation.navigate('Cambio/CambioC', { cedula });
@@ -113,6 +116,15 @@ export default function MenuScreen() {
                     <Text style={styles.optionText}>Certificado de Matrimonio</Text>
                 </TouchableOpacity>
 
+                {/*
+                <TouchableOpacity
+                    style={styles.optionButton}
+                    onPress={handleValidateCertificatesPress}
+                >
+                    <Text style={styles.optionText}>Validar Certificados</Text>
+                </TouchableOpacity>
+                */}
+                
                 <TouchableOpacity
                     style={styles.optionButton}
                     onPress={handleCambioPress}
@@ -214,7 +226,7 @@ const styles = StyleSheet.create({
     optionButton: {
         width: '80%',
         height: 50,
-        backgroundColor: '#003580', // Azul oscuro
+        backgroundColor: '#003580',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,

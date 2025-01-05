@@ -18,6 +18,7 @@ import CertificadoBautismo from "./Carnet/CertificadoBautismo";
 import CertificadoMatrimonio from "./Carnet/CertificadoMatrimonio";
 import VerMasNoticias from "./Home/VerMasNoticias";
 import VerMasSermones from "./Home/VerMasSermones";
+import ValidarCertificados from "./Certificados/ValidarCertificados";
 
 export type RootStackParamList = {
   index: undefined;
@@ -43,6 +44,7 @@ export type RootStackParamList = {
   "RedesSociales/RedesSocialesScreen": undefined;
   "Noticias/VerMasNoticias": undefined;
   "Home/VerMasSermones": undefined;
+  "Certificados/ValidarCertificados": undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -68,7 +70,7 @@ const MainStack = () => {
       <Stack.Screen name="Carnet/CarnetScreen" component={CarnetScreen} />
       <Stack.Screen name="Carnet/CertificadoBautismo" component={CertificadoBautismo} />
       <Stack.Screen name="Carnet/CertificadoMatrimonio" component={CertificadoMatrimonio} />
-
+ 
       {/* Otras Pantallas */}
       <Stack.Screen name="Rutas/RutasScreen" component={RutasScreen} />
       <Stack.Screen name="Doctrina/DoctrinaScreen" component={DoctrinaScreen} />

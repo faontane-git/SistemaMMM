@@ -1,5 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, Button, TouchableOpacity, StyleSheet, Alert, Image, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -13,7 +22,7 @@ interface Persona {
   foto: string;
   casadoEclesiasticamente: string;
   conyuge: string;
-  pastor:string;
+  pastor: string;
 }
 
 export default function CertificadoMatrimonio() {
@@ -48,7 +57,6 @@ export default function CertificadoMatrimonio() {
     fetchPersona();
   }, [cedula]);
 
-  // Función para regresar a la pantalla anterior
   const handleGoBack = () => {
     if (navigation.canGoBack()) {
       navigation.goBack();
@@ -57,7 +65,6 @@ export default function CertificadoMatrimonio() {
     }
   };
 
-  // Función para guardar el certificado como imagen
   const saveCertificate = async () => {
     try {
       if (certificateRef.current) {
@@ -72,7 +79,6 @@ export default function CertificadoMatrimonio() {
     }
   };
 
-  // Mostrar indicador de carga mientras se obtiene la información
   if (loading) {
     return (
       <View style={styles.container}>
@@ -81,7 +87,6 @@ export default function CertificadoMatrimonio() {
     );
   }
 
-  // Mostrar mensaje si no se encontró la persona
   if (!persona) {
     return (
       <View style={styles.container}>
@@ -91,7 +96,6 @@ export default function CertificadoMatrimonio() {
     );
   }
 
-  // Mostrar pantalla si no está casado eclesiásticamente
   if (persona.casadoEclesiasticamente.toLowerCase() === 'no') {
     return (
       <View style={styles.container}>
@@ -103,7 +107,6 @@ export default function CertificadoMatrimonio() {
     );
   }
 
-  // Generar datos del QR
   const qrData = JSON.stringify({
     name: `${persona.nombres} ${persona.apellidos}`,
     date: new Date().toLocaleDateString(),
@@ -139,7 +142,9 @@ export default function CertificadoMatrimonio() {
       </View>
 
       {/* Botón para guardar */}
-      <Button title="Guardar Certificado" onPress={saveCertificate} />
+      <TouchableOpacity style={styles.saveButton} onPress={saveCertificate}>
+        <Text style={styles.saveButtonText}>Guardar Certificado</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -156,6 +161,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -180,9 +189,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   certificate: {
-    width: 400,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginTop: 100,
+    width: '90%',
     height: 600,
     position: 'relative',
+    alignSelf: 'center',
   },
   image: {
     width: '100%',
@@ -191,20 +206,27 @@ const styles = StyleSheet.create({
   },
   text: {
     position: 'absolute',
-    fontSize: 7,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#000',
-  },
-  signature: {
-    position: 'absolute',
-    fontSize: 9,
-    fontWeight: '400',
-    color: '#000',
-    fontStyle: 'italic',
   },
   qrCode: {
     position: 'absolute',
     width: 50,
     height: 50,
+  },
+  saveButton: {
+    marginTop: 20,
+    backgroundColor: '#003580',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignSelf: 'center',
+  },
+  saveButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });

@@ -1,50 +1,29 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, Button, TouchableOpacity, StyleSheet, Alert, Image, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import { captureRef } from 'react-native-view-shot';
+import * as MediaLibrary from 'expo-media-library';
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { firestore } from '../../firebaseConfig';
-import { getDocs, query, collection, where } from 'firebase/firestore';
-
-interface Persona {
-  nombres: string;
-  apellidos: string;
-  cedula: string;
-  foto: string; // Base64 de la imagen
-}
+import { useNavigation } from '@react-navigation/native';
+import { Dimensions } from 'react-native';
 
 export default function CertificadoBautismo() {
-  const certificateRef = useRef<View>(null);
+  const certificateRef = useRef<View>(null); // Referencia para capturar la vista
+  const [isViewReady, setIsViewReady] = useState(false); // Verificar si la vista está lista
+  const [loading, setLoading] = useState(false); // Estado para mostrar el ActivityIndicator
   const navigation = useNavigation();
-  const route = useRoute();
-  const { cedula } = route.params as { cedula: string };
-  const [persona, setPersona] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPersona = async () => {
-      try {
-        const q = query(
-          collection(firestore, 'Personas'),
-          where('cedula', '==', cedula)
-        );
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          const data = querySnapshot.docs[0].data() as Persona;
-          setPersona(data);
-        } else {
-          console.error('No se encontraron datos para la cédula:', cedula);
-        }
-      } catch (error) {
-        console.error('Error al buscar los datos:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPersona();
-  }, [cedula]);
-
+    // Marcar la vista como lista después de renderizar
+    setIsViewReady(true);
+  }, []);
 
   // Función para regresar a la pantalla anterior
   const handleGoBack = () => {
@@ -55,49 +34,46 @@ export default function CertificadoBautismo() {
     }
   };
 
-  // Función para guardar el certificado como imagen
   const saveCertificate = async () => {
+    if (!certificateRef.current) {
+      Alert.alert('Error', 'La referencia del certificado no está disponible.');
+      return;
+    }
+
     try {
-      if (certificateRef.current) {
-        const uri = await captureRef(certificateRef.current, {
-          format: 'jpg',
-          quality: 1,
-        });
-        console.log('Certificado guardado:', uri);
+      setLoading(true); // Mostrar indicador de carga
+      // Solicitar permisos para guardar en la galería
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permiso denegado', 'No se puede guardar en la galería sin permisos.');
+        setLoading(false);
+        return;
       }
+
+      // Capturar la vista como imagen
+      const uri = await captureRef(certificateRef.current, {
+        format: 'jpg',
+        quality: 1,
+        result: 'tmpfile',
+      });
+      console.log('Captured URI:', uri);
+
+      // Guardar la imagen en la galería
+      const asset = await MediaLibrary.createAssetAsync(uri);
+      console.log('Created Asset:', asset);
+
+      await MediaLibrary.createAlbumAsync('Certificados', asset, false);
+
+      Alert.alert('Éxito', 'Su certificado de Bautismo se ha guardado en la galería.');
     } catch (error) {
       console.error('Error guardando el certificado:', error);
+      Alert.alert('Error', 'No se pudo guardar el certificado.');
+    } finally {
+      setLoading(false); // Ocultar indicador de carga
     }
   };
 
-  // Mostrar indicador de carga mientras se obtiene la información
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#003580" />
-      </View>
-    );
-  }
-
-  // Mostrar mensaje si no se encontró la persona
-  if (!persona) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center', fontSize: 16, color: 'red' }}>No se encontró información para la cédula proporcionada.</Text>
-        <Button title="Volver" onPress={handleGoBack} />
-      </View>
-    );
-  }
-
-  // Generar datos del QR
-  const qrData = JSON.stringify({
-    name: persona.nombre,
-    date: new Date().toLocaleDateString(),
-    issuer: persona.emitidoPor || 'Organización',
-    certificateId: `CERT-${cedula}`,
-  });
-
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(qrData)}`;
+  const { width } = Dimensions.get('window'); // Obtener ancho de pantalla para diseño responsivo
 
   return (
     <View style={styles.container}>
@@ -113,16 +89,24 @@ export default function CertificadoBautismo() {
       </View>
 
       {/* Certificado */}
-      <View ref={certificateRef} style={styles.certificate}>
+      <View ref={certificateRef} style={[styles.certificate, { width: width * 0.9, height: (width * 0.9) * 1.5 }]}>
         <Image source={require('../../assets/images/Cbautismo.jpg')} style={styles.image} resizeMode="contain" />
-        <Text style={[styles.text, { top: '52%', left: '27%' }]}>{persona.nombres+" "+persona.apellidos}</Text>
-        <Text style={[styles.text, { top: '59.5%', left: '20%' }]}>{persona.fechaBautizo}</Text>
-        <Text style={[styles.signature, { top: '63.5%', left: '30%' }]}>{persona.pastor}</Text>
-        <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '60%', left: '61%' }]} />
+        <Text style={[styles.text, { top: '52%', left: '27%' }]}>Juan Pérez</Text>
+        <Text style={[styles.text, { top: '59.5%', left: '20%' }]}>01/01/2025</Text>
+        <Text style={[styles.signature, { top: '63.5%', left: '30%' }]}>Pastor Smith</Text>
       </View>
 
-      {/* Botón para guardar */}
-      <Button title="Guardar Certificado" onPress={saveCertificate} />
+      {/* Botón de Guardar */}
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={saveCertificate}
+        disabled={loading || !isViewReady}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.saveButtonText}>Guardar Certificado</Text>
+        )}
+      </TouchableOpacity>
     </View>
   );
 }
@@ -131,14 +115,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
     backgroundColor: '#003580',
+    width: '100%',
   },
   logoContainer: {
     justifyContent: 'center',
@@ -156,9 +147,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   certificate: {
-    width: 400,
-    height: 600,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
     position: 'relative',
+    overflow: 'hidden',
+    marginTop: 100, // Espacio entre el header y el certificado
+    width: '90%',
+    height: '60%',
   },
   image: {
     width: '100%',
@@ -167,20 +164,28 @@ const styles = StyleSheet.create({
   },
   text: {
     position: 'absolute',
-    fontSize: 9,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#000',
   },
   signature: {
     position: 'absolute',
-    fontSize: 9,
-    fontWeight: '400',
-    color: '#000',
+    fontSize: 12,
     fontStyle: 'italic',
+    color: '#000',
   },
-  qrCode: {
-    position: 'absolute',
-    width: 50,
-    height: 50,
+  saveButton: {
+    marginTop: 20, // Espacio entre el botón y el certificado
+    backgroundColor: '#003580',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignSelf: 'center', // Centra el botón horizontalmente
+  },
+  saveButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
