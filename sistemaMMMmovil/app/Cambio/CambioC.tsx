@@ -58,7 +58,7 @@ export default function ChangePasswordScreen() {
 
             // Actualizar la contraseña
             const userRef = doc(db, 'Feligreses', userDoc.id);
-            await updateDoc(userRef, { password: newPassword });
+            await updateDoc(userRef, { contraseña: newPassword });
 
             Alert.alert('Éxito', 'La contraseña ha sido cambiada correctamente.');
             navigation.goBack(); // Opcional, regresa a la pantalla anterior

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../_layout';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type RouteParams = {
     cedula: string;
@@ -32,6 +33,15 @@ export default function MenuScreen() {
 
     const handleCloseBirthdayModal = () => {
         setIsBirthdayModalVisible(false);
+    };
+
+    const handleLogout = async () => {
+        try {
+            await AsyncStorage.removeItem('userSession'); // Elimina los datos de sesión
+            navigation.navigate('IniciarSesion/IniciarSesion'); // Redirige a la pantalla de inicio de sesión
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+        }
     };
 
     const handleOptionPress = () => {
@@ -80,10 +90,10 @@ export default function MenuScreen() {
             {/* Header */}
             <View style={styles.header}>
                 <View style={styles.logoContainer}>
-                    <FontAwesome name="home" size={30} color="#fff" />
+                    <Image source={require('../../assets/logo.png')} style={styles.logo} />
                 </View>
                 <Text style={styles.headerText}>Bienvenido</Text>
-                <TouchableOpacity style={styles.logoutButton}>
+                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                     <FontAwesome name="sign-out" size={24} color="white" />
                 </TouchableOpacity>
             </View>
@@ -124,7 +134,7 @@ export default function MenuScreen() {
                     <Text style={styles.optionText}>Validar Certificados</Text>
                 </TouchableOpacity>
                 */}
-                
+
                 <TouchableOpacity
                     style={styles.optionButton}
                     onPress={handleCambioPress}
@@ -193,6 +203,10 @@ const styles = StyleSheet.create({
     logoContainer: {
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    logo: {
+        width: 40,
+        height: 40,
     },
     headerText: {
         color: 'white',

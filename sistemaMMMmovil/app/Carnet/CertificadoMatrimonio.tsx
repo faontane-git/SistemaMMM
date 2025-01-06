@@ -23,6 +23,8 @@ interface Persona {
   casadoEclesiasticamente: string;
   conyuge: string;
   pastor: string;
+  estadoCivil: string;
+  fechaMatrimonio:string;
 }
 
 export default function CertificadoMatrimonio() {
@@ -96,13 +98,25 @@ export default function CertificadoMatrimonio() {
     );
   }
 
-  if (persona.casadoEclesiasticamente.toLowerCase() === 'no') {
+  if (!['CASADO', 'CASADA'].includes(persona.estadoCivil)) {
     return (
       <View style={styles.container}>
-        <Text style={styles.noCertificateText}>
-          Estimado/a {persona.nombres} {persona.apellidos}, usted no posee certificado de matrimonio debido a que no se ha casado eclesiásticamente.
-        </Text>
-        <Button title="Volver" onPress={handleGoBack} />
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <Image source={require('../../assets/logo.png')} style={styles.logo} />
+          </View>
+          <Text style={styles.headerText}>Certificado de Matrimonio</Text>
+          <TouchableOpacity onPress={handleGoBack}>
+            <FontAwesome name="arrow-left" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.mensaje}>
+          <Text style={styles.noCertificateText}>
+            Estimado/a {persona.nombres} {persona.apellidos}, usted no posee certificado de matrimonio debido a que usted no se ha casado.
+          </Text>
+          <Button title="Volver" onPress={handleGoBack} />
+        </View>
       </View>
     );
   }
@@ -132,12 +146,12 @@ export default function CertificadoMatrimonio() {
       {/* Certificado */}
       <View ref={certificateRef} style={styles.certificate}>
         <Image source={require('../../assets/images/Cmatrimonio.jpg')} style={styles.image} resizeMode="contain" />
-        <Text style={[styles.text, { top: '48%', left: '10%' }]}>{persona.nombres} {persona.apellidos}</Text>
-        <Text style={[styles.text, { top: '48%', left: '55%' }]}>{persona.conyuge}</Text>
-        <Text style={[styles.text, { top: '58%', left: '70%' }]}>{persona.pastor}</Text>
-        <Text style={[styles.text, { top: '58%', left: '20%' }]}>01/01/2024</Text>
-        <Text style={[styles.text, { top: '61.5%', left: '10%' }]}>{persona.nombres} {persona.apellidos}</Text>
-        <Text style={[styles.text, { top: '61.5%', left: '60%' }]}>{persona.conyuge}</Text>
+        <Text style={[styles.text, { top: '48%', left: '13%' }]}>{persona.nombres} {persona.apellidos}</Text>
+        <Text style={[styles.text, { top: '48%', left: '58%' }]}>{persona.conyuge}</Text>
+        <Text style={[styles.text, { top: '57%', left: '70%' }]}>{persona.pastor}</Text>
+        <Text style={[styles.text, { top: '57%', left: '20%' }]}>{persona.fechaMatrimonio}</Text>
+        <Text style={[styles.text, { top: '60%', left: '10%' }]}>{persona.nombres} {persona.apellidos}</Text>
+        <Text style={[styles.text, { top: '60%', left: '60%' }]}>{persona.conyuge}</Text>
         <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '35.5%', left: '80%' }]} />
       </View>
 
@@ -154,6 +168,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f9fa',
   },
+  mensaje: {
+    marginTop: 100,
+    padding: 20,
+  },
+
   noCertificateText: {
     fontSize: 16,
     color: '#333',
@@ -206,7 +225,7 @@ const styles = StyleSheet.create({
   },
   text: {
     position: 'absolute',
-    fontSize: 12,
+    fontSize: 5,
     fontWeight: 'bold',
     color: '#000',
   },

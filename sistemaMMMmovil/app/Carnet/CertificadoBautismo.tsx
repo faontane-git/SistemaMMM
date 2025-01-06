@@ -11,19 +11,61 @@ import {
 import { captureRef } from 'react-native-view-shot';
 import * as MediaLibrary from 'expo-media-library';
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
+import { firestore } from '../../firebaseConfig';
+import { getDocs, query, collection, where } from 'firebase/firestore';
+
+interface Persona {
+  nombres: string;
+  apellidos: string;
+  cedula: string;
+  foto: string;
+  casadoEclesiasticamente: string;
+  conyuge: string;
+  pastor: string;
+  fechaNacimiento:string;
+}
+
 
 export default function CertificadoBautismo() {
   const certificateRef = useRef<View>(null); // Referencia para capturar la vista
   const [isViewReady, setIsViewReady] = useState(false); // Verificar si la vista está lista
+  const [persona, setPersona] = useState<Persona | null>(null);
   const [loading, setLoading] = useState(false); // Estado para mostrar el ActivityIndicator
   const navigation = useNavigation();
+  const route = useRoute();
+  const { cedula } = route.params as { cedula: string };
 
   useEffect(() => {
     // Marcar la vista como lista después de renderizar
     setIsViewReady(true);
   }, []);
+
+
+  useEffect(() => {
+    const fetchPersona = async () => {
+      try {
+        const q = query(
+          collection(firestore, 'Personas'),
+          where('cedula', '==', cedula)
+        );
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const data = querySnapshot.docs[0].data() as Persona;
+          setPersona(data);
+        } else {
+          Alert.alert('Error', 'No se encontró información para la cédula proporcionada.');
+        }
+      } catch (error) {
+        console.error('Error al buscar los datos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPersona();
+  }, [cedula]);
 
   // Función para regresar a la pantalla anterior
   const handleGoBack = () => {
@@ -56,12 +98,10 @@ export default function CertificadoBautismo() {
         quality: 1,
         result: 'tmpfile',
       });
-      console.log('Captured URI:', uri);
-
+ 
       // Guardar la imagen en la galería
       const asset = await MediaLibrary.createAssetAsync(uri);
-      console.log('Created Asset:', asset);
-
+ 
       await MediaLibrary.createAlbumAsync('Certificados', asset, false);
 
       Alert.alert('Éxito', 'Su certificado de Bautismo se ha guardado en la galería.');
@@ -91,9 +131,9 @@ export default function CertificadoBautismo() {
       {/* Certificado */}
       <View ref={certificateRef} style={[styles.certificate, { width: width * 0.9, height: (width * 0.9) * 1.5 }]}>
         <Image source={require('../../assets/images/Cbautismo.jpg')} style={styles.image} resizeMode="contain" />
-        <Text style={[styles.text, { top: '52%', left: '27%' }]}>Juan Pérez</Text>
-        <Text style={[styles.text, { top: '59.5%', left: '20%' }]}>01/01/2025</Text>
-        <Text style={[styles.signature, { top: '63.5%', left: '30%' }]}>Pastor Smith</Text>
+        <Text style={[styles.text, { top: '52%', left: '27%' }]}>{persona?.nombres}{" "}{persona?.apellidos}</Text>
+        <Text style={[styles.text, { top: '59.5%', left: '20%' }]}>{persona?.fechaNacimiento}</Text>
+        <Text style={[styles.signature, { top: '63.5%', left: '30%' }]}>{persona?.pastor}</Text>
       </View>
 
       {/* Botón de Guardar */}
@@ -164,13 +204,13 @@ const styles = StyleSheet.create({
   },
   text: {
     position: 'absolute',
-    fontSize: 14,
+    fontSize: 8,
     fontWeight: 'bold',
     color: '#000',
   },
   signature: {
     position: 'absolute',
-    fontSize: 12,
+    fontSize: 8,
     fontStyle: 'italic',
     color: '#000',
   },
