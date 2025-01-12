@@ -72,6 +72,10 @@ export default function LoginScreen() {
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Ingresar</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                <Text style={styles.backButtonText}>Regresar</Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -122,6 +126,24 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     buttonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    backButton: {
+        width: '100%',
+        height: 50,
+        backgroundColor: '#95a5a6',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        marginTop: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        elevation: 3,
+    },
+    backButtonText: {
         color: '#fff',
         fontSize: 18,
         fontWeight: 'bold',

@@ -20,6 +20,7 @@ import Personas from './components/Personas/Personas';
 import CrearPersonaForm from './components/Personas/CrearPersonaForm';
 import EditarPersona from './components/Personas/EditarPersona';
 import Consultas from './components/Consultas/Consultas';
+import EnviarNotificacion from './components/Sermones/EnviarNotificacion';
 
 const App: React.FC = () => {
     return (
@@ -44,6 +45,7 @@ const App: React.FC = () => {
                     <Route path="/crear-persona" element={<CrearPersonaForm />} />
                     <Route path="/editar-persona/:id" element={<EditarPersona />} />
                     <Route path="/consultas" element={<Consultas />} />
+                    <Route path="/enviarNotificacion" element={<EnviarNotificacion />} />
                 </Routes>
             </Router>
         </ThemeProvider>
