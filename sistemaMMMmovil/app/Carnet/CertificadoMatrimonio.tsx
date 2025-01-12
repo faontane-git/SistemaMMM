@@ -23,7 +23,7 @@ interface Persona {
   foto: string;
   casadoEclesiasticamente: string;
   conyuge: string;
-  fechaNacimiento: string;
+  fechaMatrimonio: string;
   pastor: string;
 }
 
@@ -108,9 +108,15 @@ export default function CertificadoMatrimonio() {
   const { width } = Dimensions.get('window');
 
   const qrData = JSON.stringify({
-    name: `${persona?.nombres} ${persona?.apellidos}`,
-    certificateId: `CERT-${cedula}`,
+    nombres: persona?.nombres || '',
+    apellidos: persona?.apellidos || '',
+    cedula: cedula,
+    conyuge: persona?.conyuge || '',
+    fechaMatrimonio: persona?.fechaMatrimonio || '',
+    pastor: persona?.pastor || '',
+    certificadoId: `CERT-${cedula}`,
   });
+  
 
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(qrData)}`;
 
@@ -130,10 +136,10 @@ export default function CertificadoMatrimonio() {
         <Image source={require('../../assets/images/Cmatrimonio.jpg')} style={styles.image} resizeMode="contain" />
         <Text style={[styles.text, { top: '48%', left: '13%' }]}>{persona?.nombres} {persona?.apellidos}</Text>
         <Text style={[styles.text, { top: '48%', left: '58%' }]}>{persona?.conyuge}</Text>
-        <Text style={[styles.text, { top: '57%', left: '70%' }]}>{persona?.pastor}</Text>
-        <Text style={[styles.text, { top: '57%', left: '20%' }]}>{persona?.fechaNacimiento}</Text>
-        <Text style={[styles.text, { top: '60%', left: '10%' }]}>{persona?.nombres} {persona?.apellidos}</Text>
-        <Text style={[styles.text, { top: '60%', left: '60%' }]}>{persona?.conyuge}</Text>
+        <Text style={[styles.text, { top: '59%', left: '70%' }]}>{persona?.pastor}</Text>
+        <Text style={[styles.text, { top: '59%', left: '20%' }]}>{persona?.fechaMatrimonio}</Text>
+        <Text style={[styles.text, { top: '63%', left: '10%' }]}>{persona?.nombres} {persona?.apellidos}</Text>
+        <Text style={[styles.text, { top: '63%', left: '60%' }]}>{persona?.conyuge}</Text>
         <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '35.5%', left: '80%' }]} />
       </View>
 
@@ -204,7 +210,7 @@ const styles = StyleSheet.create({
   },
   text: {
     position: 'absolute',
-    fontSize: 8,
+    fontSize: 6,
     fontWeight: 'bold',
     color: '#000',
   },

@@ -24,24 +24,21 @@ interface Persona {
   casadoEclesiasticamente: string;
   conyuge: string;
   pastor: string;
-  fechaNacimiento:string;
+  fechaBautizo: string;
 }
 
-
 export default function CertificadoBautismo() {
-  const certificateRef = useRef<View>(null); // Referencia para capturar la vista
-  const [isViewReady, setIsViewReady] = useState(false); // Verificar si la vista está lista
+  const certificateRef = useRef<View>(null);
+  const [isViewReady, setIsViewReady] = useState(false);
   const [persona, setPersona] = useState<Persona | null>(null);
-  const [loading, setLoading] = useState(false); // Estado para mostrar el ActivityIndicator
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
   const { cedula } = route.params as { cedula: string };
 
   useEffect(() => {
-    // Marcar la vista como lista después de renderizar
     setIsViewReady(true);
   }, []);
-
 
   useEffect(() => {
     const fetchPersona = async () => {
@@ -67,7 +64,6 @@ export default function CertificadoBautismo() {
     fetchPersona();
   }, [cedula]);
 
-  // Función para regresar a la pantalla anterior
   const handleGoBack = () => {
     if (navigation.canGoBack()) {
       navigation.goBack();
@@ -83,8 +79,7 @@ export default function CertificadoBautismo() {
     }
 
     try {
-      setLoading(true); // Mostrar indicador de carga
-      // Solicitar permisos para guardar en la galería
+      setLoading(true);
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Permiso denegado', 'No se puede guardar en la galería sin permisos.');
@@ -92,16 +87,13 @@ export default function CertificadoBautismo() {
         return;
       }
 
-      // Capturar la vista como imagen
       const uri = await captureRef(certificateRef.current, {
         format: 'jpg',
         quality: 1,
         result: 'tmpfile',
       });
- 
-      // Guardar la imagen en la galería
+
       const asset = await MediaLibrary.createAssetAsync(uri);
- 
       await MediaLibrary.createAlbumAsync('Certificados', asset, false);
 
       Alert.alert('Éxito', 'Su certificado de Bautismo se ha guardado en la galería.');
@@ -109,15 +101,25 @@ export default function CertificadoBautismo() {
       console.error('Error guardando el certificado:', error);
       Alert.alert('Error', 'No se pudo guardar el certificado.');
     } finally {
-      setLoading(false); // Ocultar indicador de carga
+      setLoading(false);
     }
   };
 
-  const { width } = Dimensions.get('window'); // Obtener ancho de pantalla para diseño responsivo
+  const { width } = Dimensions.get('window');
+
+  const qrData = JSON.stringify({
+    nombres: persona?.nombres || '',
+    apellidos: persona?.apellidos || '',
+    cedula: cedula || '',
+    conyuge: persona?.conyuge || '',
+    pastor: persona?.pastor || '',
+    fechaBautizo: persona?.fechaBautizo || '',
+  });
+
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image source={require('../../assets/logo.png')} style={styles.logo} />
@@ -128,15 +130,14 @@ export default function CertificadoBautismo() {
         </TouchableOpacity>
       </View>
 
-      {/* Certificado */}
       <View ref={certificateRef} style={[styles.certificate, { width: width * 0.9, height: (width * 0.9) * 1.5 }]}>
         <Image source={require('../../assets/images/Cbautismo.jpg')} style={styles.image} resizeMode="contain" />
-        <Text style={[styles.text, { top: '52%', left: '27%' }]}>{persona?.nombres}{" "}{persona?.apellidos}</Text>
-        <Text style={[styles.text, { top: '59.5%', left: '20%' }]}>{persona?.fechaNacimiento}</Text>
+        <Text style={[styles.text, { top: '52%', left: '27%' }]}>{persona?.nombres} {persona?.apellidos}</Text>
+        <Text style={[styles.text, { top: '59.5%', left: '20%' }]}>{persona?.fechaBautizo}</Text>
         <Text style={[styles.signature, { top: '63.5%', left: '30%' }]}>{persona?.pastor}</Text>
+        <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '30%', left: '77%' }]} />
       </View>
 
-      {/* Botón de Guardar */}
       <TouchableOpacity
         style={styles.saveButton}
         onPress={saveCertificate}
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     position: 'relative',
     overflow: 'hidden',
-    marginTop: 100, // Espacio entre el header y el certificado
+    marginTop: 100,
     width: '90%',
     height: '60%',
   },
@@ -214,13 +215,18 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: '#000',
   },
+  qrCode: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+  },
   saveButton: {
-    marginTop: 20, // Espacio entre el botón y el certificado
+    marginTop: 20,
     backgroundColor: '#003580',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
-    alignSelf: 'center', // Centra el botón horizontalmente
+    alignSelf: 'center',
   },
   saveButtonText: {
     color: 'white',

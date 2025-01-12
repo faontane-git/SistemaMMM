@@ -38,7 +38,7 @@ export default function MenuScreen() {
     const handleLogout = async () => {
         try {
             await AsyncStorage.removeItem('userSession'); // Elimina los datos de sesión
-            navigation.navigate('IniciarSesion/IniciarSesion'); // Redirige a la pantalla de inicio de sesión
+            navigation.navigate('Home/HomeScreen'); // Redirige a la pantalla de inicio de sesión
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
         }
