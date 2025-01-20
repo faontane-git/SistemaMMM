@@ -22,6 +22,7 @@ import EditarPersona from './components/Personas/EditarPersona';
 import Consultas from './components/Consultas/Consultas';
 import EnviarNotificacion from './components/Sermones/EnviarNotificacion';
 import ProtectedRoute from './components/ProtectedRoute';
+import CrearAudio from './components/DetalleAudios/CrearAudio';
 
 const App: React.FC = () => {
     return (
@@ -48,6 +49,7 @@ const App: React.FC = () => {
                         <Route path="/editar-persona/:id" element={<EditarPersona />} />
                         <Route path="/consultas" element={<Consultas />} />
                         <Route path="/enviarNotificacion" element={<EnviarNotificacion />} />
+                        <Route path="/crear-audio" element={<CrearAudio />} />
                     </Route>
                 </Routes>
             </Router>

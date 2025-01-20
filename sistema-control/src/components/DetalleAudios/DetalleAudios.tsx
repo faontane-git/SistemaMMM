@@ -19,13 +19,13 @@ import {
   IconButton,
   CircularProgress,
 } from '@mui/material';
-import Navbar from '../Navbar'; 
+import Navbar from '../Navbar';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Swal from 'sweetalert2';
 import { styled } from '@mui/system';
-import { firestore } from "../../firebase"; 
-import { collection, getDocs, doc, addDoc, updateDoc, deleteDoc } from "firebase/firestore"; 
+import { firestore } from "../../firebase";
+import { collection, getDocs, doc, addDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 
 interface Audio {
@@ -73,6 +73,12 @@ const SubirMusica: React.FC = () => {
         setAudios(audiosData);
       } catch (error) {
         console.error('Error al obtener audios:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron cargar los audios.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+        });
       } finally {
         setLoading(false);
       }
@@ -110,10 +116,20 @@ const SubirMusica: React.FC = () => {
         try {
           await deleteDoc(doc(firestore, 'Audios', id));
           setAudios(prevAudios => prevAudios.filter(audio => audio.id !== id));
-          Swal.fire({ title: 'Eliminado', text: 'El audio ha sido eliminado.', icon: 'success', confirmButtonText: 'Aceptar' });
+          Swal.fire({
+            title: 'Eliminado',
+            text: 'El audio ha sido eliminado.',
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+          });
         } catch (error) {
           console.error('Error al eliminar el audio:', error);
-          Swal.fire({ title: 'Error', text: 'No se pudo eliminar el audio.', icon: 'error', confirmButtonText: 'Aceptar' });
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo eliminar el audio.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+          });
         }
       }
     });
@@ -127,7 +143,12 @@ const SubirMusica: React.FC = () => {
 
   const handleGuardarAudio = async () => {
     if (!newAudio.name || !newAudio.description || !newAudio.url || !newAudio.uploadedAt) {
-      Swal.fire({ title: 'Error', text: 'Por favor, completa todos los campos.', icon: 'error', confirmButtonText: 'Aceptar' });
+      Swal.fire({
+        title: 'Error',
+        text: 'Por favor, completa todos los campos.',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+      });
       return;
     }
 
@@ -136,20 +157,23 @@ const SubirMusica: React.FC = () => {
 
     try {
       if (editingAudioId) {
-        // 🔹 EDITAR AUDIO EXISTENTE
         const audioRef = doc(firestore, 'Audios', editingAudioId);
         await updateDoc(audioRef, {
           ...newAudio,
           uploadedAt: new Date(newAudio.uploadedAt).toISOString(),
         });
 
-        setAudios(prevAudios => prevAudios.map(audio => 
+        setAudios(prevAudios => prevAudios.map(audio =>
           audio.id === editingAudioId ? { id: editingAudioId, ...newAudio } : audio
         ));
 
-        Swal.fire({ title: 'Éxito', text: 'El audio se ha actualizado correctamente.', icon: 'success', confirmButtonText: 'Aceptar' });
+        Swal.fire({
+          title: 'Éxito',
+          text: 'El audio se ha actualizado correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+        });
       } else {
-        // 🔹 CREAR NUEVO AUDIO
         const docRef = await addDoc(collection(firestore, 'Audios'), {
           ...newAudio,
           uploadedAt: new Date(newAudio.uploadedAt).toISOString(),
@@ -157,14 +181,32 @@ const SubirMusica: React.FC = () => {
 
         setAudios(prevAudios => [...prevAudios, { id: docRef.id, ...newAudio }]);
 
-        Swal.fire({ title: 'Éxito', text: 'El audio se ha guardado correctamente.', icon: 'success', confirmButtonText: 'Aceptar' });
+        Swal.fire({
+          title: 'Éxito',
+          text: 'El audio se ha guardado correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+        });
       }
     } catch (error) {
       console.error('Error al guardar el audio:', error);
-      Swal.fire({ title: 'Error', text: 'No se pudo guardar el audio.', icon: 'error', confirmButtonText: 'Aceptar' });
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo guardar el audio.',
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+      });
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+  };
+
+  const handleEditAudio = (audio: Audio) => {
+    navigate('/crear-audio', { state: { audio } });
   };
 
   return (
@@ -177,7 +219,7 @@ const SubirMusica: React.FC = () => {
         </Typography>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-          <Button variant="contained" color="primary" onClick={() => handleOpenDialog()}>
+          <Button variant="contained" color="primary" onClick={() => handleNavigation("/crear-audio")}>
             Crear Audio
           </Button>
         </Box>
@@ -207,9 +249,10 @@ const SubirMusica: React.FC = () => {
                     </a>
                   </TableCell>
                   <TableCell>
-                    <IconButton color="primary" onClick={() => handleOpenDialog(audio)}>
+                    <IconButton color="primary" onClick={() => handleEditAudio(audio)}>
                       <EditIcon />
                     </IconButton>
+
                     <IconButton color="secondary" onClick={() => handleEliminarAudio(audio.id)}>
                       <DeleteIcon />
                     </IconButton>
@@ -221,7 +264,6 @@ const SubirMusica: React.FC = () => {
         </TableContainer>
       </Container>
 
-      {/* Modal para Crear/Editar Audio */}
       <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="sm">
         <DialogTitle>{editingAudioId ? 'Editar Audio' : 'Crear Nuevo Audio'}</DialogTitle>
         <DialogContent>
@@ -232,7 +274,9 @@ const SubirMusica: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="secondary">Cancelar</Button>
-          <Button onClick={handleGuardarAudio} color="primary">{editingAudioId ? 'Actualizar' : 'Guardar'}</Button>
+          <Button onClick={handleGuardarAudio} color="primary" disabled={saving}>
+            {saving ? <CircularProgress size={24} /> : editingAudioId ? 'Actualizar' : 'Guardar'}
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
