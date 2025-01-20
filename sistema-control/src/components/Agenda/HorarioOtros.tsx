@@ -116,8 +116,8 @@ const HorarioOtros: React.FC = () => {
   }, []);
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 5 }}>
-      <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+    <div style={{ textAlign: 'center', padding: '20px' }}>
+      <Typography variant="h4" gutterBottom>
         Horario de Actividades
       </Typography>
 
@@ -125,15 +125,7 @@ const HorarioOtros: React.FC = () => {
         <Button
           variant="contained"
           onClick={() => setOpenModal(true)}
-          sx={{
-            backgroundColor: '#1976d2',
-            color: '#fff',
-            '&:hover': { backgroundColor: '#1565c0' },
-            padding: '10px 30px',
-            fontSize: '16px',
-            boxShadow: 3,
-            borderRadius: 2,
-          }}
+          style={{ marginBottom: '2em' }}
         >
           Agregar Actividad
         </Button>
@@ -316,7 +308,7 @@ const HorarioOtros: React.FC = () => {
           </Grid>
         ))}
       </Grid>
-    </Container>
+    </div>
   );
 };
 
