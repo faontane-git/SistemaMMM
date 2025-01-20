@@ -1,20 +1,10 @@
-// src/components/LoginForm.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { firestore } from '../../firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { login } from '../auth';
 import {
-  Box,
-  TextField,
-  Button,
-  Card,
-  Typography,
-  Container,
-  Alert,
-  Stack,
-  CssBaseline,
+  Box, TextField, Button, Card, Typography, Container, Alert, Stack, CssBaseline
 } from '@mui/material';
-import logo from '../../assets/logo.png'; // Asegúrate de que la ruta esté correcta
+import logo from '../../assets/logo.png';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -26,109 +16,37 @@ const LoginForm: React.FC = () => {
     e.preventDefault();
     setError('');
 
-    try {
-      const usersRef = collection(firestore, 'Usuarios');
-      const q = query(usersRef, where('user', '==', email), where('password', '==', password));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        navigate('/menu');
-      } else {
-        setError('Credenciales incorrectas. Inténtalo de nuevo.');
-      }
-    } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      setError('Ocurrió un error al iniciar sesión. Inténtalo más tarde.');
-    }
+    const response = await login(email, password);
+    if (response.success) {
+      navigate('/menu'); // Redirige al menú después del login
+    }  
   };
 
   return (
     <>
       <CssBaseline />
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #3a7bd5 30%, #3a6073 90%)',
-          minHeight: '100vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 3,
-        }}
-      >
-        <Container maxWidth="xs"> {/* Cambié el tamaño máximo de "sm" a "xs" para pantallas pequeñas */}
-          <Card
-            sx={{
-              padding: 3,
-              borderRadius: 3,
-              boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.2)',
-              backgroundColor: '#ffffff',
-              borderTop: '5px solid #3a7bd5',
-            }}
-          >
+      <Box sx={{ background: 'linear-gradient(135deg, #3a7bd5 30%, #3a6073 90%)', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 3 }}>
+        <Container maxWidth="xs">
+          <Card sx={{ padding: 3, borderRadius: 3, boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.2)', backgroundColor: '#ffffff', borderTop: '5px solid #3a7bd5' }}>
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-              <img src={logo} alt="Logo" style={{ width: '70px', height: '70px' }} /> {/* Ajusté el tamaño */}
+              <img src={logo} alt="Logo" style={{ width: '70px', height: '70px' }} />
             </Box>
 
-            <Typography
-              variant="h5"
-              component="h1"
-              align="center"
-              gutterBottom
-              sx={{ fontWeight: 'bold', color: '#3a6073' }}
-            >
+            <Typography variant="h5" align="center" gutterBottom sx={{ fontWeight: 'bold', color: '#3a6073' }}>
               Sistema de Gestión
             </Typography>
-
-            <Typography
-              variant="subtitle1"
-              component="h2"
-              align="center"
-              gutterBottom
-              sx={{ mb: 3, fontWeight: 'medium', color: '#3a6073' }}
-            >
+            <Typography variant="subtitle1" align="center" gutterBottom sx={{ mb: 3, fontWeight: 'medium', color: '#3a6073' }}>
               Inicie Sesión
             </Typography>
 
             <form onSubmit={handleLogin}>
               <Stack spacing={2}>
-                <TextField
-                  label="Usuario"
-                  variant="outlined"
-                  fullWidth
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  sx={{ backgroundColor: '#f9f9f9', borderRadius: 1 }}
-                />
-                <TextField
-                  label="Contraseña"
-                  variant="outlined"
-                  fullWidth
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  sx={{ backgroundColor: '#f9f9f9', borderRadius: 1 }}
-                />
+                <TextField label="Usuario" variant="outlined" fullWidth value={email} onChange={(e) => setEmail(e.target.value)} sx={{ backgroundColor: '#f9f9f9', borderRadius: 1 }} />
+                <TextField label="Contraseña" variant="outlined" fullWidth type="password" value={password} onChange={(e) => setPassword(e.target.value)} sx={{ backgroundColor: '#f9f9f9', borderRadius: 1 }} />
 
-                {error && (
-                  <Alert severity="error" sx={{ mt: 1 }}>
-                    {error}
-                  </Alert>
-                )}
+                {error && <Alert severity="error" sx={{ mt: 1 }}>{error}</Alert>}
 
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  sx={{
-                    padding: 1.5,
-                    fontSize: '16px',
-                    mt: 2,
-                    backgroundColor: '#3a7bd5',
-                    '&:hover': { backgroundColor: '#3a6073' },
-                    borderRadius: 2,
-                  }}
-                >
+                <Button type="submit" variant="contained" color="primary" fullWidth sx={{ padding: 1.5, fontSize: '16px', mt: 2, backgroundColor: '#3a7bd5', '&:hover': { backgroundColor: '#3a6073' }, borderRadius: 2 }}>
                   Ingresar
                 </Button>
               </Stack>

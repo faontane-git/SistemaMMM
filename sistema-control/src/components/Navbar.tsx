@@ -66,6 +66,18 @@ const Navbar: React.FC = () => {
           >
             Personas
           </Button>
+          <Button
+            variant="outlined"
+            color="inherit"
+            sx={{
+              fontWeight: 'bold',
+              borderRadius: 2,
+              '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
+            }}
+            onClick={() => handleNavigation('/enviarNotificacion')}
+          >
+            Sermones
+          </Button>
           <IconButton color="inherit" onClick={() => handleNavigation('/settings')} sx={{ ml: 1 }}>
             <SettingsIcon fontSize="large" />
           </IconButton>

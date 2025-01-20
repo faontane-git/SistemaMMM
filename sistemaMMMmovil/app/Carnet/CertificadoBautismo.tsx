@@ -1,8 +1,18 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, Button, TouchableOpacity, StyleSheet, Alert, Image, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import { captureRef } from 'react-native-view-shot';
+import * as MediaLibrary from 'expo-media-library';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { Dimensions } from 'react-native';
 import { firestore } from '../../firebaseConfig';
 import { getDocs, query, collection, where } from 'firebase/firestore';
 
@@ -10,16 +20,25 @@ interface Persona {
   nombres: string;
   apellidos: string;
   cedula: string;
-  foto: string; // Base64 de la imagen
+  foto: string;
+  casadoEclesiasticamente: string;
+  conyuge: string;
+  pastor: string;
+  fechaBautizo: string;
 }
 
 export default function CertificadoBautismo() {
   const certificateRef = useRef<View>(null);
+  const [isViewReady, setIsViewReady] = useState(false);
+  const [persona, setPersona] = useState<Persona | null>(null);
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
   const { cedula } = route.params as { cedula: string };
-  const [persona, setPersona] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setIsViewReady(true);
+  }, []);
 
   useEffect(() => {
     const fetchPersona = async () => {
@@ -33,7 +52,7 @@ export default function CertificadoBautismo() {
           const data = querySnapshot.docs[0].data() as Persona;
           setPersona(data);
         } else {
-          console.error('No se encontraron datos para la cédula:', cedula);
+          Alert.alert('Error', 'No se encontró información para la cédula proporcionada.');
         }
       } catch (error) {
         console.error('Error al buscar los datos:', error);
@@ -45,8 +64,6 @@ export default function CertificadoBautismo() {
     fetchPersona();
   }, [cedula]);
 
-
-  // Función para regresar a la pantalla anterior
   const handleGoBack = () => {
     if (navigation.canGoBack()) {
       navigation.goBack();
@@ -55,53 +72,54 @@ export default function CertificadoBautismo() {
     }
   };
 
-  // Función para guardar el certificado como imagen
   const saveCertificate = async () => {
+    if (!certificateRef.current) {
+      Alert.alert('Error', 'La referencia del certificado no está disponible.');
+      return;
+    }
+
     try {
-      if (certificateRef.current) {
-        const uri = await captureRef(certificateRef.current, {
-          format: 'jpg',
-          quality: 1,
-        });
-        console.log('Certificado guardado:', uri);
+      setLoading(true);
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permiso denegado', 'No se puede guardar en la galería sin permisos.');
+        setLoading(false);
+        return;
       }
+
+      const uri = await captureRef(certificateRef.current, {
+        format: 'jpg',
+        quality: 1,
+        result: 'tmpfile',
+      });
+
+      const asset = await MediaLibrary.createAssetAsync(uri);
+      await MediaLibrary.createAlbumAsync('Certificados', asset, false);
+
+      Alert.alert('Éxito', 'Su certificado de Bautismo se ha guardado en la galería.');
     } catch (error) {
       console.error('Error guardando el certificado:', error);
+      Alert.alert('Error', 'No se pudo guardar el certificado.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Mostrar indicador de carga mientras se obtiene la información
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#003580" />
-      </View>
-    );
-  }
+  const { width } = Dimensions.get('window');
 
-  // Mostrar mensaje si no se encontró la persona
-  if (!persona) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center', fontSize: 16, color: 'red' }}>No se encontró información para la cédula proporcionada.</Text>
-        <Button title="Volver" onPress={handleGoBack} />
-      </View>
-    );
-  }
-
-  // Generar datos del QR
   const qrData = JSON.stringify({
-    name: persona.nombre,
-    date: new Date().toLocaleDateString(),
-    issuer: persona.emitidoPor || 'Organización',
-    certificateId: `CERT-${cedula}`,
+    nombres: persona?.nombres || '',
+    apellidos: persona?.apellidos || '',
+    cedula: cedula || '',
+    conyuge: persona?.conyuge || '',
+    pastor: persona?.pastor || '',
+    fechaBautizo: persona?.fechaBautizo || '',
   });
 
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(qrData)}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image source={require('../../assets/logo.png')} style={styles.logo} />
@@ -112,17 +130,24 @@ export default function CertificadoBautismo() {
         </TouchableOpacity>
       </View>
 
-      {/* Certificado */}
-      <View ref={certificateRef} style={styles.certificate}>
+      <View ref={certificateRef} style={[styles.certificate, { width: width * 0.9, height: (width * 0.9) * 1.5 }]}>
         <Image source={require('../../assets/images/Cbautismo.jpg')} style={styles.image} resizeMode="contain" />
-        <Text style={[styles.text, { top: '52%', left: '27%' }]}>{persona.nombres+" "+persona.apellidos}</Text>
-        <Text style={[styles.text, { top: '59.5%', left: '20%' }]}>{persona.fechaBautizo}</Text>
-        <Text style={[styles.signature, { top: '63.5%', left: '30%' }]}>{persona.pastor}</Text>
-        <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '60%', left: '61%' }]} />
+        <Text style={[styles.text, { top: '52%', left: '27%' }]}>{persona?.nombres} {persona?.apellidos}</Text>
+        <Text style={[styles.text, { top: '59.5%', left: '20%' }]}>{persona?.fechaBautizo}</Text>
+        <Text style={[styles.signature, { top: '63.5%', left: '30%' }]}>{persona?.pastor}</Text>
+        <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '30%', left: '77%' }]} />
       </View>
 
-      {/* Botón para guardar */}
-      <Button title="Guardar Certificado" onPress={saveCertificate} />
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={saveCertificate}
+        disabled={loading || !isViewReady}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.saveButtonText}>Guardar Certificado</Text>
+        )}
+      </TouchableOpacity>
     </View>
   );
 }
@@ -131,14 +156,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
     backgroundColor: '#003580',
+    width: '100%',
   },
   logoContainer: {
     justifyContent: 'center',
@@ -156,9 +188,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   certificate: {
-    width: 400,
-    height: 600,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
     position: 'relative',
+    overflow: 'hidden',
+    marginTop: 100,
+    width: '90%',
+    height: '60%',
   },
   image: {
     width: '100%',
@@ -167,20 +205,33 @@ const styles = StyleSheet.create({
   },
   text: {
     position: 'absolute',
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: 'bold',
     color: '#000',
   },
   signature: {
     position: 'absolute',
-    fontSize: 9,
-    fontWeight: '400',
-    color: '#000',
+    fontSize: 8,
     fontStyle: 'italic',
+    color: '#000',
   },
   qrCode: {
     position: 'absolute',
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
+  },
+  saveButton: {
+    marginTop: 20,
+    backgroundColor: '#003580',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignSelf: 'center',
+  },
+  saveButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });

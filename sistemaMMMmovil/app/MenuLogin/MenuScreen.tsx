@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../_layout';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type RouteParams = {
     cedula: string;
@@ -34,6 +35,15 @@ export default function MenuScreen() {
         setIsBirthdayModalVisible(false);
     };
 
+    const handleLogout = async () => {
+        try {
+            await AsyncStorage.removeItem('userSession'); // Elimina los datos de sesión
+            navigation.navigate('Home/HomeScreen'); // Redirige a la pantalla de inicio de sesión
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+        }
+    };
+
     const handleOptionPress = () => {
         navigation.navigate('Carnet/CarnetScreen', { cedula });
     };
@@ -42,6 +52,9 @@ export default function MenuScreen() {
     };
     const handleOptionPress3 = () => {
         navigation.navigate('Carnet/CertificadoMatrimonio', { cedula });
+    };
+    const handleValidateCertificatesPress = () => {
+        navigation.navigate('Certificados/ValidarCertificados');
     };
 
     const handleCambioPress = () => {
@@ -77,10 +90,10 @@ export default function MenuScreen() {
             {/* Header */}
             <View style={styles.header}>
                 <View style={styles.logoContainer}>
-                    <FontAwesome name="home" size={30} color="#fff" />
+                    <Image source={require('../../assets/logo.png')} style={styles.logo} />
                 </View>
                 <Text style={styles.headerText}>Bienvenido</Text>
-                <TouchableOpacity style={styles.logoutButton}>
+                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                     <FontAwesome name="sign-out" size={24} color="white" />
                 </TouchableOpacity>
             </View>
@@ -112,6 +125,15 @@ export default function MenuScreen() {
                 >
                     <Text style={styles.optionText}>Certificado de Matrimonio</Text>
                 </TouchableOpacity>
+
+                {/*
+                <TouchableOpacity
+                    style={styles.optionButton}
+                    onPress={handleValidateCertificatesPress}
+                >
+                    <Text style={styles.optionText}>Validar Certificados</Text>
+                </TouchableOpacity>
+                */}
 
                 <TouchableOpacity
                     style={styles.optionButton}
@@ -182,6 +204,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    logo: {
+        width: 40,
+        height: 40,
+    },
     headerText: {
         color: 'white',
         fontSize: 16,
@@ -214,7 +240,7 @@ const styles = StyleSheet.create({
     optionButton: {
         width: '80%',
         height: 50,
-        backgroundColor: '#003580', // Azul oscuro
+        backgroundColor: '#003580',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,

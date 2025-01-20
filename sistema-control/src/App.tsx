@@ -20,6 +20,8 @@ import Personas from './components/Personas/Personas';
 import CrearPersonaForm from './components/Personas/CrearPersonaForm';
 import EditarPersona from './components/Personas/EditarPersona';
 import Consultas from './components/Consultas/Consultas';
+import EnviarNotificacion from './components/Sermones/EnviarNotificacion';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App: React.FC = () => {
     return (
@@ -28,22 +30,25 @@ const App: React.FC = () => {
             <Router>
                 <Routes>
                     <Route path="/" element={<LoginForm />} />
-                    <Route path="/menu" element={<MainLayout />} />
-                    <Route path="/publicar" element={<PublishPage />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/metrics" element={<Metrics />} />
-                    <Route path="/crear-noticia" element={<CrearNoticia />} />
-                    <Route path="/detalle-noticia" element={<DetalleNoticia />} />
-                    <Route path="/contactos" element={<Contactos />} />
-                    <Route path="/subir-audio" element={<SubirAudio />} />
-                    <Route path="/detalle-audio" element={<DetalleAudio />} />
-                    <Route path="/rutas" element={<Rutas />} />
-                    <Route path="/agenda" element={<Agenda />} />
-                    <Route path="/redes-sociales" element={<RedesSociales />} />
-                    <Route path="/personas" element={<Personas />} />
-                    <Route path="/crear-persona" element={<CrearPersonaForm />} />
-                    <Route path="/editar-persona/:id" element={<EditarPersona />} />
-                    <Route path="/consultas" element={<Consultas />} />
+                    <Route element={<ProtectedRoute />}>
+                        <Route path="/menu" element={<MainLayout />} />
+                        <Route path="/publicar" element={<PublishPage />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/metrics" element={<Metrics />} />
+                        <Route path="/crear-noticia" element={<CrearNoticia />} />
+                        <Route path="/detalle-noticia" element={<DetalleNoticia />} />
+                        <Route path="/contactos" element={<Contactos />} />
+                        <Route path="/subir-audio" element={<SubirAudio />} />
+                        <Route path="/detalle-audio" element={<DetalleAudio />} />
+                        <Route path="/rutas" element={<Rutas />} />
+                        <Route path="/agenda" element={<Agenda />} />
+                        <Route path="/redes-sociales" element={<RedesSociales />} />
+                        <Route path="/personas" element={<Personas />} />
+                        <Route path="/crear-persona" element={<CrearPersonaForm />} />
+                        <Route path="/editar-persona/:id" element={<EditarPersona />} />
+                        <Route path="/consultas" element={<Consultas />} />
+                        <Route path="/enviarNotificacion" element={<EnviarNotificacion />} />
+                    </Route>
                 </Routes>
             </Router>
         </ThemeProvider>
@@ -51,3 +56,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+ 
