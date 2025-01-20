@@ -126,21 +126,7 @@ const Agenda: React.FC = () => {
     <div>
       <Navbar />
       <Container maxWidth="lg" sx={{ mt: 5 }}>
-        <Button
-          variant="text"
-          onClick={() => setSelectedHorario(null)}
-          startIcon={<ArrowBackIcon />}
-          sx={{
-            color: '#2C387E',
-            fontWeight: 'bold',
-            position: 'fixed',
-            top: 16,
-            left: 16,
-            zIndex: 1000,
-          }}
-        >
-          Volver
-        </Button>
+   
         {selectedHorario === 'cultos' && <HorarioCultos />}
         {selectedHorario === 'consejeria' && <CalendarApp />}
         {selectedHorario === 'otros' && <HorarioOtros />}

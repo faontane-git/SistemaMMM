@@ -7,6 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase';
 import './custom-datepicker.css';
+import Swal from 'sweetalert2';
 
 interface Actividad {
   id?: string; // ID del documento Firestore
@@ -100,14 +101,39 @@ const HorarioOtros: React.FC = () => {
   const deleteActividad = async () => {
     try {
       if (selectedActividad?.id) {
-        const actividadDoc = doc(firestore, 'actividades_otros', selectedActividad.id);
-        await deleteDoc(actividadDoc);
-        await loadActividades();
-        setSelectedActividad(null);
         setOpenModal(false);
+        // Confirmación de SweetAlert2 antes de eliminar
+        const result = await Swal.fire({
+          title: '¿Estás seguro?',
+          text: 'No podrás recuperar esta actividad una vez eliminada.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar',
+         });
+  
+        if (result.isConfirmed) {
+          // Referencia al documento de la actividad seleccionada
+          const actividadDoc = doc(firestore, 'actividades_otros', selectedActividad.id);
+  
+          // Elimina el documento de Firestore
+          await deleteDoc(actividadDoc);
+  
+          // Recarga las actividades después de eliminar
+          await loadActividades();
+  
+          // Reinicia el estado de la actividad seleccionada y cierra el modal
+          setSelectedActividad(null);
+        
+          // Notificación de éxito
+          Swal.fire('Eliminado', 'La actividad ha sido eliminada con éxito.', 'success');
+        }
       }
     } catch (error) {
       console.error('Error al eliminar actividad:', error);
+  
+      // Notificación de error
+      Swal.fire('Error', 'Ocurrió un error al eliminar la actividad.', 'error');
     }
   };
 
@@ -270,21 +296,32 @@ const HorarioOtros: React.FC = () => {
       </Modal>
 
       {/* Mostrar las actividades */}
-      <Grid container spacing={3} sx={{ mt: 4 }}>
+      <Grid
+        container
+        spacing={3}
+        sx={{
+          mt: 4,
+          backgroundColor: '#2e7d32', // Verde oscuro estilo pizarrón
+          padding: 4,
+          borderRadius: '8px',
+          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
+          backgroundImage: 'url(https://www.transparenttextures.com/patterns/black-linen.png)', // Textura pizarrón
+        }}
+      >
         {actividades.map((actividad, index) => (
           <Grid item xs={12} md={4} key={index}>
             <Paper
-              elevation={6}
+              elevation={3}
               sx={{
                 p: 3,
-                borderRadius: 2,
-                backgroundColor: '#f5f5f5',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                transition: 'transform 0.3s ease',
+                borderRadius: '8px',
+                backgroundColor: '#fff9c4', // Amarillo pastel
+                boxShadow: '4px 6px 10px rgba(0, 0, 0, 0.2)',
+                position: 'relative',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                 '&:hover': {
                   transform: 'scale(1.05)',
-                  boxShadow: '0 6px 18px rgba(0, 0, 0, 0.2)',
-                  cursor: 'pointer',
+                  boxShadow: '6px 8px 14px rgba(0, 0, 0, 0.3)',
                 },
               }}
               onClick={() => {
@@ -295,19 +332,21 @@ const HorarioOtros: React.FC = () => {
                 setOpenModal(true);
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#37474f' }}>
                 {actividad.nombre}
               </Typography>
-              <Typography variant="body1" sx={{ color: '#757575' }}>
+              <Typography variant="body1" sx={{ color: '#5d4037' }}>
                 <strong>Lugar:</strong> {actividad.lugar}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#757575' }}>
+              <Typography variant="body2" sx={{ color: '#5d4037' }}>
                 <strong>Fechas:</strong> {actividad.fechas}
               </Typography>
             </Paper>
           </Grid>
         ))}
       </Grid>
+
+
     </div>
   );
 };

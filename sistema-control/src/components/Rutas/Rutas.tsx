@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, TextField, Button, IconButton } from '@mui/material';
+import { Container, Typography, Box, TextField, Button } from '@mui/material';
 import Navbar from '../Navbar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
+import Swal from 'sweetalert2'; // Importar SweetAlert2
 
 const Rutas: React.FC = () => {
   const [direccion, setDireccion] = useState('');
@@ -46,10 +47,22 @@ const Rutas: React.FC = () => {
         videoLink,
         buses,
       });
-      alert('Datos actualizados correctamente');
+
+      // Mostrar alerta de éxito con SweetAlert
+      Swal.fire({
+        icon: 'success',
+        title: 'Datos actualizados',
+        text: 'Los datos se han actualizado correctamente.',
+      });
     } catch (error) {
       console.error("Error actualizando los datos: ", error);
-      alert('Error al actualizar los datos');
+
+      // Mostrar alerta de error con SweetAlert
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al actualizar los datos.',
+      });
     }
   };
 
@@ -68,12 +81,7 @@ const Rutas: React.FC = () => {
           </Button>
         </Box>
 
-        <Typography
-          variant="h4"
-          align="center"
-          gutterBottom
-          sx={{ fontWeight: 'bold', color: '#3a6073', fontSize: '24px' }}
-        >
+        <Typography variant="h4" align="center" gutterBottom>
           Rutas y Ubicación
         </Typography>
         <Typography variant="body1" align="center" color="textSecondary" sx={{ mb: 4 }}>
