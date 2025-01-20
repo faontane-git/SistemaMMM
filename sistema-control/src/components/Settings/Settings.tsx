@@ -11,22 +11,23 @@ import {
   Container,
   Grid,
 } from '@mui/material';
+import { logout } from '../auth';
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    navigate('/'); // Redirigir a la pantalla de login
+    logout(); // 🔹 Borra la sesión del usuario
+    navigate('/'); // 🔹 Redirigir al login
   };
 
   const goToMetrics = () => {
-    navigate('/metrics'); // Redirigir a la pantalla de métricas
+    navigate('/metrics'); // Redirigir a métricas
   };
 
   return (
     <div>
       <Navbar />
-
       <Box
         sx={{
           minHeight: '100vh',
