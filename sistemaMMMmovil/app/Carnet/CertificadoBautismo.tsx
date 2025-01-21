@@ -130,13 +130,25 @@ export default function CertificadoBautismo() {
         </TouchableOpacity>
       </View>
 
-      <View ref={certificateRef} style={[styles.certificate, { width: width * 0.9, height: (width * 0.9) * 1.5 }]}>
+
+      <View
+        ref={certificateRef}
+        style={[
+          styles.certificate,
+          {
+            width: width * 1.1,
+            height: (width * 1.1) * 1.3, // 🔹 REDUCIMOS un poco la altura
+            transform: [{ rotate: '-90deg' }, { scale: 1.1 }],
+          }
+        ]}
+      >
         <Image source={require('../../assets/images/Cbautismo.jpg')} style={styles.image} resizeMode="contain" />
-        <Text style={[styles.text, { top: '52%', left: '27%' }]}>{persona?.nombres} {persona?.apellidos}</Text>
-        <Text style={[styles.text, { top: '59.5%', left: '20%' }]}>{persona?.fechaBautizo}</Text>
-        <Text style={[styles.signature, { top: '63.5%', left: '30%' }]}>{persona?.pastor}</Text>
-        <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '30%', left: '77%' }]} />
+        <Text style={[styles.text, { top: '53%', left: '27%' }]}>{persona?.nombres} {persona?.apellidos}</Text>
+        <Text style={[styles.text, { top: '62%', left: '20%' }]}>{persona?.fechaBautizo}</Text>
+        <Text style={[styles.signature, { top: '67%', left: '30%' }]}>{persona?.pastor}</Text>
+        <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '26.5%', left: '75%' }]} />
       </View>
+
 
       <TouchableOpacity
         style={styles.saveButton}
@@ -217,17 +229,18 @@ const styles = StyleSheet.create({
   },
   qrCode: {
     position: 'absolute',
-    width: 60,
-    height: 60,
+    width: 80,
+    height: 80,
   },
   saveButton: {
-    marginTop: 20,
+    marginTop: 10, // 🔹 Reduce el espacio arriba del botón (antes estaba en 20)
     backgroundColor: '#003580',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
     alignSelf: 'center',
   },
+
   saveButtonText: {
     color: 'white',
     fontWeight: 'bold',
