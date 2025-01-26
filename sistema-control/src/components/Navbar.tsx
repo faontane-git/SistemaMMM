@@ -76,7 +76,7 @@ const Navbar: React.FC = () => {
             }}
             onClick={() => handleNavigation('/enviarNotificacion')}
           >
-            Sermones
+            Medicina al Corazón
           </Button>
           <IconButton color="inherit" onClick={() => handleNavigation('/settings')} sx={{ ml: 1 }}>
             <SettingsIcon fontSize="large" />

@@ -1,65 +1,98 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Navbar from '../Navbar';
-import axios from 'axios';
-import Swal from 'sweetalert2';
+import React, { useState } from "react";
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, getDocs, query, where, doc, setDoc } from "firebase/firestore";
 import {
-  Box,
   Container,
   TextField,
   Typography,
   Button,
   Grid,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+  Box,
+} from "@mui/material";
+import Swal from "sweetalert2";
+import Navbar from "../Navbar";
 
 const EnviarNotificacion: React.FC = () => {
-  const [titulo, setTitulo] = useState('');
-  const [mensaje, setMensaje] = useState('');
-  const [topic, setTopic] = useState('general'); // Por defecto, enviará al topic "general"
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const [titulo, setTitulo] = useState("Medicina al Corazón ❤️‍🩹");
+  const [referenciaEs, setReferenciaEs] = useState("");
+  const [referenciaEn, setReferenciaEn] = useState("");
+  const [mensajeEs, setMensajeEs] = useState("");
+  const [mensajeEn, setMensajeEn] = useState("");
 
-  // Función para manejar el envío del formulario
+  // Inicializar Firestore
+  const db = getFirestore();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!titulo || !mensaje) {
+    if (!referenciaEs || !mensajeEs || !referenciaEn || !mensajeEn) {
       Swal.fire({
-        title: 'Campos incompletos',
-        text: 'Por favor, completa todos los campos.',
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
+        title: "Campos incompletos",
+        text: "Por favor, completa todos los campos.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
       });
       return;
     }
 
     try {
-      // Enviar la notificación al backend
-      const response = await axios.post('http://localhost:3001/send-notification', {
-        title: titulo,
-        body: mensaje,
-        topic,
-      });
+      const mensajesRef = collection(db, "mensajes");
+      const q = query(mensajesRef, where("titulo", "==", titulo));
+      const querySnapshot = await getDocs(q);
 
-      Swal.fire({
-        title: '¡Notificación enviada!',
-        text: 'La notificación se envió con éxito a los dispositivos.',
-        icon: 'success',
-        confirmButtonText: 'Aceptar',
-      });
+      if (!querySnapshot.empty) {
+        // Si ya existe, obtener el ID del primer documento encontrado
+        const docId = querySnapshot.docs[0].id;
+        const mensajeDocRef = doc(db, "mensajes", docId);
 
-      console.log('Respuesta del backend:', response.data);
+        await setDoc(mensajeDocRef, {
+          titulo,
+          referenciaEs,
+          referenciaEn,
+          mensaje_es: mensajeEs,
+          mensaje_en: mensajeEn,
+          fecha: new Date(),
+        });
+
+        Swal.fire({
+          title: "Notificación actualizada",
+          text: "El mensaje ha sido actualizado con éxito.",
+          icon: "success",
+          confirmButtonText: "Aceptar",
+        });
+      } else {
+        // Si no existe, lo crea
+        const nuevoDocRef = doc(mensajesRef);
+        await setDoc(nuevoDocRef, {
+          titulo,
+          referenciaEs,
+          referenciaEn,
+          mensaje_es: mensajeEs,
+          mensaje_en: mensajeEn,
+          fecha: new Date(),
+        });
+
+        Swal.fire({
+          title: "Notificación creada",
+          text: "El mensaje ha sido guardado con éxito.",
+          icon: "success",
+          confirmButtonText: "Aceptar",
+        });
+      }
+
+      // Limpiar formulario
+      setTitulo("Medicina al Corazón ❤️‍🩹");
+      setReferenciaEs("");
+      setReferenciaEn("");
+      setMensajeEs("");
+      setMensajeEn("");
     } catch (error) {
-      console.error('Error al enviar la notificación:', error);
+      console.error("Error al guardar o actualizar el mensaje:", error);
       Swal.fire({
-        title: 'Error',
-        text: 'Hubo un problema al enviar la notificación. Por favor, inténtalo de nuevo.',
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
+        title: "Error",
+        text: "Hubo un problema al procesar la notificación.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
       });
     }
   };
@@ -67,98 +100,68 @@ const EnviarNotificacion: React.FC = () => {
   return (
     <div>
       <Navbar />
-
-      {/* Contenedor Principal */}
-      <Box
-        sx={{
-          minHeight: '100vh',
-          backgroundColor: 'background.default',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: 4,
-          pt: 8,
-          position: 'relative',
-        }}
-      >
-        {/* Botón de regresar */}
-        <Box display="flex" justifyContent="flex-start" mb={2} sx={{ width: '100%', maxWidth: 'sm' }}>
-          <Button
-            variant="outlined"
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate(-1)}
-          >
-            Regresar
-          </Button>
-        </Box>
-
-        <Container
-          maxWidth={isSmallScreen ? 'xs' : 'sm'}
-          sx={{ backgroundColor: '#fff', borderRadius: 3, boxShadow: 3, padding: 4 }}
-        >
-          {/* Título del formulario */}
-          <Typography variant="h4" component="h1" align="center" gutterBottom>
-            Enviar Notificación
-          </Typography>
-
-          {/* Formulario de envío de notificación */}
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4 }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Título"
-                  value={titulo}
-                  onChange={(e) => setTitulo(e.target.value)}
-                  placeholder="Ingrese el título de la notificación"
-                  required
-                  variant="outlined"
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Mensaje"
-                  value={mensaje}
-                  onChange={(e) => setMensaje(e.target.value)}
-                  placeholder="Ingrese el contenido del mensaje"
-                  required
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Topic (Opcional)"
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  placeholder="Ingrese el topic (por defecto: general)"
-                  variant="outlined"
-                />
-              </Grid>
+      <Container maxWidth="sm" sx={{ mt: 5 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Medicina al Corazón ❤️‍🩹
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Referencia Bíblica Español"
+                value={referenciaEs}
+                onChange={(e) => setReferenciaEs(e.target.value)}
+                placeholder="Ej: Jeremías 29:11 📖"
+              />
             </Grid>
 
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              sx={{
-                mt: 4,
-                fontSize: '16px',
-                fontWeight: 'bold',
-                padding: 1.5,
-              }}
-            >
-              Enviar Notificación
-            </Button>
-          </Box>
-        </Container>
-      </Box>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Mensaje en Español"
+                value={mensajeEs}
+                onChange={(e) => setMensajeEs(e.target.value)}
+                placeholder="Escribe el mensaje en español"
+                multiline
+                rows={4}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Referencia Bíblica Inglés"
+                value={referenciaEn}
+                onChange={(e) => setReferenciaEn(e.target.value)}
+                placeholder="Ej: Jeremiah 29:11 📖"
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Mensaje en Inglés"
+                value={mensajeEn}
+                onChange={(e) => setMensajeEn(e.target.value)}
+                placeholder="Escribe el mensaje en inglés"
+                multiline
+                rows={4}
+              />
+            </Grid>
+          </Grid>
+
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ mt: 4, fontSize: "16px", fontWeight: "bold", padding: 1.5 }}
+          >
+            Guardar Notificación
+          </Button>
+        </Box>
+      </Container>
     </div>
   );
 };
