@@ -12,9 +12,11 @@
       "supportsTablet": true
     },
     "android": {
+      "useNextNotificationsApi": true,
+      "googleSerivesFile":"./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor":" #ffffff"
       },
       "package": "com.faontane.sistemaMMMmovil"
     },

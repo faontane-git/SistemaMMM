@@ -1,18 +1,21 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     TouchableOpacity,
     Image,
+    Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
+ 
 export default function WelcomeScreen() {
     const navigation = useNavigation();
+  
 
     const handleContinue = () => {
-        navigation.navigate('Home/HomeScreen' as never);
+        // Enviar una notificación local como ejemplo
+         navigation.navigate('Home/HomeScreen' as never);
     };
 
     return (
