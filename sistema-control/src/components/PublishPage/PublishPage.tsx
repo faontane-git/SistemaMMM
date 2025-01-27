@@ -9,6 +9,7 @@ import {
   Card,
   CardContent,
   CardActionArea,
+  useTheme
 } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import ContactsIcon from '@mui/icons-material/Contacts';
@@ -17,7 +18,49 @@ import ShareIcon from '@mui/icons-material/Share';
 import MapIcon from '@mui/icons-material/Map';
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 
+// Definimos los items fuera del componente para evitar recreaciones innecesarias
+const publishOptions = [
+  {
+    to: "/detalle-noticia",
+    icon: <EventIcon sx={{ fontSize: 35, color: '#1976d2', mb: 1 }} />,
+    title: "Noticia y eventos",
+    description: "Mantente informado con noticias y eventos relevantes de la comunidad.",
+  },
+  {
+    to: "/detalle-audio",
+    icon: <AudiotrackIcon sx={{ fontSize: 35, color: '#673ab7', mb: 1 }} />,
+    title: "Audios",
+    description: "Escucha sermones y mensajes de audio de nuestros líderes.",
+  },
+  {
+    to: "/contactos",
+    icon: <ContactsIcon sx={{ fontSize: 35, color: '#388e3c', mb: 1 }} />,
+    title: "Contactos",
+    description: "Accede a los contactos de miembros y líderes de la comunidad.",
+  },
+  {
+    to: "/agenda",
+    icon: <ScheduleIcon sx={{ fontSize: 35, color: '#d32f2f', mb: 1 }} />,
+    title: "Agenda",
+    description: "Consulta la agenda de eventos y reuniones programadas.",
+  },
+  {
+    to: "/redes-sociales",
+    icon: <ShareIcon sx={{ fontSize: 35, color: '#ff5722', mb: 1 }} />,
+    title: "Redes Sociales",
+    description: "Conéctate con nosotros a través de nuestras redes sociales oficiales.",
+  },
+  {
+    to: "/rutas",
+    icon: <MapIcon sx={{ fontSize: 35, color: '#4caf50', mb: 1 }} />,
+    title: "Rutas",
+    description: "Encuentra las mejores rutas para llegar a nuestras instalaciones.",
+  },
+];
+
 const PublishPage: React.FC = () => {
+  const theme = useTheme(); // Usamos el tema para obtener los colores correctos
+
   return (
     <div>
       <Navbar />
@@ -25,7 +68,7 @@ const PublishPage: React.FC = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          backgroundColor: 'background.default', // Usa el fondo del tema
+          backgroundColor: theme.palette.background.default, // Usamos el tema global
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-start',
@@ -35,7 +78,7 @@ const PublishPage: React.FC = () => {
       >
         <Container maxWidth="lg">
           <Typography
-            variant="h4" // Cambiado a h4 para un tamaño más pequeño
+            variant="h4"
             align="center"
             gutterBottom
           >
@@ -43,50 +86,13 @@ const PublishPage: React.FC = () => {
           </Typography>
 
           <Grid container spacing={3} justifyContent="center">
-            {[
-              {
-                to: "/detalle-noticia",
-                icon: <EventIcon sx={{ fontSize: 35, color: '#1976d2', mb: 1 }} />,
-                title: "Noticia y eventos",
-                description: "Mantente informado con noticias y eventos relevantes de la comunidad.",
-              },
-              {
-                to: "/detalle-audio",
-                icon: <AudiotrackIcon sx={{ fontSize: 35, color: '#673ab7', mb: 1 }} />,
-                title: "Audios",
-                description: "Escucha sermones y mensajes de audio de nuestros líderes.",
-              },
-              {
-                to: "/contactos",
-                icon: <ContactsIcon sx={{ fontSize: 35, color: '#388e3c', mb: 1 }} />,
-                title: "Contactos",
-                description: "Accede a los contactos de miembros y líderes de la comunidad.",
-              },
-              {
-                to: "/agenda",
-                icon: <ScheduleIcon sx={{ fontSize: 35, color: '#d32f2f', mb: 1 }} />,
-                title: "Agenda",
-                description: "Consulta la agenda de eventos y reuniones programadas.",
-              },
-              {
-                to: "/redes-sociales",
-                icon: <ShareIcon sx={{ fontSize: 35, color: '#ff5722', mb: 1 }} />,
-                title: "Redes Sociales",
-                description: "Conéctate con nosotros a través de nuestras redes sociales oficiales.",
-              },
-              {
-                to: "/rutas",
-                icon: <MapIcon sx={{ fontSize: 35, color: '#4caf50', mb: 1 }} />,
-                title: "Rutas",
-                description: "Encuentra las mejores rutas para llegar a nuestras instalaciones.",
-              },
-            ].map((item, index) => (
+            {publishOptions.map(({ to, icon, title, description }, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
                 <Card
                   sx={{
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     borderRadius: 3,
-                    backgroundColor: 'background.default', // Fondo del tema
+                    backgroundColor: theme.palette.background.paper,
                     height: '200px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -99,14 +105,14 @@ const PublishPage: React.FC = () => {
                     transition: 'all 0.3s ease-in-out',
                   }}
                 >
-                  <CardActionArea component={Link} to={item.to}>
+                  <CardActionArea component={Link} to={to} aria-label={title}>
                     <CardContent sx={{ textAlign: 'center', padding: 1.5 }}>
-                      {item.icon}
-                      <Typography variant="subtitle1">
-                        {item.title}
+                      {icon}
+                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                        {title}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        {item.description}
+                        {description}
                       </Typography>
                     </CardContent>
                   </CardActionArea>
