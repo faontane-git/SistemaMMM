@@ -15,6 +15,9 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
 import { firestore } from '../../firebaseConfig';
 import { getDocs, query, collection, where } from 'firebase/firestore';
+import * as FileSystem from 'expo-file-system';
+import * as Print from 'expo-print';
+import { Platform, ActionSheetIOS } from 'react-native';
 
 interface Persona {
   nombres: string;
@@ -72,6 +75,7 @@ export default function CertificadoBautismo() {
     }
   };
 
+
   const saveCertificate = async () => {
     if (!certificateRef.current) {
       Alert.alert('Error', 'La referencia del certificado no está disponible.');
@@ -80,30 +84,126 @@ export default function CertificadoBautismo() {
 
     try {
       setLoading(true);
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permiso denegado', 'No se puede guardar en la galería sin permisos.');
-        setLoading(false);
-        return;
+
+      // 🔹 Mostrar opciones al usuario
+      if (Platform.OS === 'ios') {
+        ActionSheetIOS.showActionSheetWithOptions(
+          {
+            options: ['Cancelar', 'Guardar en Galería', 'Guardar como PDF'],
+            cancelButtonIndex: 0,
+          },
+          async (buttonIndex) => {
+            if (buttonIndex === 1) {
+              await saveToGallery();
+            } else if (buttonIndex === 2) {
+              await saveToPDF();
+            }
+          }
+        );
+      } else {
+        // 🔹 Opciones para Android
+        Alert.alert(
+          'Guardar Certificado',
+          '¿Cómo quieres guardar el certificado?',
+          [
+            { text: 'Cancelar', style: 'cancel' },
+            { text: 'Guardar en Galería', onPress: saveToGallery },
+            { text: 'Guardar como PDF', onPress: saveToPDF },
+          ]
+        );
       }
 
-      const uri = await captureRef(certificateRef.current, {
-        format: 'jpg',
-        quality: 1,
-        result: 'tmpfile',
-      });
-
-      const asset = await MediaLibrary.createAssetAsync(uri);
-      await MediaLibrary.createAlbumAsync('Certificados', asset, false);
-
-      Alert.alert('Éxito', 'Su certificado de Bautismo se ha guardado en la galería.');
     } catch (error) {
       console.error('Error guardando el certificado:', error);
-      Alert.alert('Error', 'No se pudo guardar el certificado.');
+      Alert.alert('Error', 'Hubo un problema al guardar el certificado.');
     } finally {
       setLoading(false);
     }
   };
+
+  // 📌 Función para guardar en la galería (JPG)
+  const saveToGallery = async () => {
+    try {
+      // 📌 Verificar si la referencia existe
+      if (!certificateRef.current) {
+        Alert.alert('Error', 'No se pudo capturar el certificado.');
+        return;
+      }
+
+      // 📌 Pedir permisos
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permiso denegado', 'No se puede guardar en la galería sin permisos.');
+        return;
+      }
+
+      // 📸 Capturar la imagen
+      const uri = await captureRef(certificateRef.current, {
+        format: 'jpg',
+        quality: 1,
+      });
+
+      // 📂 Guardar la imagen en la galería
+      const asset = await MediaLibrary.createAssetAsync(uri);
+      let album = await MediaLibrary.getAlbumAsync('Certificados');
+
+      if (!album) {
+        album = await MediaLibrary.createAlbumAsync('Certificados', asset, false);
+      } else {
+        await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+      }
+
+      Alert.alert('Éxito', 'El certificado se ha guardado en la galería.');
+
+    } catch (error) {
+      console.error('Error guardando en galería:', error);
+      Alert.alert('Error', 'No se pudo guardar la imagen en la galería.');
+    }
+  };
+
+
+  // 📌 Función para guardar como PDF
+  const saveToPDF = async () => {
+    try {
+      // ✅ Verificar si `certificateRef.current` existe antes de capturar la imagen
+      if (!certificateRef.current) {
+        Alert.alert('Error', 'No se pudo capturar el certificado.');
+        return;
+      }
+
+      // 📸 Capturar la imagen del certificado
+      const uri = await captureRef(certificateRef.current, {
+        format: 'jpg',
+        quality: 1,
+      });
+
+      // 🖼️ Leer la imagen como Base64
+      const imageBase64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // 📝 Crear HTML para el PDF
+      const imageSrc = `data:image/jpeg;base64,${imageBase64}`;
+      const htmlContent = `
+        <html>
+            <body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+                <div style="transform: rotate(-90deg); display: flex; justify-content: center; align-items: center;">
+                    <img src="${imageSrc}" style="width: 120%; max-width: 1000px;" />
+                </div>
+            </body>
+        </html>
+      `;
+
+      // 🔍 Generar y abrir el PDF SIN GUARDARLO
+      await Print.printAsync({ html: htmlContent });
+
+    } catch (error) {
+      console.error('Error al abrir el PDF:', error);
+      Alert.alert('Error', 'No se pudo abrir el certificado como PDF.');
+    }
+  };
+
+
 
   const { width } = Dimensions.get('window');
 
