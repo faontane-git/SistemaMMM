@@ -70,6 +70,7 @@ const MainStack = () => {
       <Stack.Screen name="Carnet/CarnetScreen" component={CarnetScreen} />
       <Stack.Screen name="Carnet/CertificadoBautismo" component={CertificadoBautismo} />
       <Stack.Screen name="Carnet/CertificadoMatrimonio" component={CertificadoMatrimonio} />
+      <Stack.Screen name="Certificados/ValidarCertificados" component={ValidarCertificados} />
  
       {/* Otras Pantallas */}
       <Stack.Screen name="Rutas/RutasScreen" component={RutasScreen} />

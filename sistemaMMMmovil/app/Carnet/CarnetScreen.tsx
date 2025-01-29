@@ -70,10 +70,11 @@ export default function CarnetScreen() {
 
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
         JSON.stringify({
+            tipoCertificado:"carnet",
             nombres: persona.nombres,
             apellidos: persona.apellidos,
             cedula: persona.cedula,
-        })
+         })
     )}`;
 
     return (

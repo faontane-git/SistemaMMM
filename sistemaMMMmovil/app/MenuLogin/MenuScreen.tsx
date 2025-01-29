@@ -126,14 +126,14 @@ export default function MenuScreen() {
                     <Text style={styles.optionText}>Certificado de Matrimonio</Text>
                 </TouchableOpacity>
 
-                {/*
+                
                 <TouchableOpacity
                     style={styles.optionButton}
                     onPress={handleValidateCertificatesPress}
                 >
                     <Text style={styles.optionText}>Validar Certificados</Text>
                 </TouchableOpacity>
-                */}
+                
 
                 <TouchableOpacity
                     style={styles.optionButton}
