@@ -83,6 +83,34 @@ const Consultas: React.FC = () => {
         }
     };
 
+    // Función para agregar 'funcion: "feligres"' a todos los documentos en la colección 'Personas'
+    const handleAddFuncion = async () => {
+        setLoading(true);
+        try {
+            const collectionRef = collection(firestore, "Personas");
+            const snapshot = await getDocs(collectionRef);
+
+            if (snapshot.empty) {
+                console.log("No hay documentos en la colección Personas.");
+                return;
+            }
+
+            const promises = snapshot.docs.map((docSnapshot) => {
+                const docRef = doc(firestore, "Personas", docSnapshot.id);
+                return updateDoc(docRef, {
+                    funcion: "feligres", // Agrega el campo 'funcion' con el valor 'feligres'
+                });
+            });
+
+            await Promise.all(promises);
+            console.log("Campo 'funcion' agregado con valor 'feligres' en todos los documentos de Personas.");
+        } catch (error) {
+            console.error("Error al agregar el campo 'funcion':", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div style={{ padding: "20px" }}>
             <Typography variant="h4" gutterBottom>
@@ -119,8 +147,17 @@ const Consultas: React.FC = () => {
                 color="success"
                 onClick={handleAddFechaNacimiento}
                 disabled={loading}
+                style={{ marginBottom: "10px" }}
             >
                 {loading ? "Agregando..." : `Agregar Fecha de Nacimiento (${today})`}
+            </Button>
+            <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleAddFuncion}
+                disabled={loading}
+            >
+                {loading ? "Agregando..." : "Agregar Funcion 'feligres'"}
             </Button>
 
             <List>
