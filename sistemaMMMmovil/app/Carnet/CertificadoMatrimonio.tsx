@@ -108,13 +108,13 @@ export default function CertificadoMatrimonio() {
   const { width } = Dimensions.get('window');
 
   const qrData = JSON.stringify({
+    tipoCertificado:"matrimonio",
     nombres: persona?.nombres || '',
     apellidos: persona?.apellidos || '',
     cedula: cedula,
     conyuge: persona?.conyuge || '',
     fechaMatrimonio: persona?.fechaMatrimonio || '',
     pastor: persona?.pastor || '',
-    certificadoId: `CERT-${cedula}`,
   });
   
 

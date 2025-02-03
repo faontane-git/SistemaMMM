@@ -208,6 +208,7 @@ export default function CertificadoBautismo() {
   const { width } = Dimensions.get('window');
 
   const qrData = JSON.stringify({
+    tipoCertificado:"bautismo",
     nombres: persona?.nombres || '',
     apellidos: persona?.apellidos || '',
     cedula: cedula || '',
