@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
-import { Box, Grid, TextField, Typography, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {
+    Box,
+    Grid,
+    TextField,
+    Typography,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    SelectChangeEvent,
+} from '@mui/material';
+
+// Importa la interfaz Person
+import { Person } from './CrearPersonaForm';
 
 interface ContactInfoFormProps {
-    newPerson: any;
-    handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => void;
+    newPerson: Person;
+    setNewPerson: React.Dispatch<React.SetStateAction<Person>>;
     setIsStepValid: (isValid: boolean) => void;
 }
 
@@ -29,33 +42,60 @@ const countries = [
     "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
 ];
 
-const ContactInfoForm: React.FC<ContactInfoFormProps> = ({ newPerson, handleInputChange, setIsStepValid }) => {
+const ContactInfoForm: React.FC<ContactInfoFormProps> = ({ newPerson, setNewPerson, setIsStepValid }) => {
     const [emailError, setEmailError] = useState('');
 
+    // Validación de correo electrónico
     const validateEmail = (email: string) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
     };
 
+    // Manejo de cambios en los inputs
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
+        const { name, value } = e.target;
+
+        setNewPerson((prevPerson) => ({
+            ...prevPerson,
+            [name]: value,
+        }));
+    };
+
+    // Manejo de cambios en el correo con validación
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         handleInputChange(e);
         const email = e.target.value;
-        if (email && !validateEmail(email)) {
-            setEmailError('Correo electrónico no válido');
-        } else {
-            setEmailError('');
-        }
+        setEmailError(email && !validateEmail(email) ? 'Correo electrónico no válido' : '');
     };
+
+    // Validación del formulario
+    useEffect(() => {
+        const isValid = !!(
+            newPerson.País &&
+            newPerson.CiudadResidencia &&
+            newPerson.DireccionDomicilio &&
+            newPerson.ContactoPersonal &&
+            newPerson.ContactoEmergencia &&
+            newPerson.Correo &&
+            emailError.length === 0 // ✅ Verifica que emailError esté vacío
+        );
+    
+        setIsStepValid(isValid);
+    }, [newPerson, emailError, setIsStepValid]);
+    
 
     return (
         <Box mt={3}>
+            <Typography variant="h6" gutterBottom>
+                Información de Contacto
+            </Typography>
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                         <InputLabel>País</InputLabel>
                         <Select
-                            name="pais"
-                            value={newPerson.pais || ''}
+                            name="País"
+                            value={newPerson.País || ''}
                             onChange={(e) => handleInputChange(e as SelectChangeEvent<string>)}
                         >
                             {countries.map((country, idx) => (
@@ -67,14 +107,15 @@ const ContactInfoForm: React.FC<ContactInfoFormProps> = ({ newPerson, handleInpu
                     </FormControl>
                 </Grid>
 
-                {["ciudadResidencia", "direccionDomicilio", "contactoPersonal", "contactoEmergencia"].map((field, idx) => (
+                {["CiudadResidencia", "DireccionDomicilio", "ContactoPersonal", "ContactoEmergencia"].map((field, idx) => (
                     <Grid item xs={12} sm={6} key={idx}>
                         <TextField
                             fullWidth
-                            label={field.charAt(0).toUpperCase() + field.slice(1)}
+                            label={field.replace(/([A-Z])/g, ' $1').trim()} // Convierte camelCase a texto legible
                             name={field}
-                            value={newPerson[field]}
+                            value={newPerson[field as keyof Person] || ''}
                             onChange={handleInputChange}
+                            required
                         />
                     </Grid>
                 ))}
@@ -83,11 +124,12 @@ const ContactInfoForm: React.FC<ContactInfoFormProps> = ({ newPerson, handleInpu
                     <TextField
                         fullWidth
                         label="Correo"
-                        name="correo"
-                        value={newPerson.correo || ''}
+                        name="Correo"
+                        value={newPerson.Correo || ''}
                         onChange={handleEmailChange}
                         error={!!emailError}
                         helperText={emailError}
+                        required
                     />
                 </Grid>
             </Grid>

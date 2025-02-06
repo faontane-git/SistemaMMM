@@ -1,42 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Grid, TextField, Typography, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
+import React, { useEffect } from 'react';
+import {
+    Box,
+    Grid,
+    TextField,
+    Typography,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    SelectChangeEvent,
+} from '@mui/material';
+
+// Importa la interfaz Person
+import { Person } from './CrearPersonaForm';
 
 interface ChurchInfoFormProps {
-    newPerson: any;
-    handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => void;
+    newPerson: Person;
+    setNewPerson: React.Dispatch<React.SetStateAction<Person>>;
     setIsStepValid: (isValid: boolean) => void;
 }
 
-const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, handleInputChange, setIsStepValid }) => {
-    const [formValid, setFormValid] = useState(false);
+const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, setNewPerson, setIsStepValid }) => {
 
+    // Validar los campos requeridos
     useEffect(() => {
         const isValid =
-            newPerson.ministro?.trim() &&
-            newPerson.iglesiaActual?.trim() &&
-            newPerson.cargoIglesia?.trim() &&
-            newPerson.bautizadoAgua?.trim() &&
-            newPerson.fechaBautizo?.trim() &&
-            newPerson.pastor?.trim() &&
-            newPerson.iglesiaBautismo?.trim();
-        setFormValid(!!isValid);
+            newPerson.Ministro.trim() &&
+            newPerson.IglesiaActual.trim() &&
+            newPerson.CargoIglesia.trim() &&
+            newPerson.BautizadoAgua.trim() &&
+            newPerson.FechaBaustismo &&
+            newPerson.Pastor.trim() &&
+            newPerson.IglesiaBautismo.trim();
+
         setIsStepValid(!!isValid);
     }, [newPerson, setIsStepValid]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
-        handleInputChange(e);
+    // Manejo de cambios en los inputs
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
+        const { name, value } = e.target;
+
+        setNewPerson((prevPerson) => ({
+            ...prevPerson,
+            [name]: value,
+        }));
     };
 
     return (
         <Box mt={3}>
+            <Typography variant="h6" gutterBottom>
+                Información Eclesiástica
+            </Typography>
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                     <TextField
                         fullWidth
                         label="Ministro"
-                        name="ministro"
-                        value={newPerson.ministro || ''}
-                        onChange={handleChange}
+                        name="Ministro"
+                        value={newPerson.Ministro || ''}
+                        onChange={handleInputChange}
                         required
                     />
                 </Grid>
@@ -44,9 +66,9 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, handleInputC
                     <TextField
                         fullWidth
                         label="Iglesia Actual"
-                        name="iglesiaActual"
-                        value={newPerson.iglesiaActual || ''}
-                        onChange={handleChange}
+                        name="IglesiaActual"
+                        value={newPerson.IglesiaActual || ''}
+                        onChange={handleInputChange}
                         required
                     />
                 </Grid>
@@ -54,9 +76,9 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, handleInputC
                     <FormControl fullWidth required>
                         <InputLabel>Cargo en la Iglesia</InputLabel>
                         <Select
-                            name="cargoIglesia"
-                            value={newPerson.cargoIglesia || ''}
-                            onChange={handleChange}
+                            name="CargoIglesia"
+                            value={newPerson.CargoIglesia || ''}
+                            onChange={handleInputChange}
                         >
                             <MenuItem value="CO-PASTOR">CO-PASTOR</MenuItem>
                             <MenuItem value="LÍDER">LÍDER</MenuItem>
@@ -71,9 +93,9 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, handleInputC
                     <FormControl fullWidth required>
                         <InputLabel>Bautizado en Agua</InputLabel>
                         <Select
-                            name="bautizadoAgua"
-                            value={newPerson.bautizadoAgua || ''}
-                            onChange={handleChange}
+                            name="BautizadoAgua"
+                            value={newPerson.BautizadoAgua || ''}
+                            onChange={handleInputChange}
                         >
                             <MenuItem value="SI">SI</MenuItem>
                             <MenuItem value="NO">NO</MenuItem>
@@ -84,11 +106,11 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, handleInputC
                     <TextField
                         fullWidth
                         label="Fecha de Bautizo"
-                        name="fechaBautizo"
+                        name="FechaBaustismo"
                         type="date"
                         InputLabelProps={{ shrink: true }}
-                        value={newPerson.fechaBautizo || ''}
-                        onChange={handleChange}
+                        value={newPerson.FechaBaustismo || ''}
+                        onChange={handleInputChange}
                         required
                     />
                 </Grid>
@@ -96,9 +118,9 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, handleInputC
                     <TextField
                         fullWidth
                         label="Pastor"
-                        name="pastor"
-                        value={newPerson.pastor || ''}
-                        onChange={handleChange}
+                        name="Pastor"
+                        value={newPerson.Pastor || ''}
+                        onChange={handleInputChange}
                         required
                     />
                 </Grid>
@@ -106,9 +128,9 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, handleInputC
                     <TextField
                         fullWidth
                         label="Iglesia de Bautismo"
-                        name="iglesiaBautismo"
-                        value={newPerson.iglesiaBautismo || ''}
-                        onChange={handleChange}
+                        name="IglesiaBautismo"
+                        value={newPerson.IglesiaBautismo || ''}
+                        onChange={handleInputChange}
                         required
                     />
                 </Grid>
@@ -116,12 +138,12 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, handleInputC
                     <FormControl fullWidth required>
                         <InputLabel>Bautizado en el Espíritu Santo</InputLabel>
                         <Select
-                            name="bautizadoEspirituSanto"
-                            value={newPerson.bautizadoEspirituSanto || ''}
-                            onChange={handleChange}
+                            name="BautizadoEspirutoSanto"
+                            value={newPerson.BautizadoEspirutoSanto || ''}
+                            onChange={handleInputChange}
                         >
-                            <MenuItem value="si">SI</MenuItem>
-                            <MenuItem value="no">NO</MenuItem>
+                            <MenuItem value="SI">SI</MenuItem>
+                            <MenuItem value="NO">NO</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
@@ -129,12 +151,12 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, handleInputC
                     <FormControl fullWidth required>
                         <InputLabel>Casado Eclesiásticamente</InputLabel>
                         <Select
-                            name="casadoEclesiasticamente"
-                            value={newPerson.casadoEclesiasticamente || ''}
-                            onChange={handleChange}
+                            name="CasadoEclesiaticamnete"
+                            value={newPerson.CasadoEclesiaticamnete || ''}
+                            onChange={handleInputChange}
                         >
-                            <MenuItem value="si">SI</MenuItem>
-                            <MenuItem value="no">NO</MenuItem>
+                            <MenuItem value="SI">SI</MenuItem>
+                            <MenuItem value="NO">NO</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
@@ -142,12 +164,12 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, handleInputC
                     <FormControl fullWidth required>
                         <InputLabel>Activo</InputLabel>
                         <Select
-                            name="activo"
-                            value={newPerson.activo || ''}
-                            onChange={handleChange}
+                            name="Activo"
+                            value={newPerson.Activo || ''}
+                            onChange={handleInputChange}
                         >
-                            <MenuItem value="si">SI</MenuItem>
-                            <MenuItem value="no">NO</MenuItem>
+                            <MenuItem value="SI">SI</MenuItem>
+                            <MenuItem value="NO">NO</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
@@ -155,9 +177,9 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, handleInputC
                     <FormControl fullWidth required>
                         <InputLabel>Función</InputLabel>
                         <Select
-                            name="funcion"
-                            value={newPerson.funcion || ''}
-                            onChange={handleChange}
+                            name="Funcion"
+                            value={newPerson.Funcion || ''}
+                            onChange={handleInputChange}
                         >
                             <MenuItem value="Administrador">Administrador</MenuItem>
                             <MenuItem value="Feligrés">Feligrés</MenuItem>
@@ -165,12 +187,6 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, handleInputC
                     </FormControl>
                 </Grid>
             </Grid>
-
-            {!formValid && (
-                <Typography color="error" variant="body2" mt={2}>
-                    Por favor, complete todos los campos antes de continuar.
-                </Typography>
-            )}
         </Box>
     );
 };

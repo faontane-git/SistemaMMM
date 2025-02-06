@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Grid, TextField, Typography, Button, SelectChangeEvent, Container, Stepper, Step, StepLabel, Paper } from '@mui/material';
+import React, { useState } from 'react';
+import { 
+    Box, Grid, Typography, Button, SelectChangeEvent, 
+    Container, Stepper, Step, StepLabel, Paper 
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
@@ -8,32 +11,97 @@ import PersonalInfoForm from './PersonalInfoForm';
 import ContactInfoForm from './ContactInfoForm';
 import Navbar from '../Navbar';
 
-
-interface ContactInfoFormProps {
-    newPerson: any;
-    handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => void;
-    setIsStepValid: (isValid: boolean) => void;
+// Definición de la interfaz para newPerson
+export interface Person {
+    Nombres: string;
+    Apellidos: string;
+    FechaNacimiento: string;
+    Cedula: string;
+    Password: string;
+    Sexo: string;
+    EstadoCivil: string;
+    NombreCoyuge?: string;
+    FechaMatrimonio?: string;
+    País: string;
+    CiudadResidencia: string;
+    DireccionDomicilio: string;
+    ContactoPersonal: string;
+    ContactoEmergencia: string;
+    Correo: string;
+    Ministro: string;
+    IglesiaActual: string;
+    CargoIglesia: string;
+    BautizadoAgua: string;
+    FechaBaustismo?: string;
+    Pastor: string;
+    IglesiaBautismo: string;
+    BautizadoEspirutoSanto: string;
+    CasadoEclesiaticamnete: string;
+    Activo: string;
+    Funcion: string;
+    Photo?: string;
 }
 
 const CrearPersonaForm: React.FC = () => {
-    const [newPerson, setNewPerson] = useState({});
+    const [newPerson, setNewPerson] = useState<Person>({
+        Nombres: '',
+        Apellidos: '',
+        FechaNacimiento: '',
+        Cedula: '',
+        Password: '',
+        Sexo: '',
+        EstadoCivil: '',
+        NombreCoyuge: '',
+        FechaMatrimonio: '',
+        País: '',
+        CiudadResidencia: '',
+        DireccionDomicilio: '',
+        ContactoPersonal: '',
+        ContactoEmergencia: '',
+        Correo: '',
+        Ministro: '',
+        IglesiaActual: '',
+        CargoIglesia: '',
+        BautizadoAgua: '',
+        FechaBaustismo: '',
+        Pastor: '',
+        IglesiaBautismo: '',
+        BautizadoEspirutoSanto: '',
+        CasadoEclesiaticamnete: '',
+        Activo: '',
+        Funcion: '',
+        Photo: '',
+    });
+
     const [activeStep, setActiveStep] = useState(0);
     const [isStepValid, setIsStepValid] = useState(false);
-    const [photo, setPhoto] = useState<string | null>(null);
     const navigate = useNavigate();
     const db = getFirestore();
 
+    // Manejo de cambios en los inputs
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
         const { name, value } = e.target;
-        setNewPerson((prevPerson) => ({ ...prevPerson, [name]: value }));
+
+        setNewPerson((prevPerson) => ({
+            ...prevPerson,
+            [name]: value,
+            Password: name === 'Cedula' ? value : prevPerson.Password,
+            // Corregir lógica de NombreCoyuge y FechaMatrimonio
+            NombreCoyuge: name === 'EstadoCivil' && value !== 'CASADO' ? '' : prevPerson.NombreCoyuge,
+            FechaMatrimonio: name === 'EstadoCivil' && value !== 'CASADO' ? '' : prevPerson.FechaMatrimonio,
+        }));
     };
 
+    // Manejo de cambio de foto
     const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setPhoto(reader.result as string);
+                setNewPerson((prevPerson) => ({
+                    ...prevPerson,
+                    Photo: reader.result as string,
+                }));
             };
             reader.readAsDataURL(file);
         }
@@ -54,7 +122,8 @@ const CrearPersonaForm: React.FC = () => {
     const handleCreatePerson = async () => {
         if (isStepValid) {
             try {
-                await addDoc(collection(db, 'Personas'), { ...newPerson, photo });
+                console.log("Objeto a guardar:", newPerson); // Para depuración
+                await addDoc(collection(db, 'Personas'), newPerson);
                 Swal.fire('Éxito', 'Persona creada exitosamente.', 'success');
                 navigate('/personas');
             } catch (error) {
@@ -83,23 +152,21 @@ const CrearPersonaForm: React.FC = () => {
                         {activeStep === 0 && (
                             <PersonalInfoForm
                                 newPerson={newPerson}
-                                handleInputChange={handleInputChange}
-                                photo={photo}
-                                handlePhotoChange={handlePhotoChange}
+                                setNewPerson={setNewPerson} // Pasamos la función para modificar el estado
                                 setIsStepValid={setIsStepValid}
                             />
                         )}
                         {activeStep === 1 && (
                             <ContactInfoForm
                                 newPerson={newPerson}
-                                handleInputChange={handleInputChange}
+                                setNewPerson={setNewPerson}
                                 setIsStepValid={setIsStepValid}
                             />
                         )}
                         {activeStep === 2 && (
                             <ChurchInfoForm
                                 newPerson={newPerson}
-                                handleInputChange={handleInputChange}
+                                setNewPerson={setNewPerson}
                                 setIsStepValid={setIsStepValid}
                             />
                         )}
@@ -122,7 +189,6 @@ const CrearPersonaForm: React.FC = () => {
                 </Paper>
             </Container>
         </div>
-
     );
 };
 

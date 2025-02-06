@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
     Box,
     Avatar,
@@ -11,38 +11,64 @@ import {
     Select,
     MenuItem,
     SelectChangeEvent,
-    OutlinedInput,
 } from '@mui/material';
 
+// Importa la interfaz Person
+import { Person } from './CrearPersonaForm';
+
 interface PersonalInfoFormProps {
-    newPerson: any;
-    handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => void;
-    photo: string | null;
-    handlePhotoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    newPerson: Person;
+    setNewPerson: React.Dispatch<React.SetStateAction<Person>>;
     setIsStepValid: (isValid: boolean) => void;
 }
 
 const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     newPerson,
-    handleInputChange,
-    photo,
-    handlePhotoChange,
+    setNewPerson,
     setIsStepValid,
 }) => {
-    const [formValid, setFormValid] = useState(false);
 
+    // Manejar cambios en los campos
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
+        const { name, value } = e.target;
+
+        setNewPerson((prevPerson) => ({
+            ...prevPerson,
+            [name]: value,
+            Password: name === 'Cedula' ? value : prevPerson.Password, // Sincroniza Password con Cedula
+            NombreCoyuge: name === 'EstadoCivil' && value !== 'CASADO' ? '' : prevPerson.NombreCoyuge,
+            FechaMatrimonio: name === 'EstadoCivil' && value !== 'CASADO' ? '' : prevPerson.FechaMatrimonio,
+        }));
+    };
+
+    // Manejar cambio de foto y actualizar en newPerson
+    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setNewPerson((prevPerson) => ({
+                    ...prevPerson,
+                    Photo: reader.result as string,
+                }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // Validación del formulario
     useEffect(() => {
         const isValid =
-            newPerson.nombres?.trim() &&
-            newPerson.apellidos?.trim() &&
-            newPerson.fechaNacimiento &&
-            newPerson.cedula?.length === 10 &&
-            newPerson.sexo &&
-            newPerson.estadoCivil &&
-            photo;
-        setFormValid(!!isValid);
+            newPerson.Nombres.trim() &&
+            newPerson.Apellidos.trim() &&
+            newPerson.FechaNacimiento &&
+            newPerson.Cedula.length === 10 &&
+            newPerson.Sexo &&
+            newPerson.EstadoCivil &&
+            newPerson.Photo;
+
         setIsStepValid(!!isValid);
-    }, [newPerson, photo, setIsStepValid]);
+    }, [newPerson, setIsStepValid]);
 
     return (
         <Box mt={3}>
@@ -50,8 +76,8 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                 Información Personal
             </Typography>
             <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
-                {photo ? (
-                    <Avatar src={photo} alt="Foto" sx={{ width: 150, height: 150, mb: 2 }} />
+                {newPerson.Photo ? (
+                    <Avatar src={newPerson.Photo} alt="Foto" sx={{ width: 150, height: 150, mb: 2 }} />
                 ) : (
                     <Avatar sx={{ width: 150, height: 150, mb: 2 }}>N/A</Avatar>
                 )}
@@ -61,13 +87,13 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                 </Button>
             </Box>
             <Grid container spacing={2}>
-                {['nombres', 'apellidos'].map((field, idx) => (
+                {['Nombres', 'Apellidos'].map((field, idx) => (
                     <Grid item xs={12} sm={6} key={idx}>
                         <TextField
                             fullWidth
-                            label={field.charAt(0).toUpperCase() + field.slice(1)}
+                            label={field}
                             name={field}
-                            value={newPerson[field] || ''}
+                            value={newPerson[field as keyof Person] || ''}
                             onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
                             required
                         />
@@ -78,10 +104,10 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                     <TextField
                         fullWidth
                         label="Fecha de Nacimiento"
-                        name="fechaNacimiento"
+                        name="FechaNacimiento"
                         type="date"
                         InputLabelProps={{ shrink: true }}
-                        value={newPerson.fechaNacimiento || ''}
+                        value={newPerson.FechaNacimiento || ''}
                         onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
                         required
                     />
@@ -91,13 +117,17 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                     <TextField
                         fullWidth
                         label="Cédula"
-                        name="cedula"
-                        value={newPerson.cedula || ''}
+                        name="Cedula"
+                        value={newPerson.Cedula || ''}
                         onChange={(e) => {
                             const numericValue = e.target.value.replace(/[^0-9]/g, '');
                             if (numericValue.length <= 10) {
                                 handleInputChange({
-                                    target: { name: 'cedula', value: numericValue },
+                                    target: { name: 'Cedula', value: numericValue },
+                                } as React.ChangeEvent<HTMLInputElement>);
+
+                                handleInputChange({
+                                    target: { name: 'Password', value: numericValue },
                                 } as React.ChangeEvent<HTMLInputElement>);
                             }
                         }}
@@ -110,8 +140,8 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                     <FormControl fullWidth required>
                         <InputLabel>Sexo</InputLabel>
                         <Select
-                            name="sexo"
-                            value={newPerson.sexo || ''}
+                            name="Sexo"
+                            value={newPerson.Sexo || ''}
                             onChange={(e) => handleInputChange(e as SelectChangeEvent<string>)}
                         >
                             <MenuItem value="MASCULINO">MASCULINO</MenuItem>
@@ -124,8 +154,8 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                     <FormControl fullWidth required>
                         <InputLabel>Estado Civil</InputLabel>
                         <Select
-                            name="estadoCivil"
-                            value={newPerson.estadoCivil || ''}
+                            name="EstadoCivil"
+                            value={newPerson.EstadoCivil || ''}
                             onChange={(e) => handleInputChange(e as SelectChangeEvent<string>)}
                         >
                             <MenuItem value="SOLTERO">SOLTERO</MenuItem>
@@ -137,14 +167,14 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                     </FormControl>
                 </Grid>
 
-                {newPerson.estadoCivil === 'CASADO' && (
+                {newPerson.EstadoCivil === 'CASADO' && (
                     <>
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth
                                 label="Nombre del Cónyuge"
-                                name="conyuge"
-                                value={newPerson.conyuge || ''}
+                                name="NombreCoyuge"
+                                value={newPerson.NombreCoyuge || ''}
                                 onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
                                 required
                             />
@@ -153,10 +183,10 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                             <TextField
                                 fullWidth
                                 label="Fecha de Matrimonio"
-                                name="fechaMatrimonio"
+                                name="FechaMatrimonio"
                                 type="date"
                                 InputLabelProps={{ shrink: true }}
-                                value={newPerson.fechaMatrimonio || ''}
+                                value={newPerson.FechaMatrimonio || ''}
                                 onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
                                 required
                             />
