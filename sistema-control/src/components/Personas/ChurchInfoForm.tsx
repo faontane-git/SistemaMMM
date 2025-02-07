@@ -107,7 +107,6 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, setNewPerson
                         fullWidth
                         label="Fecha de Bautizo"
                         name="FechaBaustismo"
-                        type="date"
                         InputLabelProps={{ shrink: true }}
                         value={newPerson.FechaBaustismo || ''}
                         onChange={handleInputChange}
@@ -158,6 +157,18 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, setNewPerson
                             <MenuItem value="SI">SI</MenuItem>
                             <MenuItem value="NO">NO</MenuItem>
                         </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth required>
+                        <TextField
+                            fullWidth
+                            label="Iglesia Matrimonio"
+                            name="IglesiaMatrimonio"
+                            value={newPerson.IglesiaMatrimonio || ''}
+                            onChange={handleInputChange}
+                            required
+                        />
                     </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>

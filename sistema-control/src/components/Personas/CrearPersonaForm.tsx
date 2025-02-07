@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { 
-    Box, Grid, Typography, Button, SelectChangeEvent, 
-    Container, Stepper, Step, StepLabel, Paper 
+import {
+    Box, Grid, Typography, Button, SelectChangeEvent,
+    Container, Stepper, Step, StepLabel, Paper
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
@@ -11,7 +11,6 @@ import PersonalInfoForm from './PersonalInfoForm';
 import ContactInfoForm from './ContactInfoForm';
 import Navbar from '../Navbar';
 
-// Definición de la interfaz para newPerson
 export interface Person {
     Nombres: string;
     Apellidos: string;
@@ -30,6 +29,7 @@ export interface Person {
     Correo: string;
     Ministro: string;
     IglesiaActual: string;
+    IglesiaMatrimonio: string;
     CargoIglesia: string;
     BautizadoAgua: string;
     FechaBaustismo?: string;
@@ -61,6 +61,7 @@ const CrearPersonaForm: React.FC = () => {
         Correo: '',
         Ministro: '',
         IglesiaActual: '',
+        IglesiaMatrimonio:'',
         CargoIglesia: '',
         BautizadoAgua: '',
         FechaBaustismo: '',
@@ -74,104 +75,93 @@ const CrearPersonaForm: React.FC = () => {
     });
 
     const [activeStep, setActiveStep] = useState(0);
-    const [isStepValid, setIsStepValid] = useState(false);
     const navigate = useNavigate();
     const db = getFirestore();
+    const [isStepValid, setIsStepValid] = useState(false);
 
-    // Manejo de cambios en los inputs
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
-        const { name, value } = e.target;
+    const validateForm = (step: number): boolean => {
+        const errors: string[] = [];
 
-        setNewPerson((prevPerson) => ({
-            ...prevPerson,
-            [name]: value,
-            Password: name === 'Cedula' ? value : prevPerson.Password,
-            // Corregir lógica de NombreCoyuge y FechaMatrimonio
-            NombreCoyuge: name === 'EstadoCivil' && value !== 'CASADO' ? '' : prevPerson.NombreCoyuge,
-            FechaMatrimonio: name === 'EstadoCivil' && value !== 'CASADO' ? '' : prevPerson.FechaMatrimonio,
-        }));
-    };
-
-    // Manejo de cambio de foto
-    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setNewPerson((prevPerson) => ({
-                    ...prevPerson,
-                    Photo: reader.result as string,
-                }));
-            };
-            reader.readAsDataURL(file);
+        if (step === 0) {
+            if (!newPerson.Nombres.trim()) errors.push('El campo "Nombres" es obligatorio.');
+            if (!newPerson.Apellidos.trim()) errors.push('El campo "Apellidos" es obligatorio.');
+            if (!newPerson.FechaNacimiento) errors.push('Debe seleccionar una "Fecha de Nacimiento".');
+            if (newPerson.Cedula.length !== 10) errors.push('La "Cédula" debe tener 10 dígitos.');
+            if (!newPerson.Sexo) errors.push('Debe seleccionar un "Sexo".');
+            if (!newPerson.EstadoCivil) errors.push('Debe seleccionar un "Estado Civil".');
+            if (!newPerson.Photo) errors.push('Debe subir una foto.');
         }
-    };
 
-    const validateForm = () => {
-        const errors = [];
-    
-        if (!newPerson.Nombres.trim()) errors.push('El campo "Nombres" es obligatorio.');
-        if (!newPerson.Apellidos.trim()) errors.push('El campo "Apellidos" es obligatorio.');
-        if (!newPerson.FechaNacimiento) errors.push('Debe seleccionar una "Fecha de Nacimiento".');
-        if (newPerson.Cedula.length !== 10) errors.push('La "Cédula" debe tener 10 dígitos.');
-        if (!newPerson.Sexo) errors.push('Debe seleccionar un "Sexo".');
-        if (!newPerson.EstadoCivil) errors.push('Debe seleccionar un "Estado Civil".');
-        if (!newPerson.Photo) errors.push('Debe subir una foto.');
-    
-        // Validación de cónyuge solo si el estado civil es "CASADO"
-        if (newPerson.EstadoCivil === 'CASADO') {
-            if (!newPerson.NombreCoyuge || !newPerson.NombreCoyuge.trim()) {
-                errors.push('Debe ingresar el "Nombre del Cónyuge".');
-            }
-            if (!newPerson.FechaMatrimonio) {
-                errors.push('Debe seleccionar una "Fecha de Matrimonio".');
-            }
+        if (step === 1) {
+            //if (!newPerson.País.trim()) errors.push('El campo "País" es obligatorio.');
+            //if (!newPerson.CiudadResidencia.trim()) errors.push('El campo "Ciudad de Residencia" es obligatorio.');
+            //if (!newPerson.DireccionDomicilio.trim()) errors.push('El campo "Dirección Domicilio" es obligatorio.');
+            //if (!newPerson.ContactoPersonal.trim()) errors.push('El campo "Contacto Personal" es obligatorio.');
+            //if (!newPerson.ContactoEmergencia.trim()) errors.push('El campo "Contacto de Emergencia" es obligatorio.');
+            //if (!newPerson.Correo.trim()) errors.push('El campo "Correo" es obligatorio.');
         }
-    
+
+        if (step === 2) {
+            //if (!newPerson.Ministro.trim()) errors.push('El campo "Ministro" es obligatorio.');
+            //if (!newPerson.IglesiaActual.trim()) errors.push('El campo "Iglesia Actual" es obligatorio.');
+            //if (!newPerson.CargoIglesia.trim()) errors.push('El campo "Cargo en la Iglesia" es obligatorio.');
+            //if (!newPerson.BautizadoAgua.trim()) errors.push('Debe indicar si fue "Bautizado en Agua".');
+            //if (!newPerson.Pastor.trim()) errors.push('El campo "Pastor" es obligatorio.');
+            //if (!newPerson.IglesiaBautismo.trim()) errors.push('El campo "Iglesia Bautismo" es obligatorio.');
+            //if (!newPerson.BautizadoEspirutoSanto.trim()) errors.push('Debe indicar si fue "Bautizado en el Espíritu Santo".');
+            //if (!newPerson.CasadoEclesiaticamnete.trim()) errors.push('Debe indicar si fue "Casado Eclesiásticamente".');
+            //if (!newPerson.Activo.trim()) errors.push('Debe indicar si está "Activo".');
+            //if (!newPerson.Funcion.trim()) errors.push('Debe indicar su "Función".');
+        }
+
         if (errors.length > 0) {
             Swal.fire({
                 title: 'Campos Incompletos',
-                html: errors.join('<br>'), // Mostrar errores en línea
+                html: errors.join('<br>'),
                 icon: 'warning',
                 confirmButtonText: 'Aceptar'
             });
             return false;
         }
-    
+
         return true;
     };
-    
-    
+
+
 
     const handleNext = () => {
-        if (validateForm()) {
-            setIsStepValid(true); // Permitir avanzar
+        if (validateForm(activeStep)) {
             setActiveStep((prev) => prev + 1);
+            setIsStepValid(true);
         } else {
-            setIsStepValid(false); // No permitir avanzar
+            setIsStepValid(false);
         }
     };
-    
+
+
+
     const handleBack = () => {
         setActiveStep((prev) => prev - 1);
     };
 
     const handleCreatePerson = async () => {
-        if (isStepValid) {
-            try {
-                console.log("Objeto a guardar:", newPerson); // Para depuración
-                await addDoc(collection(db, 'Personas'), newPerson);
-                Swal.fire('Éxito', 'Persona creada exitosamente.', 'success');
-                navigate('/personas');
-            } catch (error) {
-                Swal.fire('Error', 'Hubo un problema al crear la persona.', 'error');
-            }
+        if (!validateForm(0) || !validateForm(1) || !validateForm(2)) return;
+
+        try {
+            console.log("Objeto a guardar:", newPerson);
+            await addDoc(collection(db, 'Personas'), newPerson);
+            Swal.fire('Éxito', 'Persona creada exitosamente.', 'success');
+            navigate('/personas');
+        } catch (error) {
+            console.log(error);
+            Swal.fire('Error', 'Hubo un problema al crear la persona.', 'error');
         }
     };
 
+
     return (
         <div>
-            <Navbar/>
+            <Navbar />
             <Container maxWidth="md">
                 <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
                     <Typography variant="h4" align="center" gutterBottom>
@@ -189,25 +179,26 @@ const CrearPersonaForm: React.FC = () => {
                         {activeStep === 0 && (
                             <PersonalInfoForm
                                 newPerson={newPerson}
-                                setNewPerson={setNewPerson} // Pasamos la función para modificar el estado
-                                setIsStepValid={setIsStepValid}
+                                setNewPerson={setNewPerson}
+                                setIsStepValid={(isValid) => setIsStepValid(isValid)}
                             />
                         )}
                         {activeStep === 1 && (
                             <ContactInfoForm
                                 newPerson={newPerson}
                                 setNewPerson={setNewPerson}
-                                setIsStepValid={setIsStepValid}
+                                setIsStepValid={(isValid) => setIsStepValid(isValid)}
                             />
                         )}
                         {activeStep === 2 && (
                             <ChurchInfoForm
                                 newPerson={newPerson}
                                 setNewPerson={setNewPerson}
-                                setIsStepValid={setIsStepValid}
+                                setIsStepValid={(isValid) => setIsStepValid(isValid)}
                             />
                         )}
                     </Box>
+
 
                     <Box mt={3} display="flex" justifyContent="space-between">
                         <Button disabled={activeStep === 0} onClick={handleBack}>

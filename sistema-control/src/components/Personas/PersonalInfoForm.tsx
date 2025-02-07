@@ -17,6 +17,7 @@ import {
 import { Person } from './CrearPersonaForm';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import Swal from 'sweetalert2';
+import imageCompression from "browser-image-compression";
 
 interface PersonalInfoFormProps {
     newPerson: Person;
@@ -43,8 +44,8 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     
             // Si el estado civil cambia y NO es "CASADO", eliminar los datos del cónyuge
             if (name === 'EstadoCivil' && value !== 'CASADO') {
-                delete updatedPerson.NombreCoyuge;
-                delete updatedPerson.FechaMatrimonio;
+                updatedPerson.NombreCoyuge="";
+                updatedPerson.FechaMatrimonio="";
             }
     
             return updatedPerson;
@@ -93,17 +94,27 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     };
 
     // Manejar cambio de foto y actualizar en newPerson
-    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
+            try {
+                const options = {
+                    maxSizeMB: 0.1, // Tamaño máximo en MB (100KB)
+                    maxWidthOrHeight: 300, // Redimensiona manteniendo proporción
+                    useWebWorker: true, // Usa WebWorker para mejor rendimiento
+                };
+    
+                const compressedFile = await imageCompression(file, options);
+                const compressedBase64 = await imageCompression.getDataUrlFromFile(compressedFile);
+    
                 setNewPerson((prevPerson) => ({
                     ...prevPerson,
-                    Photo: reader.result as string,
+                    Photo: compressedBase64,
                 }));
-            };
-            reader.readAsDataURL(file);
+            } catch (error) {
+                console.error("Error al comprimir la imagen:", error);
+                Swal.fire("Error", "No se pudo procesar la imagen", "error");
+            }
         }
     };
 
@@ -224,7 +235,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                                 fullWidth
                                 label="Fecha de Matrimonio"
                                 name="FechaMatrimonio"
-                                type="date"
                                 InputLabelProps={{ shrink: true }}
                                 value={newPerson.FechaMatrimonio || ''}
                                 onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
