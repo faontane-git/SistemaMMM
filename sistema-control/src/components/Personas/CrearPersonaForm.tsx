@@ -107,14 +107,51 @@ const CrearPersonaForm: React.FC = () => {
         }
     };
 
+    const validateForm = () => {
+        const errors = [];
+    
+        if (!newPerson.Nombres.trim()) errors.push('El campo "Nombres" es obligatorio.');
+        if (!newPerson.Apellidos.trim()) errors.push('El campo "Apellidos" es obligatorio.');
+        if (!newPerson.FechaNacimiento) errors.push('Debe seleccionar una "Fecha de Nacimiento".');
+        if (newPerson.Cedula.length !== 10) errors.push('La "Cédula" debe tener 10 dígitos.');
+        if (!newPerson.Sexo) errors.push('Debe seleccionar un "Sexo".');
+        if (!newPerson.EstadoCivil) errors.push('Debe seleccionar un "Estado Civil".');
+        if (!newPerson.Photo) errors.push('Debe subir una foto.');
+    
+        // Validación de cónyuge solo si el estado civil es "CASADO"
+        if (newPerson.EstadoCivil === 'CASADO') {
+            if (!newPerson.NombreCoyuge || !newPerson.NombreCoyuge.trim()) {
+                errors.push('Debe ingresar el "Nombre del Cónyuge".');
+            }
+            if (!newPerson.FechaMatrimonio) {
+                errors.push('Debe seleccionar una "Fecha de Matrimonio".');
+            }
+        }
+    
+        if (errors.length > 0) {
+            Swal.fire({
+                title: 'Campos Incompletos',
+                html: errors.join('<br>'), // Mostrar errores en línea
+                icon: 'warning',
+                confirmButtonText: 'Aceptar'
+            });
+            return false;
+        }
+    
+        return true;
+    };
+    
+    
+
     const handleNext = () => {
-        if (isStepValid) {
+        if (validateForm()) {
+            setIsStepValid(true); // Permitir avanzar
             setActiveStep((prev) => prev + 1);
         } else {
-            Swal.fire('Error', 'Por favor complete todos los campos antes de continuar.', 'error');
+            setIsStepValid(false); // No permitir avanzar
         }
     };
-
+    
     const handleBack = () => {
         setActiveStep((prev) => prev - 1);
     };

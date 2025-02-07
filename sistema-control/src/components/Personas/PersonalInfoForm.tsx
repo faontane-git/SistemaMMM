@@ -15,6 +15,8 @@ import {
 
 // Importa la interfaz Person
 import { Person } from './CrearPersonaForm';
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import Swal from 'sweetalert2';
 
 interface PersonalInfoFormProps {
     newPerson: Person;
@@ -31,14 +33,63 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     // Manejar cambios en los campos
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
         const { name, value } = e.target;
+    
+        setNewPerson((prevPerson) => {
+            const updatedPerson = {
+                ...prevPerson,
+                [name]: value,
+                Password: name === 'Cedula' ? value : prevPerson.Password, // Sincroniza Password con Cedula
+            };
+    
+            // Si el estado civil cambia y NO es "CASADO", eliminar los datos del cónyuge
+            if (name === 'EstadoCivil' && value !== 'CASADO') {
+                delete updatedPerson.NombreCoyuge;
+                delete updatedPerson.FechaMatrimonio;
+            }
+    
+            return updatedPerson;
+        });
+    };
 
-        setNewPerson((prevPerson) => ({
-            ...prevPerson,
-            [name]: value,
-            Password: name === 'Cedula' ? value : prevPerson.Password, // Sincroniza Password con Cedula
-            NombreCoyuge: name === 'EstadoCivil' && value !== 'CASADO' ? '' : prevPerson.NombreCoyuge,
-            FechaMatrimonio: name === 'EstadoCivil' && value !== 'CASADO' ? '' : prevPerson.FechaMatrimonio,
-        }));
+    const handleCedulaChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const numericValue = e.target.value.replace(/[^0-9]/g, '');
+        
+        if (numericValue.length <= 10) {
+            handleInputChange({
+                target: { name: 'Cedula', value: numericValue },
+            } as React.ChangeEvent<HTMLInputElement>);
+    
+            handleInputChange({
+                target: { name: 'Password', value: numericValue },
+            } as React.ChangeEvent<HTMLInputElement>);
+        }
+    
+        // 🔍 Si la cédula tiene 10 dígitos, validar en Firestore
+        if (numericValue.length === 10) {
+            const db = getFirestore();
+            const personasCollection = collection(db, 'Personas');
+            const q = query(personasCollection, where('Cedula', '==', numericValue));
+    
+            const querySnapshot = await getDocs(q);
+    
+            if (!querySnapshot.empty) {
+                Swal.fire({
+                    title: 'Cédula Duplicada',
+                    text: 'La cédula ingresada ya existe en la base de datos.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+    
+                // ❌ Si la cédula ya existe, la eliminamos del input
+                handleInputChange({
+                    target: { name: 'Cedula', value: '' },
+                } as React.ChangeEvent<HTMLInputElement>);
+    
+                handleInputChange({
+                    target: { name: 'Password', value: '' },
+                } as React.ChangeEvent<HTMLInputElement>);
+            }
+        }
     };
 
     // Manejar cambio de foto y actualizar en newPerson
@@ -119,18 +170,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                         label="Cédula"
                         name="Cedula"
                         value={newPerson.Cedula || ''}
-                        onChange={(e) => {
-                            const numericValue = e.target.value.replace(/[^0-9]/g, '');
-                            if (numericValue.length <= 10) {
-                                handleInputChange({
-                                    target: { name: 'Cedula', value: numericValue },
-                                } as React.ChangeEvent<HTMLInputElement>);
-
-                                handleInputChange({
-                                    target: { name: 'Password', value: numericValue },
-                                } as React.ChangeEvent<HTMLInputElement>);
-                            }
-                        }}
+                        onChange={handleCedulaChange}
                         inputProps={{ maxLength: 10 }}
                         required
                     />
