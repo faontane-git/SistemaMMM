@@ -27,7 +27,8 @@ import { styled } from '@mui/system';
 import { firestore } from "../../firebase";
 import { collection, getDocs, doc, addDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
-
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+ 
 interface Audio {
   id: string;
   name: string;
@@ -214,10 +215,19 @@ const SubirMusica: React.FC = () => {
       <Navbar />
 
       <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Typography variant="h4" align="center" gutterBottom>
-          Audios
-        </Typography>
-
+        <Box position="relative" display="flex" justifyContent="center" alignItems="center" mb={2}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+            sx={{ position: 'absolute', left: 0 }} // 🔹 Fija el botón a la izquierda
+          >
+            Regresar
+          </Button>
+          <Typography variant="h4" align="center">
+            Audios
+          </Typography>
+        </Box>
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
           <Button variant="contained" color="primary" onClick={() => handleNavigation("/crear-audio")}>
             Crear Audio

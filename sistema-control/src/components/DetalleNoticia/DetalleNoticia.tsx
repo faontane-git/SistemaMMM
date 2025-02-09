@@ -144,19 +144,20 @@ const DetalleNoticia: React.FC = () => {
     <div>
       <Navbar />
       <Container maxWidth="md" sx={{ marginTop: 4 }}>
-        <Box display="flex" justifyContent="flex-start" mb={2}>
+        <Box position="relative" display="flex" justifyContent="center" alignItems="center" mb={2}>
           <Button
             variant="outlined"
             startIcon={<ArrowBackIcon />}
             onClick={() => navigate(-1)}
+            sx={{ position: 'absolute', left: 0 }} // 🔹 Fija el botón a la izquierda
           >
             Regresar
           </Button>
+          <Typography variant="h4" align="center">
+            Listado de Noticias
+          </Typography>
         </Box>
 
-        <Typography variant="h4" align="center" gutterBottom>
-          Listado de Noticias
-        </Typography>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
           <Button
