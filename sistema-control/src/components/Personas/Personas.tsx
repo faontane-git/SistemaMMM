@@ -16,37 +16,15 @@ import {
   TableContainer,
 } from '@mui/material';
 import Navbar from '../Navbar';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 interface PersonData {
   id: string;
   Nombres: string;
   Apellidos: string;
-  FechaNacimiento: string;
   Cedula: string;
-  Password: string;
-  Sexo: string;
-  EstadoCivil: string;
-  NombreCoyuge?: string;
-  FechaMatrimonio?: string;
-  País: string;
-  CiudadResidencia: string;
-  DireccionDomicilio: string;
-  ContactoPersonal: string;
-  ContactoEmergencia: string;
-  Correo: string;
-  Ministro: string;
-  IglesiaActual: string;
-  CargoIglesia: string;
-  BautizadoAgua: string;
-  FechaBaustismo?: string;
-  Pastor: string;
-  IglesiaBautismo: string;
-  BautizadoEspirutoSanto: string;
-  CasadoEclesiaticamnete: string;
-  Activo: string;
-  Funcion: string;
   Photo?: string;
 }
 
@@ -67,39 +45,13 @@ const PersonasList: React.FC = () => {
         const personasCollection = collection(db, 'Personas');
         const querySnapshot = await getDocs(personasCollection);
   
-        const personasArray: PersonData[] = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            Nombres: data.Nombres || '',
-            Apellidos: data.Apellidos || '',
-            FechaNacimiento: data.FechaNacimiento || '',
-            Cedula: data.Cedula || '',
-            Password: data.Password || '',
-            Sexo: data.Sexo || '',
-            EstadoCivil: data.EstadoCivil || '',
-            NombreCoyuge: data.NombreCoyuge || '',
-            FechaMatrimonio: data.FechaMatrimonio || '',
-            País: data.País || '',
-            CiudadResidencia: data.CiudadResidencia || '',
-            DireccionDomicilio: data.DireccionDomicilio || '',
-            ContactoPersonal: data.ContactoPersonal || '',
-            ContactoEmergencia: data.ContactoEmergencia || '',
-            Correo: data.Correo || '',
-            Ministro: data.Ministro || '',
-            IglesiaActual: data.IglesiaActual || '',
-            CargoIglesia: data.CargoIglesia || '',
-            BautizadoAgua: data.BautizadoAgua || '',
-            FechaBaustismo: data.FechaBaustismo || '',
-            Pastor: data.Pastor || '',
-            IglesiaBautismo: data.IglesiaBautismo || '',
-            BautizadoEspirutoSanto: data.BautizadoEspirutoSanto || '',
-            CasadoEclesiaticamnete: data.CasadoEclesiaticamnete || '',
-            Activo: data.Activo || '',
-            Funcion: data.Funcion || '',
-            Photo: data.Photo || '',
-          };
-        });
+        const personasArray: PersonData[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          Nombres: doc.data().Nombres || '',
+          Apellidos: doc.data().Apellidos || '',
+          Cedula: doc.data().Cedula || '',
+          Photo: doc.data().Photo || '',
+        }));
   
         setData(personasArray);
         setFilteredData(personasArray);
@@ -117,24 +69,75 @@ const PersonasList: React.FC = () => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
 
-    const filtered = data.filter((person) => {
-      const nombres = person.Nombres?.toLowerCase() || '';
-      const apellidos = person.Apellidos?.toLowerCase() || '';
-      const cedula = person.Cedula?.toLowerCase() || '';
-
-      return (
-        nombres.includes(query) ||
-        apellidos.includes(query) ||
-        cedula.includes(query)
-      );
-    });
+    const filtered = data.filter((person) =>
+      person.Nombres.toLowerCase().includes(query) ||
+      person.Apellidos.toLowerCase().includes(query) ||
+      person.Cedula.toLowerCase().includes(query)
+    );
 
     setFilteredData(filtered);
     setPage(0);
   };
 
-  const handleCrearPersona = () => {
-    navigate('/crear-persona');
+  const handleEditar = (id: string) => {
+    navigate(`/editar-persona/${id}`);
+  };
+
+  const handleCambiarContraseña = (id: string) => {
+    Swal.fire({
+      title: 'Cambiar Contraseña',
+      input: 'password',
+      inputLabel: 'Nueva Contraseña',
+      inputPlaceholder: 'Ingrese la nueva contraseña',
+      showCancelButton: true,
+      confirmButtonText: 'Actualizar',
+      cancelButtonText: 'Cancelar',
+      preConfirm: (newPassword) => {
+        if (!newPassword) {
+          Swal.showValidationMessage('Debe ingresar una contraseña válida');
+          return false;
+        }
+        return newPassword;
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const db = getFirestore();
+          const personDocRef = doc(db, 'Personas', id);
+          await updateDoc(personDocRef, { Password: result.value });
+
+          Swal.fire('Éxito', 'Contraseña actualizada correctamente', 'success');
+        } catch (error) {
+          Swal.fire('Error', 'No se pudo actualizar la contraseña', 'error');
+        }
+      }
+    });
+  };
+
+  const handleEliminar = async (id: string) => {
+    const confirmacion = await Swal.fire({
+      title: '¿Eliminar Persona?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (confirmacion.isConfirmed) {
+      try {
+        const db = getFirestore();
+        await deleteDoc(doc(db, 'Personas', id));
+        
+        const updatedData = data.filter((person) => person.id !== id);
+        setData(updatedData);
+        setFilteredData(updatedData);
+
+        Swal.fire('Eliminado', 'Persona eliminada correctamente', 'success');
+      } catch (error) {
+        Swal.fire('Error', 'No se pudo eliminar la persona', 'error');
+      }
+    }
   };
 
   return (
@@ -148,7 +151,7 @@ const PersonasList: React.FC = () => {
         </Box>
 
         <Box display="flex" justifyContent="center" mb={3}>
-          <Button variant="contained" color="primary" onClick={handleCrearPersona}>
+          <Button variant="contained" color="primary" onClick={() => navigate('/crear-persona')}>
             Crear Persona
           </Button>
         </Box>
@@ -178,6 +181,7 @@ const PersonasList: React.FC = () => {
                     <TableCell>Nombres</TableCell>
                     <TableCell>Apellidos</TableCell>
                     <TableCell>Cédula</TableCell>
+                    <TableCell>Acciones</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -193,6 +197,34 @@ const PersonasList: React.FC = () => {
                       <TableCell>{person.Nombres}</TableCell>
                       <TableCell>{person.Apellidos}</TableCell>
                       <TableCell>{person.Cedula}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          sx={{ mr: 1 }}
+                          onClick={() => handleEditar(person.id)}
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="warning"
+                          size="small"
+                          sx={{ mr: 1 }}
+                          onClick={() => handleCambiarContraseña(person.id)}
+                        >
+                          Contraseña
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          size="small"
+                          onClick={() => handleEliminar(person.id)}
+                        >
+                          Eliminar
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
