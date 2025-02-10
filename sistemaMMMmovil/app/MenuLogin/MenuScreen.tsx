@@ -129,6 +129,14 @@ export default function MenuScreen() {
             <View style={styles.body}>
                 <Text style={styles.nameText}>{Nombres}</Text>
                 <Text style={styles.nameText}>{Apellidos}</Text>
+
+                {/* Foto debajo del nombre */}
+                {Photo ? (
+                    <Image source={{ uri: Photo }} style={styles.profilePhoto} />
+                ) : (
+                    <FontAwesome name="user-circle" size={80} color="#ccc" style={styles.profilePhotoPlaceholder} />
+                )}
+
                 <Text style={styles.subtitle}>Seleccione una opción</Text>
 
                 {/* Opciones */}
@@ -273,4 +281,15 @@ const styles = StyleSheet.create({
     optionIcon: {
         marginRight: 10,
     },
+    profilePhoto: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        marginVertical: 10,
+    },
+
+    profilePhotoPlaceholder: {
+        marginVertical: 10,
+    },
+
 });
