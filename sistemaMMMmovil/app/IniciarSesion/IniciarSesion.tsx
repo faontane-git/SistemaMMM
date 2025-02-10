@@ -20,18 +20,31 @@ export default function LoginScreen() {
         }
 
         try {
+            console.log("Ingreso");
             const q = query(
-                collection(firestore, 'Feligreses'),
-                where('cedula', '==', cedula.trim()),
-                where('contraseña', '==', password.trim())
+                collection(firestore, 'Personas'),
+                where('Cedula', '==', cedula.trim()),
+                where('Password', '==', password.trim())
             );
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
-                const userData = querySnapshot.docs[0].data(); // Primer resultado
-                const { nombres, apellidos, cedula, fechaNacimiento } = userData;
-                console.log('Datos del usuario:', nombres, apellidos, cedula);
-                navigation.navigate('MenuLogin/MenuScreen', { nombres, apellidos, cedula, fechaNacimiento });
+                const userData = querySnapshot.docs[0].data();
+                const { Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto
+                    , CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
+                    Correo, DireccionDomicilio, EstadoCivil, FechaBaustismo, FechaMatrimonio, Funcion, IglesiaActual,
+                    IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, País, Photo, Sexo
+                } = userData;
+                console.log('Datos del usuario:', Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto
+                    , CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
+                    Correo, DireccionDomicilio, EstadoCivil, FechaBaustismo, FechaMatrimonio, Funcion, IglesiaActual,
+                    IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, País, Photo, Sexo);
+                navigation.navigate('MenuLogin/MenuScreen', {
+                    Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto
+                    , CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
+                    Correo, DireccionDomicilio, EstadoCivil, FechaBaustismo, FechaMatrimonio, Funcion, IglesiaActual,
+                    IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, País, Photo, Sexo
+                });
             } else {
                 Alert.alert('Error', 'Usuario o contraseña incorrectos.');
             }

@@ -13,8 +13,6 @@ import * as MediaLibrary from 'expo-media-library';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
-import { firestore } from '../../firebaseConfig';
-import { getDocs, query, collection, where } from 'firebase/firestore';
 
 interface Persona {
   nombres: string;
@@ -34,35 +32,12 @@ export default function CertificadoMatrimonio() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { cedula } = route.params as { cedula: string };
+  const { Nombres, Apellidos, NombreCoyuge, EstadoCivil, Pastor, Cedula, FechaMatrimonio } =
+    route.params as { Nombres: string, Apellidos: string, EstadoCivil: string, NombreCoyuge: string, Pastor: string, Cedula: string, FechaMatrimonio: string };
 
   useEffect(() => {
     setIsViewReady(true);
   }, []);
-
-  useEffect(() => {
-    const fetchPersona = async () => {
-      try {
-        const q = query(
-          collection(firestore, 'Personas'),
-          where('cedula', '==', cedula)
-        );
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          const data = querySnapshot.docs[0].data() as Persona;
-          setPersona(data);
-        } else {
-          Alert.alert('Error', 'No se encontró información para la cédula proporcionada.');
-        }
-      } catch (error) {
-        console.error('Error al buscar los datos:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPersona();
-  }, [cedula]);
 
   const handleGoBack = () => {
     if (navigation.canGoBack()) {
@@ -108,15 +83,15 @@ export default function CertificadoMatrimonio() {
   const { width } = Dimensions.get('window');
 
   const qrData = JSON.stringify({
-    tipoCertificado:"matrimonio",
+    tipoCertificado: "matrimonio",
     nombres: persona?.nombres || '',
     apellidos: persona?.apellidos || '',
-    cedula: cedula,
+    cedula: Cedula,
     conyuge: persona?.conyuge || '',
     fechaMatrimonio: persona?.fechaMatrimonio || '',
     pastor: persona?.pastor || '',
   });
-  
+
 
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(qrData)}`;
 
@@ -134,12 +109,12 @@ export default function CertificadoMatrimonio() {
 
       <View ref={certificateRef} style={styles.certificate}>
         <Image source={require('../../assets/images/Cmatrimonio.jpg')} style={styles.image} resizeMode="contain" />
-        <Text style={[styles.text, { top: '48%', left: '13%' }]}>{persona?.nombres} {persona?.apellidos}</Text>
-        <Text style={[styles.text, { top: '48%', left: '58%' }]}>{persona?.conyuge}</Text>
-        <Text style={[styles.text, { top: '59%', left: '70%' }]}>{persona?.pastor}</Text>
-        <Text style={[styles.text, { top: '59%', left: '20%' }]}>{persona?.fechaMatrimonio}</Text>
-        <Text style={[styles.text, { top: '63%', left: '10%' }]}>{persona?.nombres} {persona?.apellidos}</Text>
-        <Text style={[styles.text, { top: '63%', left: '60%' }]}>{persona?.conyuge}</Text>
+        <Text style={[styles.text, { top: '48%', left: '13%' }]}>{Nombres} {Apellidos}</Text>
+        <Text style={[styles.text, { top: '48%', left: '58%' }]}>{NombreCoyuge}</Text>
+        <Text style={[styles.text, { top: '59%', left: '70%' }]}>{Pastor}</Text>
+        <Text style={[styles.text, { top: '59%', left: '20%' }]}>{FechaMatrimonio}</Text>
+        <Text style={[styles.text, { top: '63%', left: '10%' }]}>{Nombres} {Apellidos}</Text>
+        <Text style={[styles.text, { top: '63%', left: '60%' }]}>{NombreCoyuge}</Text>
         <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '35.5%', left: '80%' }]} />
       </View>
 

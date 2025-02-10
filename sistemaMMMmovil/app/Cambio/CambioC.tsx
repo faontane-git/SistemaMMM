@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { getFirestore, doc, updateDoc } from 'firebase/firestore';
 
 const db = getFirestore(); // Inicializa Firestore
 
@@ -12,7 +12,7 @@ export default function ChangePasswordScreen() {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const { cedula } = route.params as { cedula: string }; // Parámetro recibido de la navegación
+    const { Password, Cedula } = route.params as { Password: string; Cedula: string }; // Parámetro recibido de la navegación
 
     const handleGoBack = () => {
         if (navigation.canGoBack()) {
@@ -27,38 +27,24 @@ export default function ChangePasswordScreen() {
             Alert.alert('Error', 'Por favor complete todos los campos.');
             return;
         }
+
         if (newPassword !== confirmPassword) {
             Alert.alert('Error', 'Las nuevas contraseñas no coinciden.');
             return;
         }
 
+        // Verificar si la contraseña antigua ingresada es correcta
+        if (oldPassword !== Password) {
+            Alert.alert('Error', 'La antigua contraseña no es correcta.');
+            return;
+        }
+
         try {
-            // Buscar el documento del usuario en la colección Personas
-            const q = query(
-                collection(db, 'Feligreses'), // Reemplaza 'Personas' por el nombre correcto de tu colección
-                where('cedula', '==', cedula)
-            );
+            // Referencia al documento del usuario en Firestore usando su cédula como identificador único
+            const userRef = doc(db, 'Personas', Cedula);
 
-            const querySnapshot = await getDocs(q);
-
-            if (querySnapshot.empty) {
-                Alert.alert('Error', 'Usuario no encontrado.');
-                return;
-            }
-
-            // Obtener el primer documento encontrado
-            const userDoc = querySnapshot.docs[0];
-            const userData = userDoc.data();
-
-            // Verificar la antigua contraseña
-            if (userData.contraseña !== oldPassword) {
-                Alert.alert('Error', 'La antigua contraseña no es correcta.');
-                return;
-            }
-
-            // Actualizar la contraseña
-            const userRef = doc(db, 'Feligreses', userDoc.id);
-            await updateDoc(userRef, { contraseña: newPassword });
+            // Actualizar la contraseña en Firestore
+            await updateDoc(userRef, { Password: newPassword });
 
             Alert.alert('Éxito', 'La contraseña ha sido cambiada correctamente.');
             navigation.goBack(); // Opcional, regresa a la pantalla anterior
@@ -152,19 +138,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         flex: 1,
         textAlign: 'center',
-    },
-    cedulaContainer: {
-        paddingHorizontal: 20,
-        paddingBottom: 10,
-    },
-    cedulaLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    cedulaValue: {
-        fontSize: 16,
-        color: '#555',
     },
     form: {
         paddingHorizontal: 20,

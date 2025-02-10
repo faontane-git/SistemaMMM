@@ -7,10 +7,34 @@ import { RootStackParamList } from '../_layout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type RouteParams = {
-    cedula: string;
-    nombres: string;
-    apellidos: string;
-    fechaNacimiento: string;
+    Nombres: string;
+    Apellidos: string;
+    Cedula: string;
+    FechaNacimiento: string;
+    Activo: string;
+    BautizadoAgua: string;
+    BautizadoEspirutoSanto: string;
+    CargoIglesia: string;
+    CasadoEclesiaticamnete: string;
+    CiudadResidencia: string;
+    ContactoEmergencia: string;
+    ContactoPersonal: string;
+    Correo: string;
+    DireccionDomicilio: string;
+    EstadoCivil: string;
+    FechaBaustismo: string;
+    FechaMatrimonio: string;
+    Funcion: string;
+    IglesiaActual: string;
+    IglesiaBautismo: string;
+    IglesiaMatrimonio: string;
+    Ministro: string;
+    NombreCoyuge: string;
+    Password: string;
+    Pastor: string;
+    País: string;
+    Photo: string;
+    Sexo: string;
 };
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'IniciarSesion/IniciarSesion'>;
@@ -18,18 +42,21 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, '
 export default function MenuScreen() {
     const navigation = useNavigation<LoginScreenNavigationProp>();
     const route = useRoute();
-    const { nombres, apellidos, cedula, fechaNacimiento } = route.params as RouteParams;
+    const { Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto
+        , CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
+        Correo, DireccionDomicilio, EstadoCivil, FechaBaustismo, FechaMatrimonio, Funcion, IglesiaActual,
+        IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, País, Photo, Sexo } = route.params as RouteParams;
 
     const [isBirthdayModalVisible, setIsBirthdayModalVisible] = useState(false);
 
     useEffect(() => {
         const today = new Date();
-        const [year, month, day] = fechaNacimiento.split('-').map(Number);
+        const [year, month, day] = FechaNacimiento.split('-').map(Number);
 
         if (month === today.getMonth() + 1 && day === today.getDate()) {
             setIsBirthdayModalVisible(true);
         }
-    }, [fechaNacimiento]);
+    }, [FechaNacimiento]);
 
     const handleCloseBirthdayModal = () => {
         setIsBirthdayModalVisible(false);
@@ -45,20 +72,20 @@ export default function MenuScreen() {
     };
 
     const handleOptionPress = () => {
-        navigation.navigate('Carnet/CarnetScreen', { cedula });
+        navigation.navigate('Carnet/CarnetScreen', { Nombres, Apellidos, Cedula, Photo, IglesiaActual, CargoIglesia });
     };
     const handleOptionPress2 = () => {
-        navigation.navigate('Carnet/CertificadoBautismo', { cedula });
+        navigation.navigate('Carnet/CertificadoBautismo', { Nombres, Apellidos, Cedula, Pastor, FechaBaustismo });
     };
     const handleOptionPress3 = () => {
-        navigation.navigate('Carnet/CertificadoMatrimonio', { cedula });
+        navigation.navigate('Carnet/CertificadoMatrimonio', { Nombres, Apellidos, EstadoCivil, NombreCoyuge, Pastor, Cedula, FechaMatrimonio });
     };
     const handleValidateCertificatesPress = () => {
         navigation.navigate('Certificados/ValidarCertificados');
     };
 
     const handleCambioPress = () => {
-        navigation.navigate('Cambio/CambioC', { cedula });
+        navigation.navigate('Cambio/CambioC', { Password, Cedula });
     };
 
     return (
@@ -75,7 +102,7 @@ export default function MenuScreen() {
                         <Text style={styles.birthdayTitle}>¡Feliz cumpleaños!</Text>
                         <FontAwesome name="birthday-cake" size={80} color="#f39c12" style={styles.birthdayIcon} />
                         <Text style={styles.birthdayMessage}>
-                            ¡Hoy es tu cumpleaños, {nombres}! Que tengas un gran día. 🥳
+                            ¡Hoy es tu cumpleaños, {Nombres}! Que tengas un gran día. 🥳
                         </Text>
                         <TouchableOpacity
                             style={styles.birthdayButton}
@@ -100,45 +127,35 @@ export default function MenuScreen() {
 
             {/* Bienvenida y opciones */}
             <View style={styles.body}>
-                <Text style={styles.nameText}>{nombres}</Text>
-                <Text style={styles.nameText}>{apellidos}</Text>
+                <Text style={styles.nameText}>{Nombres}</Text>
+                <Text style={styles.nameText}>{Apellidos}</Text>
                 <Text style={styles.subtitle}>Seleccione una opción</Text>
 
                 {/* Opciones */}
-                <TouchableOpacity
-                    style={styles.optionButton}
-                    onPress={handleOptionPress}
-                >
+                <TouchableOpacity style={styles.optionButton} onPress={handleOptionPress}>
+                    <FontAwesome name="id-card" size={20} color="white" style={styles.optionIcon} />
                     <Text style={styles.optionText}>Ver Carnet</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.optionButton}
-                    onPress={handleOptionPress2}
-                >
+                <TouchableOpacity style={styles.optionButton} onPress={handleOptionPress2}>
+                    <FontAwesome name="certificate" size={20} color="white" style={styles.optionIcon} />
                     <Text style={styles.optionText}>Certificado de Bautismo</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.optionButton}
-                    onPress={handleOptionPress3}
-                >
+                <TouchableOpacity style={styles.optionButton} onPress={handleOptionPress3}>
+                    <FontAwesome name="heart" size={20} color="white" style={styles.optionIcon} />
                     <Text style={styles.optionText}>Certificado de Matrimonio</Text>
                 </TouchableOpacity>
 
-                
-                <TouchableOpacity
-                    style={styles.optionButton}
-                    onPress={handleValidateCertificatesPress}
-                >
-                    <Text style={styles.optionText}>Validar Certificados</Text>
-                </TouchableOpacity>
-                
+                {Funcion === "Administrador" && (
+                    <TouchableOpacity style={styles.optionButton} onPress={handleValidateCertificatesPress}>
+                        <FontAwesome name="check-circle" size={20} color="white" style={styles.optionIcon} />
+                        <Text style={styles.optionText}>Validar Certificados</Text>
+                    </TouchableOpacity>
+                )}
 
-                <TouchableOpacity
-                    style={styles.optionButton}
-                    onPress={handleCambioPress}
-                >
+                <TouchableOpacity style={styles.optionButton} onPress={handleCambioPress}>
+                    <FontAwesome name="lock" size={20} color="white" style={styles.optionIcon} />
                     <Text style={styles.optionText}>Cambiar Contraseña</Text>
                 </TouchableOpacity>
             </View>
@@ -238,17 +255,22 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     optionButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
         width: '80%',
         height: 50,
         backgroundColor: '#003580',
         justifyContent: 'center',
-        alignItems: 'center',
         borderRadius: 10,
         marginVertical: 10,
+        paddingHorizontal: 15,
     },
     optionText: {
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    optionIcon: {
+        marginRight: 10,
     },
 });

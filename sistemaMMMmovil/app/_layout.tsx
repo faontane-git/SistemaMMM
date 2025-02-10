@@ -29,17 +29,41 @@ export type RootStackParamList = {
   "Rutas/RutasScreen": undefined;
   "Agenda/HorarioOtrosScreen": undefined;
   "IniciarSesion/IniciarSesion": undefined;
-  "Carnet/CarnetScreen": { cedula: string };
-  "Carnet/CertificadoBautismo": { cedula: string };
-  "Carnet/CertificadoMatrimonio": { cedula: string };
-  "Cambio/CambioC": { cedula: string };
+  "Carnet/CarnetScreen": { Nombres: string, Apellidos: string, Cedula: string, Photo: string, IglesiaActual: string, CargoIglesia: string };
+  "Carnet/CertificadoBautismo": { Nombres: string, Apellidos: string, Cedula: string, Pastor: string, FechaBaustismo: string };
+  "Carnet/CertificadoMatrimonio": { Nombres: string, Apellidos: string, EstadoCivil: string, NombreCoyuge: string, Pastor: string, Cedula: string, FechaMatrimonio: string };
+  "Cambio/CambioC": { Password: string, Cedula: string };
   "QuienesSomos/QuienesSomosScreen": undefined;
   "Doctrina/DoctrinaScreen": undefined;
   "MenuLogin/MenuScreen": {
-    nombres: string;
-    apellidos: string;
-    cedula: string;
-    fechaNacimiento: string;
+    Nombres: string;
+    Apellidos: string;
+    Cedula: string;
+    FechaNacimiento: string;
+    Activo: string;
+    BautizadoAgua: string;
+    BautizadoEspirutoSanto: string;
+    CargoIglesia: string;
+    CasadoEclesiaticamnete: string;
+    CiudadResidencia: string;
+    ContactoEmergencia: string;
+    ContactoPersonal: string;
+    Correo: string;
+    DireccionDomicilio: string;
+    EstadoCivil: string;
+    FechaBaustismo: string;
+    FechaMatrimonio: string;
+    Funcion: string;
+    IglesiaActual: string;
+    IglesiaBautismo: string;
+    IglesiaMatrimonio: string;
+    Ministro: string;
+    NombreCoyuge: string;
+    Password: string;
+    Pastor: string;
+    País: string;
+    Photo: string;
+    Sexo: string;
   };
   "RedesSociales/RedesSocialesScreen": undefined;
   "Noticias/VerMasNoticias": undefined;
@@ -71,7 +95,7 @@ const MainStack = () => {
       <Stack.Screen name="Carnet/CertificadoBautismo" component={CertificadoBautismo} />
       <Stack.Screen name="Carnet/CertificadoMatrimonio" component={CertificadoMatrimonio} />
       <Stack.Screen name="Certificados/ValidarCertificados" component={ValidarCertificados} />
- 
+
       {/* Otras Pantallas */}
       <Stack.Screen name="Rutas/RutasScreen" component={RutasScreen} />
       <Stack.Screen name="Doctrina/DoctrinaScreen" component={DoctrinaScreen} />
@@ -82,7 +106,7 @@ const MainStack = () => {
       {/* Pantalla de Ver Más Noticias */}
       <Stack.Screen name="Noticias/VerMasNoticias" component={VerMasNoticias} />
       <Stack.Screen name="Home/VerMasSermones" component={VerMasSermones} />
-     </Stack.Navigator>
+    </Stack.Navigator>
   );
 };
 

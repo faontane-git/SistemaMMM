@@ -13,8 +13,6 @@ import * as MediaLibrary from 'expo-media-library';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
-import { firestore } from '../../firebaseConfig';
-import { getDocs, query, collection, where } from 'firebase/firestore';
 import * as FileSystem from 'expo-file-system';
 import * as Print from 'expo-print';
 import { Platform, ActionSheetIOS } from 'react-native';
@@ -23,8 +21,6 @@ interface Persona {
   nombres: string;
   apellidos: string;
   cedula: string;
-  foto: string;
-  casadoEclesiasticamente: string;
   conyuge: string;
   pastor: string;
   fechaBautizo: string;
@@ -37,35 +33,12 @@ export default function CertificadoBautismo() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { cedula } = route.params as { cedula: string };
+  const { Nombres, Apellidos, FechaBaustismo, Pastor, Cedula } =
+    route.params as { Nombres: string, Apellidos: string, FechaBaustismo: string, Pastor: string, Cedula: string };
 
   useEffect(() => {
     setIsViewReady(true);
   }, []);
-
-  useEffect(() => {
-    const fetchPersona = async () => {
-      try {
-        const q = query(
-          collection(firestore, 'Personas'),
-          where('cedula', '==', cedula)
-        );
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          const data = querySnapshot.docs[0].data() as Persona;
-          setPersona(data);
-        } else {
-          Alert.alert('Error', 'No se encontró información para la cédula proporcionada.');
-        }
-      } catch (error) {
-        console.error('Error al buscar los datos:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPersona();
-  }, [cedula]);
 
   const handleGoBack = () => {
     if (navigation.canGoBack()) {
@@ -208,13 +181,13 @@ export default function CertificadoBautismo() {
   const { width } = Dimensions.get('window');
 
   const qrData = JSON.stringify({
-    tipoCertificado:"bautismo",
-    nombres: persona?.nombres || '',
-    apellidos: persona?.apellidos || '',
-    cedula: cedula || '',
-    conyuge: persona?.conyuge || '',
-    pastor: persona?.pastor || '',
-    fechaBautizo: persona?.fechaBautizo || '',
+    tipoCertificado: "bautismo",
+    nombres: Nombres || '',
+    apellidos: Apellidos || '',
+    cedula: Cedula || '',
+    conyuge: '',
+    pastor: Pastor || '',
+    fechaBautizo: FechaBaustismo || '',
   });
 
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
@@ -244,9 +217,9 @@ export default function CertificadoBautismo() {
         ]}
       >
         <Image source={require('../../assets/images/Cbautismo.jpg')} style={styles.image} resizeMode="contain" />
-        <Text style={[styles.text, { top: '53%', left: '27%' }]}>{persona?.nombres} {persona?.apellidos}</Text>
-        <Text style={[styles.text, { top: '62%', left: '20%' }]}>{persona?.fechaBautizo}</Text>
-        <Text style={[styles.signature, { top: '67%', left: '30%' }]}>{persona?.pastor}</Text>
+        <Text style={[styles.text, { top: '53%', left: '27%' }]}>{Nombres} {Apellidos}</Text>
+        <Text style={[styles.text, { top: '62%', left: '20%' }]}>{FechaBaustismo}</Text>
+        <Text style={[styles.signature, { top: '67%', left: '30%' }]}>{Pastor}</Text>
         <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '26.5%', left: '75%' }]} />
       </View>
 

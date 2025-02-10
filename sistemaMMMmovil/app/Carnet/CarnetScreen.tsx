@@ -2,65 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { getDocs, query, collection, where } from 'firebase/firestore';
-import { firestore } from '../../firebaseConfig';
-
-interface Persona {
-    nombres: string;
-    apellidos: string;
-    cedula: string;
-    foto: string; // Base64 de la imagen
-    cargoIglesia: string;
-}
 
 export default function CarnetScreen() {
     const navigation = useNavigation();
     const route = useRoute();
-    const { cedula } = route.params as { cedula: string };
-    const [persona, setPersona] = useState<Persona | null>(null);
+    const { Nombres,Apellidos,Cedula,Photo,IglesiaActual,CargoIglesia
+     } = route.params as {Nombres:string,Apellidos:string,Cedula: string,Photo:string,IglesiaActual:string,CargoIglesia:string };
     const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchPersona = async () => {
-            try {
-                const q = query(
-                    collection(firestore, 'Personas'),
-                    where('cedula', '==', cedula)
-                );
-                const querySnapshot = await getDocs(q);
-                if (!querySnapshot.empty) {
-                    const data = querySnapshot.docs[0].data() as Persona;
-                    setPersona(data);
-                } else {
-                    console.error('No se encontraron datos para la cédula:', cedula);
-                }
-            } catch (error) {
-                console.error('Error al buscar los datos:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPersona();
-    }, [cedula]);
 
     const handleGoBack = () => {
         navigation.goBack();
     };
 
-    if (loading) {
-        return (
-            <View style={styles.container}>
-                <ActivityIndicator size="large" color="#ffffff" />
-                <Text style={styles.loadingText}>Cargando datos...</Text>
-            </View>
-        );
-    }
 
-    if (!persona) {
+
+    if (!Cedula) {
         return (
             <View style={styles.container}>
-                <Text style={styles.errorText}>No se encontraron datos para la cédula {cedula}</Text>
+                <Text style={styles.errorText}>No se encontraron datos para la cédula {Cedula}</Text>
                 <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
                     <Text style={styles.backButtonText}>Volver</Text>
                 </TouchableOpacity>
@@ -71,9 +30,9 @@ export default function CarnetScreen() {
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
         JSON.stringify({
             tipoCertificado:"carnet",
-            nombres: persona.nombres,
-            apellidos: persona.apellidos,
-            cedula: persona.cedula,
+            Nombres: Nombres,
+            Apellidos: Apellidos,
+            Cedula: Cedula,
          })
     )}`;
 
@@ -89,13 +48,12 @@ export default function CarnetScreen() {
                 {/* Contenido superpuesto */}
                 <View style={styles.overlay}>
                     {/* Título */}
-                    <Text style={styles.title}>IGLESIA MMM</Text>
-                    <Text style={styles.subtitle}>FCO. DE ORELLANA</Text>
-
+                    <Text style={styles.title}>{IglesiaActual}</Text>
+ 
                     {/* Foto de perfil */}
                     <View style={styles.profileSection}>
-                        {persona.foto ? (
-                            <Image source={{ uri: persona.foto }} style={styles.profileImage} />
+                        {Photo ? (
+                            <Image source={{ uri: Photo }} style={styles.profileImage} />
                         ) : (
                             <FontAwesome name="user-circle" size={100} color="#ccc" />
                         )}
@@ -103,16 +61,16 @@ export default function CarnetScreen() {
 
                     {/* Información personal */}
                     <View style={styles.infoContainer}>
-                        <Text style={styles.infoValue}>{persona.nombres}</Text>
+                        <Text style={styles.infoValue}>{Nombres}</Text>
                     </View>
                     <View style={styles.infoContainer}>
-                        <Text style={styles.infoValue}>{persona.apellidos}</Text>
+                        <Text style={styles.infoValue}>{Apellidos}</Text>
                     </View>
                     <View style={styles.infoContainer}>
-                        <Text style={styles.infoValue}>{persona.cedula}</Text>
+                        <Text style={styles.infoValue}>{Cedula}</Text>
                     </View>
                     <View style={styles.infoContainer}>
-                        <Text style={styles.infoValue}>{persona.cargoIglesia}</Text>
+                        <Text style={styles.infoValue}>{CargoIglesia}</Text>
                     </View>
 
                     {/* Código QR */}
