@@ -3,16 +3,18 @@ import { View, Text, StyleSheet, Alert, Image, TouchableOpacity, Dimensions } fr
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { collection, query, where, getDocs, getFirestore } from "firebase/firestore";
 
 interface CertificadoData {
   tipoCertificado: string;
-  nombres: string;
-  apellidos: string;
-  cedula: string;
-  conyuge?: string;
-  pastor?: string;
-  fechaBautizo?: string;
-  fechaMatrimonio?: string;
+  Nombres: string;
+  Apellidos: string;
+  Cedula: string;
+  Conyuge?: string;
+  Pastor?: string;
+  Photo?: string;
+  FechaBautizo?: string;
+  FechaMatrimonio?: string;
 }
 
 export default function ValidarCertificados() {
@@ -20,6 +22,7 @@ export default function ValidarCertificados() {
   const [scanned, setScanned] = useState(false);
   const [certificadoData, setCertificadoData] = useState<CertificadoData | null>(null);
   const navigation = useNavigation();
+  const db = getFirestore();
 
   useEffect(() => {
     if (!permission) {
@@ -27,25 +30,50 @@ export default function ValidarCertificados() {
     }
   }, [permission]);
 
-  const handleBarCodeScanned = ({ data }: { data: string }) => {
+  const handleBarCodeScanned = async ({ data }: { data: string }) => {
     if (!scanned) {
       setScanned(true);
       try {
         const parsedData: CertificadoData = JSON.parse(data);
-        if (['carnet', 'bautismo', 'matrimonio'].includes(parsedData.tipoCertificado)) {
-          setCertificadoData(parsedData);
-        } else {
-          Alert.alert('Código QR no válido', 'El tipo de certificado no es válido.', [
-            { text: 'OK', onPress: () => setScanned(false) }
+
+        if (!['carnet', 'bautismo', 'matrimonio'].includes(parsedData.tipoCertificado)) {
+          Alert.alert("Código QR no válido", "El tipo de certificado no es válido.", [
+            { text: "OK", onPress: () => setScanned(false) }
           ]);
+          return;
         }
+
+        if (parsedData.tipoCertificado === "carnet") {
+          // 🔍 Buscar en Firebase Firestore la persona con la cédula escaneada
+          const personasCollection = collection(db, "Personas");
+          const q = query(personasCollection, where("Cedula", "==", parsedData.Cedula));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            // 📌 Obtener el primer documento encontrado
+            const personaDoc = querySnapshot.docs[0];
+            const personaData = personaDoc.data();
+            parsedData.Photo = personaData.Photo || ""; // ✅ Guardar la foto encontrada
+          } else {
+            Alert.alert("Error", "No se encontró la persona en la base de datos.", [
+              { text: "OK", onPress: () => navigation.goBack() } // 🔥 Regresa a la pantalla anterior al tocar "OK"
+            ]);
+            setScanned(false);
+            return;
+          }
+        }
+
+        // ✅ Actualizar el estado con los datos del certificado y la foto encontrada
+        setCertificadoData(parsedData);
+
       } catch (error) {
-        Alert.alert('Error', 'El código QR no contiene datos válidos.', [
-          { text: 'OK', onPress: () => setScanned(false) }
-        ]);
+        console.log("Error al procesar el QR:", error);
+        Alert.alert("Error", "El código QR no contiene datos válidos.");
+        setScanned(false);
       }
     }
   };
+
 
   const handleGoBack = () => {
     navigation.goBack();
@@ -89,31 +117,36 @@ export default function ValidarCertificados() {
           {certificadoData.tipoCertificado === 'carnet' && (
             <>
               <Text style={styles.validText}>Carnet Válido</Text>
-              <Text style={styles.certificadoText}>Nombres: {certificadoData.nombres}</Text>
-              <Text style={styles.certificadoText}>Apellidos: {certificadoData.apellidos}</Text>
-              <Text style={styles.certificadoText}>Cédula: {certificadoData.cedula}</Text>
+              <Text style={styles.certificadoText}>Nombres: {certificadoData.Nombres}</Text>
+              <Text style={styles.certificadoText}>Apellidos: {certificadoData.Apellidos}</Text>
+              <Text style={styles.certificadoText}>Cédula: {certificadoData.Cedula}</Text>
+              {certificadoData.Photo ? (
+                <Image source={{ uri: certificadoData.Photo }} style={styles.profileImage} />
+              ) : (
+                <Text style={styles.certificadoText}>No hay foto disponible</Text>
+              )}
             </>
           )}
           {certificadoData.tipoCertificado === 'bautismo' && (
             <>
               <Text style={styles.validText}>Certificado de Bautismo Válido</Text>
-              <Text style={styles.certificadoText}>Nombres: {certificadoData.nombres}</Text>
-              <Text style={styles.certificadoText}>Apellidos: {certificadoData.apellidos}</Text>
-              <Text style={styles.certificadoText}>Cédula: {certificadoData.cedula}</Text>
-              <Text style={styles.certificadoText}>Cónyuge: {certificadoData.conyuge}</Text>
-              <Text style={styles.certificadoText}>Pastor: {certificadoData.pastor}</Text>
-              <Text style={styles.certificadoText}>Fecha de Bautizo: {certificadoData.fechaBautizo}</Text>
+              <Text style={styles.certificadoText}>Nombres: {certificadoData.Nombres}</Text>
+              <Text style={styles.certificadoText}>Apellidos: {certificadoData.Apellidos}</Text>
+              <Text style={styles.certificadoText}>Cédula: {certificadoData.Cedula}</Text>
+              <Text style={styles.certificadoText}>Cónyuge: {certificadoData.Conyuge}</Text>
+              <Text style={styles.certificadoText}>Pastor: {certificadoData.Pastor}</Text>
+              <Text style={styles.certificadoText}>Fecha de Bautizo: {certificadoData.FechaBautizo}</Text>
             </>
           )}
           {certificadoData.tipoCertificado === 'matrimonio' && (
             <>
               <Text style={styles.validText}>Certificado de Matrimonio Válido</Text>
-              <Text style={styles.certificadoText}>Nombres: {certificadoData.nombres}</Text>
-              <Text style={styles.certificadoText}>Apellidos: {certificadoData.apellidos}</Text>
-              <Text style={styles.certificadoText}>Cédula: {certificadoData.cedula}</Text>
-              <Text style={styles.certificadoText}>Cónyuge: {certificadoData.conyuge}</Text>
-              <Text style={styles.certificadoText}>Fecha de Matrimonio: {certificadoData.fechaMatrimonio}</Text>
-              <Text style={styles.certificadoText}>Pastor: {certificadoData.pastor}</Text>
+              <Text style={styles.certificadoText}>Nombres: {certificadoData.Nombres}</Text>
+              <Text style={styles.certificadoText}>Apellidos: {certificadoData.Apellidos}</Text>
+              <Text style={styles.certificadoText}>Cédula: {certificadoData.Cedula}</Text>
+              <Text style={styles.certificadoText}>Cónyuge: {certificadoData.Conyuge}</Text>
+              <Text style={styles.certificadoText}>Fecha de Matrimonio: {certificadoData.FechaMatrimonio}</Text>
+              <Text style={styles.certificadoText}>Pastor: {certificadoData.Pastor}</Text>
             </>
           )}
           <TouchableOpacity style={styles.button} onPress={() => { setScanned(false); setCertificadoData(null); }}>
@@ -205,6 +238,12 @@ const styles = StyleSheet.create({
   certificadoText: {
     fontSize: 16,
     marginBottom: 5,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginVertical: 10,
   },
   button: {
     marginTop: 20,

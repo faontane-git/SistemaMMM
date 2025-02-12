@@ -39,8 +39,14 @@ export default function CertificadoMatrimonio() {
     route.params as { Nombres: string, Apellidos: string, EstadoCivil: string, NombreCoyuge: string, Pastor: string, Cedula: string, FechaMatrimonio: string };
 
   useEffect(() => {
-    setIsViewReady(true);
+    if (EstadoCivil !== 'CASADO') {
+      Alert.alert("Aviso", "Estimado/a, no puede generar este certificado.");
+      navigation.goBack(); // Vuelve a la pantalla anterior
+    } else {
+      setIsViewReady(true);
+    }
   }, []);
+
 
   const handleGoBack = () => {
     if (navigation.canGoBack()) {

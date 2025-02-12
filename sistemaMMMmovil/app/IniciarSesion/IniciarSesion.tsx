@@ -35,10 +35,6 @@ export default function LoginScreen() {
                     Correo, DireccionDomicilio, EstadoCivil, FechaBaustismo, FechaMatrimonio, Funcion, IglesiaActual,
                     IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, País, Photo, Sexo
                 } = userData;
-                console.log('Datos del usuario:', Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto
-                    , CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
-                    Correo, DireccionDomicilio, EstadoCivil, FechaBaustismo, FechaMatrimonio, Funcion, IglesiaActual,
-                    IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, País, Photo, Sexo);
                 navigation.navigate('MenuLogin/MenuScreen', {
                     Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto
                     , CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
