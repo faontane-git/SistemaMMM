@@ -23,6 +23,7 @@ import Consultas from './components/Consultas/Consultas';
 import EnviarNotificacion from './components/Sermones/EnviarNotificacion';
 import ProtectedRoute from './components/ProtectedRoute';
 import CrearAudio from './components/DetalleAudios/CrearAudio';
+import FormularioNotificacion from './components/Sermones/FormularioNotificacion';
 
 const App: React.FC = () => {
     return (
@@ -49,6 +50,7 @@ const App: React.FC = () => {
                         <Route path="/editar-persona/:id" element={<EditarPersona />} />
                         <Route path="/consultas" element={<Consultas />} />
                         <Route path="/enviarNotificacion" element={<EnviarNotificacion />} />
+                        <Route path="/crear-notificacion" element={<FormularioNotificacion />} />
                         <Route path="/crear-audio" element={<CrearAudio />} />
                     </Route>
                 </Routes>
@@ -58,4 +60,3 @@ const App: React.FC = () => {
 };
 
 export default App;
- 
