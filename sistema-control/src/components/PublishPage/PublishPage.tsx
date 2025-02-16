@@ -17,6 +17,7 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 import ShareIcon from '@mui/icons-material/Share';
 import MapIcon from '@mui/icons-material/Map';
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
+import HomeIcon from '@mui/icons-material/Home';
 
 // Definimos los items fuera del componente para evitar recreaciones innecesarias
 const publishOptions = [
@@ -31,12 +32,6 @@ const publishOptions = [
     icon: <AudiotrackIcon sx={{ fontSize: 35, color: '#673ab7', mb: 1 }} />,
     title: "Audios",
     description: "Escucha sermones y mensajes de audio de nuestros líderes.",
-  },
-  {
-    to: "/contactos",
-    icon: <ContactsIcon sx={{ fontSize: 35, color: '#388e3c', mb: 1 }} />,
-    title: "Contactos",
-    description: "Accede a los contactos de miembros y líderes de la comunidad.",
   },
   {
     to: "/agenda",
@@ -55,6 +50,12 @@ const publishOptions = [
     icon: <MapIcon sx={{ fontSize: 35, color: '#4caf50', mb: 1 }} />,
     title: "Rutas",
     description: "Encuentra las mejores rutas para llegar a nuestras instalaciones.",
+  },
+  {
+    to: "/bienvenida",
+    icon: <HomeIcon sx={{ fontSize: 35, color: '#ffeb3b', mb: 1 }} />,
+    title: "Bienvenida",
+    description: "Explora nuestra comunidad y conoce más sobre nosotros.",
   },
 ];
 

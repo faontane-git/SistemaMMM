@@ -24,6 +24,7 @@ import EnviarNotificacion from './components/Sermones/EnviarNotificacion';
 import ProtectedRoute from './components/ProtectedRoute';
 import CrearAudio from './components/DetalleAudios/CrearAudio';
 import FormularioNotificacion from './components/Sermones/FormularioNotificacion';
+import BienvenidaPage from './components/Bienvenida/Bienvenida';
 
 const App: React.FC = () => {
     return (
@@ -52,6 +53,7 @@ const App: React.FC = () => {
                         <Route path="/enviarNotificacion" element={<EnviarNotificacion />} />
                         <Route path="/crear-notificacion" element={<FormularioNotificacion />} />
                         <Route path="/crear-audio" element={<CrearAudio />} />
+                        <Route path='/bienvenida' element={<BienvenidaPage/>}/>
                     </Route>
                 </Routes>
             </Router>
