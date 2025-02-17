@@ -16,18 +16,44 @@ import Carousel from 'react-native-reanimated-carousel';
 import { Dimensions } from 'react-native';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 
-interface Contacto {
-  id: string;
-  foto: string;
-  nombre: string;
-  telefono: string;
+// Definir la interfaz Persona
+interface Persona {
+  Nombres: string;
+  Apellidos: string;
+  Cedula: string;
+  FechaNacimiento: string;
+  Activo: string;
+  BautizadoAgua: string;
+  BautizadoEspirutoSanto: string;
+  CargoIglesia: string;
+  CasadoEclesiaticamnete: string;
+  CiudadResidencia: string;
+  ContactoEmergencia: string;
+  ContactoPersonal: string;
+  Correo: string;
+  DireccionDomicilio: string;
+  EstadoCivil: string;
+  FechaBaustismo: string;
+  FechaMatrimonio: string;
+  Funcion: string;
+  IglesiaActual: string;
+  IglesiaBautismo: string;
+  IglesiaMatrimonio: string;
+  Ministro: string;
+  NombreCoyuge: string;
+  Password: string;
+  Pastor: string;
+  País: string;
+  Photo: string;
+  Sexo: string;
 }
+
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function ContactosScreen() {
   const navigation = useNavigation();
-  const [contactos, setContactos] = useState<Contacto[]>([]);
+  const [contactos, setContactos] = useState<Persona[]>([]);
   const [loading, setLoading] = useState(true);
   const [galeria, setGaleria] = useState<number[]>([
     require('../../assets/images/galeria1.jpeg'),
@@ -41,25 +67,46 @@ export default function ContactosScreen() {
   const db = getFirestore();
 
   useEffect(() => {
-    const obtenerContactos = async () => {
+    const obtenerContactos = async (db: any, setContactos: (data: Persona[]) => void, setLoading: (loading: boolean) => void) => {
       try {
-        const contactosCollection = collection(db, 'Contactos');
+        const contactosCollection = collection(db, 'Personas');
         const querySnapshot = await getDocs(contactosCollection);
 
-        const contactosArray: Contacto[] = querySnapshot.docs
-          .map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as Contacto[];
-
-        // Ordenar contactos por ID de menor a mayor
-        contactosArray.sort((a, b) => {
-          const idA = parseInt(a.id, 10); // Asegúrate de que sea numérico
-          const idB = parseInt(b.id, 10); // Asegúrate de que sea numérico
-          return idA - idB;
+        const contactosArray: Persona[] = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            Nombres: data.Nombres || '',
+            Apellidos: data.Apellidos || '',
+            Cedula: data.Cedula || '',
+            FechaNacimiento: data.FechaNacimiento || '',
+            Activo: data.Activo || '',
+            BautizadoAgua: data.BautizadoAgua || '',
+            BautizadoEspirutoSanto: data.BautizadoEspirutoSanto || '',
+            CargoIglesia: data.CargoIglesia || '',
+            CasadoEclesiaticamnete: data.CasadoEclesiaticamnete || '',
+            CiudadResidencia: data.CiudadResidencia || '',
+            ContactoEmergencia: data.ContactoEmergencia || '',
+            ContactoPersonal: data.ContactoPersonal || '',
+            Correo: data.Correo || '',
+            DireccionDomicilio: data.DireccionDomicilio || '',
+            EstadoCivil: data.EstadoCivil || '',
+            FechaBaustismo: data.FechaBaustismo || '',
+            FechaMatrimonio: data.FechaMatrimonio || '',
+            Funcion: data.Funcion || '',
+            IglesiaActual: data.IglesiaActual || '',
+            IglesiaBautismo: data.IglesiaBautismo || '',
+            IglesiaMatrimonio: data.IglesiaMatrimonio || '',
+            Ministro: data.Ministro || '',
+            NombreCoyuge: data.NombreCoyuge || '',
+            Password: data.Password || '',
+            Pastor: data.Pastor || '',
+            País: data.País || '',
+            Photo: data.Photo || '',
+            Sexo: data.Sexo || '',
+          };
         });
 
-        setContactos(contactosArray);
+        setContactos(contactosArray); // 🔹 Se almacenan los datos en el estado
       } catch (error) {
         console.error('Error al obtener los contactos:', error);
         ToastAndroid.show('Error al cargar contactos', ToastAndroid.SHORT);
@@ -68,7 +115,8 @@ export default function ContactosScreen() {
       }
     };
 
-    obtenerContactos();
+
+    obtenerContactos(db, setContactos, setLoading); // 🔥 Ahora se llama correctamente
   }, []);
 
 
@@ -105,12 +153,12 @@ export default function ContactosScreen() {
     </View>
   );
 
-  const ContactCard = ({ contacto }: { contacto: Contacto }) => (
+  const ContactCard = ({ contacto }: { contacto: Persona }) => (
     <View style={styles.contactCard}>
-      <Image source={{ uri: contacto.foto }} style={styles.contactImage} />
+      <Image source={{ uri: contacto.Photo }} style={styles.contactImage} />
       <View style={styles.contactInfo}>
-        <Text style={styles.contactName}>{contacto.nombre}</Text>
-        <Text style={styles.contactPhone}>Teléfono: {contacto.telefono}</Text>
+        <Text style={styles.contactName}>{contacto.CargoIglesia} {contacto.Nombres}</Text>
+        <Text style={styles.contactPhone}>Teléfono: {contacto.ContactoPersonal}</Text>
       </View>
     </View>
   );
@@ -155,10 +203,23 @@ export default function ContactosScreen() {
         ) : (
           <View>
             <Text style={styles.contactHeader}>Contactos</Text>
-            {contactos.map((contacto) => (
-              <ContactCard key={contacto.id} contacto={contacto} />
-            ))}
+            {contactos
+              .filter((contacto) =>
+                ["PASTOR", "PASTORA", "CO-PASTOR"].includes(contacto.CargoIglesia)
+              ) // 🔥 Filtra solo los cargos especificados
+              .sort((a, b) => {
+                const order = { PASTOR: 1, PASTORA: 2, "CO-PASTOR": 3 }; // 📌 Orden deseado
+                return (
+                  (order[a.CargoIglesia as keyof typeof order] || 99) -
+                  (order[b.CargoIglesia as keyof typeof order] || 99)
+                );
+              }) // 🔥 Ordena los cargos según la prioridad definida
+              .map((contacto) => (
+                <ContactCard key={contacto.Cedula} contacto={contacto} />
+              ))}
           </View>
+
+
         )}
 
         <View style={styles.emailBox}>
@@ -228,7 +289,7 @@ const styles = StyleSheet.create({
   contactCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', padding: 15, borderRadius: 8, marginBottom: 15 },
   contactImage: { width: 50, height: 50, borderRadius: 25, marginRight: 15 },
   contactInfo: { flex: 1 },
-  contactName: { fontSize: 18, fontWeight: 'bold', color: '#34495e' },
+  contactName: { fontSize: 14, fontWeight: 'bold', color: '#34495e' },
   contactPhone: { fontSize: 14, color: '#7f8c8d' },
   emailBox: { flexDirection: 'row', alignItems: 'center', padding: 15, backgroundColor: '#3498db', borderRadius: 10, marginTop: 20 },
   emailIcon: { marginRight: 8 },

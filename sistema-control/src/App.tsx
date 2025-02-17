@@ -10,7 +10,6 @@ import Settings from './components/Settings/Settings';
 import Metrics from './components/Settings/Metrics';
 import CrearNoticia from './components/CrearNoticia/CrearNoticia';
 import DetalleNoticia from './components/DetalleNoticia/DetalleNoticia';
-import Contactos from './components/Contactos/Contactos';
 import Agenda from './components/Agenda/Agenda';
 import RedesSociales from './components/RedesSociales/RedesSociales';
 import Rutas from './components/Rutas/Rutas';
@@ -40,7 +39,6 @@ const App: React.FC = () => {
                         <Route path="/metrics" element={<Metrics />} />
                         <Route path="/crear-noticia" element={<CrearNoticia />} />
                         <Route path="/detalle-noticia" element={<DetalleNoticia />} />
-                        <Route path="/contactos" element={<Contactos />} />
                         <Route path="/subir-audio" element={<SubirAudio />} />
                         <Route path="/detalle-audio" element={<DetalleAudio />} />
                         <Route path="/rutas" element={<Rutas />} />
@@ -53,7 +51,7 @@ const App: React.FC = () => {
                         <Route path="/enviarNotificacion" element={<EnviarNotificacion />} />
                         <Route path="/crear-notificacion" element={<FormularioNotificacion />} />
                         <Route path="/crear-audio" element={<CrearAudio />} />
-                        <Route path='/bienvenida' element={<BienvenidaPage/>}/>
+                        <Route path='/bienvenida' element={<BienvenidaPage />} />
                     </Route>
                 </Routes>
             </Router>

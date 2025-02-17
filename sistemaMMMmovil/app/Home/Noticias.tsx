@@ -9,7 +9,7 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 
 interface NoticiasProps {
-    noticias: Array<{ id: string; titulo: string; fotoBase64?: string; descripcion?: string }>;
+    noticias: Array<{ id: string; titulo: string; fotoBase64?: string; descripcion?: string, fecha?: string }>;
     handleOptionPress: (option: string) => void;
 }
 
@@ -35,6 +35,9 @@ const Noticias: React.FC<NoticiasProps> = ({ noticias, handleOptionPress }) => {
                 />
                 <View style={styles.textContent}>
                     <Text style={styles.newsItemTitle}>{ultimaNoticia.titulo}</Text>
+                    <Text style={styles.date}>
+                        Publicado el: {new Date(ultimaNoticia.fecha || Date.now()).toLocaleDateString()}
+                    </Text>
                     <Text style={styles.newsDescription}>
                         {ultimaNoticia.descripcion}
                     </Text>
@@ -92,6 +95,11 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: '#2C3E50',
+        marginBottom: 10,
+    },    
+    date: {
+        fontSize: 14,
+        color: '#888',
         marginBottom: 10,
     },
     newsDescription: {
