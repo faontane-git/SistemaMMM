@@ -114,16 +114,28 @@ export default function HomeScreen() {
                 )}
             </View>
 
-            {/* Botón de Ver Doctrina */}
+            {/* Botón de Ver Doctrina y Medicina al Corazón */}
             <View style={styles.doctrinaSection}>
-                <TouchableOpacity
-                    style={styles.doctrinaButton}
-                    onPress={() => handleOptionPress('Doctrina/DoctrinaScreen')}
-                >
-                    <FontAwesome name="book" size={20} color="white" />
-                    <Text style={styles.doctrinaButtonText}>Ver Doctrina</Text>
-                </TouchableOpacity>
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                        style={styles.smallButton}
+                        onPress={() => handleOptionPress('Doctrina/DoctrinaScreen')}
+                    >
+                        <FontAwesome name="book" size={16} color="white" />
+                        <Text style={styles.smallButtonText}>Ver Doctrina</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={[styles.smallButton, styles.medicinaButton]}
+                        onPress={() => setModalVisible(true)}
+                        >
+                        <FontAwesome name="heart" size={16} color="white" />
+                        <Text style={styles.smallButtonText}>Medicina al Corazón</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
+
+
         </>
     );
 
@@ -281,6 +293,32 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     doctrinaSection: { marginVertical: 0, alignItems: 'center' },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    smallButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#2980b9', // 🔵 Color original para "Ver Doctrina"
+        paddingHorizontal: 10, // 📌 Más estrecho
+        paddingVertical: 8, // 📌 Menos altura
+        borderRadius: 30, // 🔹 Bordes redondeados pequeños
+        marginHorizontal: 5, // 📌 Espacio entre botones
+        justifyContent: 'center',
+    },
+    
+    medicinaButton: {
+        backgroundColor: '#C0392B', // 🔴 Rojo para "Medicina al Corazón"
+    },
+    
+    smallButtonText: {
+        color: 'white',
+        fontSize: 14, // 📌 Texto más pequeño
+        marginLeft: 5, // 📌 Espacio entre icono y texto
+    },
     doctrinaButton: {
         flexDirection: 'row',
         alignItems: 'center',
