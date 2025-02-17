@@ -44,7 +44,7 @@ const EnviarNotificacion: React.FC = () => {
             const mensajesRef = collection(db, "mensajes");
             const querySnapshot = await getDocs(mensajesRef);
             const datos = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Notificacion[];
-            
+
             // Ordenar las notificaciones por fecha de menor a mayor
             datos.sort((a, b) => {
                 const parseFecha = (fecha: string) => {
@@ -98,11 +98,13 @@ const EnviarNotificacion: React.FC = () => {
                     sx={{ mb: 3 }}
                 >
                     <MenuItem value="">Todos</MenuItem>
-                    {[...Array(12)].map((_, i) => (
-                        <MenuItem key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
-                            {`Mes ${i + 1}`}
-                        </MenuItem>
-                    ))}
+                    {["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+                        .map((mes, i) => (
+                            <MenuItem key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
+                                {mes}
+                            </MenuItem>
+                        ))}
+
                 </TextField>
                 <Button variant="contained" color="primary" fullWidth sx={{ mb: 3 }} onClick={() => navigate("/crear-notificacion")}>
                     Crear Notificación
@@ -132,9 +134,9 @@ const EnviarNotificacion: React.FC = () => {
                                         <TableCell>{notif.referenciaEn}</TableCell>
                                         <TableCell>{notif.mensaje_en}</TableCell>
                                         <TableCell>
-                                            <Button 
-                                                variant="contained" 
-                                                color="secondary" 
+                                            <Button
+                                                variant="contained"
+                                                color="secondary"
                                                 onClick={() => handleEliminar(notif.id)}
                                             >
                                                 Eliminar

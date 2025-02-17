@@ -22,6 +22,12 @@ import HomeIcon from '@mui/icons-material/Home';
 // Definimos los items fuera del componente para evitar recreaciones innecesarias
 const publishOptions = [
   {
+    to: "/bienvenida",
+    icon: <HomeIcon sx={{ fontSize: 35, color: '#ffeb3b', mb: 1 }} />,
+    title: "Bienvenida",
+    description: "Explora nuestra comunidad y conoce más sobre nosotros.",
+  },
+  {
     to: "/detalle-noticia",
     icon: <EventIcon sx={{ fontSize: 35, color: '#1976d2', mb: 1 }} />,
     title: "Noticia y eventos",
@@ -34,6 +40,12 @@ const publishOptions = [
     description: "Escucha sermones y mensajes de audio de nuestros líderes.",
   },
   {
+    to: "/rutas",
+    icon: <MapIcon sx={{ fontSize: 35, color: '#4caf50', mb: 1 }} />,
+    title: "Rutas",
+    description: "Encuentra las mejores rutas para llegar a nuestras instalaciones.",
+  },
+  {
     to: "/agenda",
     icon: <ScheduleIcon sx={{ fontSize: 35, color: '#d32f2f', mb: 1 }} />,
     title: "Agenda",
@@ -44,19 +56,7 @@ const publishOptions = [
     icon: <ShareIcon sx={{ fontSize: 35, color: '#ff5722', mb: 1 }} />,
     title: "Redes Sociales",
     description: "Conéctate con nosotros a través de nuestras redes sociales oficiales.",
-  },
-  {
-    to: "/rutas",
-    icon: <MapIcon sx={{ fontSize: 35, color: '#4caf50', mb: 1 }} />,
-    title: "Rutas",
-    description: "Encuentra las mejores rutas para llegar a nuestras instalaciones.",
-  },
-  {
-    to: "/bienvenida",
-    icon: <HomeIcon sx={{ fontSize: 35, color: '#ffeb3b', mb: 1 }} />,
-    title: "Bienvenida",
-    description: "Explora nuestra comunidad y conoce más sobre nosotros.",
-  },
+  }
 ];
 
 const PublishPage: React.FC = () => {
