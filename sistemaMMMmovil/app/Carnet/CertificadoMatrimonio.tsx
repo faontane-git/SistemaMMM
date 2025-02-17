@@ -221,12 +221,12 @@ export default function CertificadoMatrimonio() {
         ]}
       >
         <Image source={require('../../assets/images/Cmatrimonio.jpg')} style={styles.image} resizeMode="contain" />
-        <Text style={[styles.text, { top: '48%', left: '13%' }]}>{Nombres} {Apellidos}</Text>
-        <Text style={[styles.text, { top: '48%', left: '58%' }]}>{NombreCoyuge}</Text>
+        <Text style={[styles.text, { top: '48%', left: '17%' }]}>{Nombres} {Apellidos}</Text>
+        <Text style={[styles.text, { top: '48%', left: '59%' }]}>{NombreCoyuge}</Text>
         <Text style={[styles.text, { top: '59%', left: '70%' }]}>{Pastor}</Text>
         <Text style={[styles.text, { top: '59%', left: '20%' }]}>{FechaMatrimonio}</Text>
-        <Text style={[styles.text, { top: '63%', left: '10%' }]}>{Nombres} {Apellidos}</Text>
-        <Text style={[styles.text, { top: '63%', left: '60%' }]}>{NombreCoyuge}</Text>
+        <Text style={[styles.text, { top: '63%', left: '15%' }]}>{Nombres} {Apellidos}</Text>
+        <Text style={[styles.text, { top: '63%', left: '66%' }]}>{NombreCoyuge}</Text>
         <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '35.5%', left: '80%' }]} />
       </View>
 

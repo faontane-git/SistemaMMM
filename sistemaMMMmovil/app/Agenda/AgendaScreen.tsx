@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -15,15 +15,15 @@ export default function ActividadesScreen() {
   };
 
   const handleHorarioCultos = () => {
-    navigation.navigate('Agenda/HorarioCultosScreen' as never); // Redirige a la pantalla "Horario Cultos"
+    navigation.navigate('Agenda/HorarioCultosScreen' as never);
   };
 
   const handleHorarioActividades = () => {
-    navigation.navigate('Agenda/HorarioActividadesScreen' as never); // Redirige a la pantalla "Horario Actividades"
+    navigation.navigate('Agenda/HorarioActividadesScreen' as never);
   };
 
   const handleOtros = () => {
-    navigation.navigate('Agenda/HorarioOtrosScreen' as never); // Redirige a la pantalla "Otros"
+    navigation.navigate('Agenda/HorarioOtrosScreen' as never);
   };
 
   return (
@@ -32,25 +32,25 @@ export default function ActividadesScreen() {
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image
-            source={require('../../assets/logo.png')} // Ruta local al logo
+            source={require('../../assets/logo.png')}
             style={styles.logo}
           />
         </View>
         <Text style={styles.headerText}>Agenda</Text>
         <TouchableOpacity onPress={handleGoBack}>
-          <FontAwesome name="arrow-left" size={24} color="white" />
+          <FontAwesome name="arrow-left" size={30} color="white" />
         </TouchableOpacity>
       </View>
 
-      {/* Botones */}
+      {/* Botones más grandes y con colores de la bandera de Ecuador */}
       <View style={styles.buttonSection}>
-        <TouchableOpacity style={styles.button} onPress={handleHorarioCultos}>
+        <TouchableOpacity style={[styles.buttonCultos, styles.buttonYellow]} onPress={handleHorarioCultos}>
           <Text style={styles.buttonText}>Horario de Cultos</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleHorarioActividades}>
+        <TouchableOpacity style={[styles.button, styles.buttonBlue]} onPress={handleHorarioActividades}>
           <Text style={styles.buttonText}>Horario de Consejería Pastoral</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleOtros}>
+        <TouchableOpacity style={[styles.button, styles.buttonRed]} onPress={handleOtros}>
           <Text style={styles.buttonText}>Actividades Nacionales</Text>
         </TouchableOpacity>
       </View>
@@ -80,40 +80,50 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
   },
-  contentSection: {
-    padding: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#34495e',
-    marginBottom: 10,
-  },
-  sectionDescription: {
-    fontSize: 16,
-    color: '#7f8c8d',
-  },
   buttonSection: {
     alignItems: 'center',
     marginBottom: 20,
   },
-  button: {
-    fontSize: 16,
+  buttonCultos: {
+    fontSize: 20, // 📌 Botón más grande
     fontWeight: 'bold',
-    backgroundColor: '#2c3e50',
-    paddingHorizontal: 40,
-    paddingVertical: 15,
-    borderRadius: 10,
+    paddingHorizontal: 20, // 📌 Más ancho
+    paddingVertical: 70, // 📌 Más alto
+    borderRadius: 12,
     shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
-    marginVertical: 10, // Espaciado entre botones
-    width: '80%', // Ancho del botón relativo al contenedor
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
+    marginVertical: 15, // 📌 Más espacio entre botones
+    width: '85%', // 📌 Botón más ancho
+    alignItems: 'center',
+  },
+  button: {
+    fontSize: 20, // 📌 Botón más grande
+    fontWeight: 'bold',
+    paddingHorizontal: 20, // 📌 Más ancho
+    paddingVertical: 50, // 📌 Más alto
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
+    marginVertical: 15, // 📌 Más espacio entre botones
+    width: '85%', // 📌 Botón más ancho
+    alignItems: 'center',
+  },
+  buttonYellow: {
+    backgroundColor: '#FFC107', // 📌 Amarillo
+  },
+  buttonBlue: {
+    backgroundColor: '#0033A0', // 📌 Azul
+  },
+  buttonRed: {
+    backgroundColor: '#D52B1E', // 📌 Rojo
   },
   buttonText: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 18, // 📌 Texto más grande
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -122,7 +132,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 40,
-    height: 40,
+    width: 50, // 📌 Logo más grande
+    height: 50,
   },
 });
+

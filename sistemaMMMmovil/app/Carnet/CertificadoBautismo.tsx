@@ -218,7 +218,7 @@ export default function CertificadoBautismo() {
       >
         <Image source={require('../../assets/images/Cbautismo.jpg')} style={styles.image} resizeMode="contain" />
         <Text style={[styles.text, { top: '53%', left: '27%' }]}>{Nombres} {Apellidos}</Text>
-        <Text style={[styles.text, { top: '62%', left: '20%' }]}>{FechaBaustismo}</Text>
+        <Text style={[styles.textDate, { top: '62%', left: '20%' }]}>{FechaBaustismo}</Text>
         <Text style={[styles.signature, { top: '67%', left: '30%' }]}>{Pastor}</Text>
         <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '26.5%', left: '75%' }]} />
       </View>
@@ -291,6 +291,12 @@ const styles = StyleSheet.create({
   },
   text: {
     position: 'absolute',
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#000',
+  },  
+  textDate: {
+    position: 'absolute',
     fontSize: 8,
     fontWeight: 'bold',
     color: '#000',
@@ -299,6 +305,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 8,
     fontStyle: 'italic',
+    fontWeight: 'bold',
     color: '#000',
   },
   qrCode: {

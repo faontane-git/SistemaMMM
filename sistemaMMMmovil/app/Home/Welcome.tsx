@@ -1,21 +1,46 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     TouchableOpacity,
     Image,
-    Alert,
+    ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
- 
+import { collection, getDocs, DocumentData } from 'firebase/firestore';
+import { firestore } from '@/firebaseConfig';
+
+interface BienvenidaData {
+    Titulo: string;
+    Mensaje: string;
+}
+
 export default function WelcomeScreen() {
     const navigation = useNavigation();
-  
+    const [bienvenida, setBienvenida] = useState<BienvenidaData>({ Titulo: '', Mensaje: '' });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchBienvenida = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(firestore, 'Bienvenida'));
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data() as BienvenidaData; // 🔥 Se forzó el tipo aquí
+                    setBienvenida(data);
+                });
+            } catch (error) {
+                console.error('Error al obtener los datos de Bienvenida:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBienvenida();
+    }, []);
 
     const handleContinue = () => {
-        // Enviar una notificación local como ejemplo
-         navigation.navigate('Home/HomeScreen' as never);
+        navigation.navigate('Home/HomeScreen' as never);
     };
 
     return (
@@ -26,19 +51,23 @@ export default function WelcomeScreen() {
                 style={styles.logo}
             />
 
-            {/* Título */}
-            <Text style={styles.title}>¡Bienvenido!</Text>
+            {/* Muestra un loader mientras se carga la información */}
+            {loading ? (
+                <ActivityIndicator size="large" color="#1B4F72" />
+            ) : (
+                <>
+                    {/* Título dinámico */}
+                    <Text style={styles.title}>{bienvenida.Titulo}</Text>
 
-            {/* Mensaje */}
-            <Text style={styles.message}>
-                Conecta con la comunidad, accede a sermones inspiradores, noticias importantes y
-                herramientas para fortalecer tu fe. ¡Estamos felices de tenerte aquí!
-            </Text>
+                    {/* Mensaje dinámico */}
+                    <Text style={styles.message}>{bienvenida.Mensaje}</Text>
 
-            {/* Botón */}
-            <TouchableOpacity style={styles.button} onPress={handleContinue}>
-                <Text style={styles.buttonText}>Explorar la App</Text>
-            </TouchableOpacity>
+                    {/* Botón */}
+                    <TouchableOpacity style={styles.button} onPress={handleContinue}>
+                        <Text style={styles.buttonText}>Ingresar</Text>
+                    </TouchableOpacity>
+                </>
+            )}
         </View>
     );
 }
@@ -48,7 +77,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#E8F4F8', // Fondo suave azul celeste
+        backgroundColor: '#E8F4F8',
         padding: 20,
     },
     logo: {
@@ -59,19 +88,19 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#2C3E50', // Azul oscuro
+        color: '#2C3E50',
         textAlign: 'center',
         marginBottom: 20,
     },
     message: {
         fontSize: 18,
-        color: '#34495E', // Gris azulado
+        color: '#34495E',
         textAlign: 'center',
         marginBottom: 40,
         lineHeight: 24,
     },
     button: {
-        backgroundColor: '#1B4F72', // Azul oscuro
+        backgroundColor: '#1B4F72',
         paddingHorizontal: 40,
         paddingVertical: 15,
         borderRadius: 25,
@@ -86,3 +115,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
+

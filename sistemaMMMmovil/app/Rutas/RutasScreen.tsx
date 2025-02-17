@@ -34,9 +34,8 @@ export default function RutasScreen({ navigation }: any) {
                     ...doc.data(),
                 }));
 
-                // Asumimos que la colección tiene un solo documento con la información
                 if (rutasArray.length > 0) {
-                    setRutaData(rutasArray[0]); // Usar el primer documento
+                    setRutaData(rutasArray[0]);
                 }
             } catch (error) {
                 console.error('Error al obtener los datos de rutas:', error);
@@ -78,7 +77,7 @@ export default function RutasScreen({ navigation }: any) {
             <View style={styles.header}>
                 <View style={styles.logoContainer}>
                     <Image
-                        source={require('../../assets/logo.png')} // Ruta local al logo
+                        source={require('../../assets/logo.png')}
                         style={styles.logo}
                     />
                 </View>
@@ -86,6 +85,24 @@ export default function RutasScreen({ navigation }: any) {
                 <TouchableOpacity onPress={handleGoBack}>
                     <FontAwesome name="arrow-left" size={24} color="white" />
                 </TouchableOpacity>
+            </View>
+
+            {/* Título de la Iglesia */}
+            <View style={styles.titleContainer}>
+                <Text style={styles.titleText}>
+                    Iglesia Cristiana Pentecostes del Movimiento Misionero Mundial
+                </Text>
+                <Text style={styles.titleText}>
+                    Fco. De Orellana
+                </Text>
+            </View>
+
+            {/* Imagen de ejemplo antes de "Buses Disponibles" */}
+            <View style={styles.imageContainer}>
+                <Image
+                    source={require('../../assets/images/lugar.jpg')} // Cambia la ruta según tu imagen
+                    style={styles.exampleImage}
+                />
             </View>
 
             {/* Información de buses */}
@@ -177,6 +194,26 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         flex: 1,
         textAlign: 'center',
+    },
+    titleContainer: {
+        alignItems: 'center',
+        marginVertical: 10,
+        paddingHorizontal: 15,
+    },
+    titleText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#2c3e50',
+        textAlign: 'center',
+    },
+    imageContainer: {
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    exampleImage: {
+        width: 300,
+        height: 180,
+        borderRadius: 10,
     },
     section: {
         marginBottom: 20,

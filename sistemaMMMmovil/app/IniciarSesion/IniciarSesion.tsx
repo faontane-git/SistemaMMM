@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { 
+    View, Text, TextInput, TouchableOpacity, StyleSheet, 
+    Alert, Image, ActivityIndicator 
+} from 'react-native';
 import { getDocs, collection, query, where } from 'firebase/firestore';
 import { firestore } from '../../firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
@@ -11,6 +14,7 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, '
 export default function LoginScreen() {
     const [cedula, setCedula] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false); // Estado para la pantalla de carga
     const navigation = useNavigation<LoginScreenNavigationProp>();
 
     const handleLogin = async () => {
@@ -18,6 +22,8 @@ export default function LoginScreen() {
             Alert.alert('Error', 'Por favor, completa todos los campos.');
             return;
         }
+
+        setLoading(true); // 🔵 Activamos la pantalla de carga
 
         try {
             console.log("Ingreso");
@@ -30,23 +36,28 @@ export default function LoginScreen() {
 
             if (!querySnapshot.empty) {
                 const userData = querySnapshot.docs[0].data();
-                const { Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto
-                    , CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
+                const {
+                    Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto,
+                    CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
                     Correo, DireccionDomicilio, EstadoCivil, FechaBaustismo, FechaMatrimonio, Funcion, IglesiaActual,
                     IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, País, Photo, Sexo
                 } = userData;
+
                 navigation.navigate('MenuLogin/MenuScreen', {
-                    Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto
-                    , CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
+                    Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto,
+                    CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
                     Correo, DireccionDomicilio, EstadoCivil, FechaBaustismo, FechaMatrimonio, Funcion, IglesiaActual,
                     IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, País, Photo, Sexo
                 });
+
             } else {
                 Alert.alert('Error', 'Usuario o contraseña incorrectos.');
             }
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
             Alert.alert('Error', 'Ocurrió un error al iniciar sesión. Inténtalo de nuevo.');
+        } finally {
+            setLoading(false); // 🔴 Desactivamos la pantalla de carga después de la validación
         }
     };
 
@@ -60,39 +71,49 @@ export default function LoginScreen() {
 
     return (
         <View style={styles.container}>
-            <Image
-                source={require('../../assets/logo.png')}
-                style={styles.logo}
-            />
+            {loading ? (
+                // Pantalla de carga con ActivityIndicator
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#2980b9" />
+                    <Text style={styles.loadingText}>Iniciando sesión...</Text>
+                </View>
+            ) : (
+                <>
+                    <Image
+                        source={require('../../assets/logo.png')}
+                        style={styles.logo}
+                    />
 
-            <Text style={styles.title}>Iniciar Sesión</Text>
+                    <Text style={styles.title}>Iniciar Sesión</Text>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Cédula"
-                placeholderTextColor="#aaa"
-                keyboardType="numeric"
-                autoCapitalize="none"
-                value={cedula}
-                onChangeText={setCedula}
-            />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Cédula"
+                        placeholderTextColor="#aaa"
+                        keyboardType="numeric"
+                        autoCapitalize="none"
+                        value={cedula}
+                        onChangeText={setCedula}
+                    />
 
-            <TextInput
-                style={styles.input}
-                placeholder="Contraseña"
-                placeholderTextColor="#aaa"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-            />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Contraseña"
+                        placeholderTextColor="#aaa"
+                        secureTextEntry
+                        value={password}
+                        onChangeText={setPassword}
+                    />
 
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Ingresar</Text>
-            </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                        <Text style={styles.buttonText}>Ingresar</Text>
+                    </TouchableOpacity>
 
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-                <Text style={styles.backButtonText}>Regresar</Text>
-            </TouchableOpacity>
+                    <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+                        <Text style={styles.backButtonText}>Regresar</Text>
+                    </TouchableOpacity>
+                </>
+            )}
         </View>
     );
 }
@@ -104,6 +125,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#f8f9fa',
         padding: 20,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 18,
+        color: '#555',
     },
     logo: {
         width: 100,
