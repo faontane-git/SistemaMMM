@@ -66,13 +66,26 @@ export default function HomeScreen() {
 
     useEffect(() => {
         const mensajesRef = collection(firestore, "mensajes");
-        const q = query(mensajesRef, orderBy("fecha", "desc"), limit(1)); // Obtener el último mensaje
+        const q = query(mensajesRef, orderBy("fecha", "desc")); // Obtener los últimos 10 mensajes
+
+        const today = new Date();
+        const formattedDate = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}`;
+
+        console.log("Fecha de hoy:", formattedDate); // Imprime "Fecha de hoy: 22/02"
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
             if (!snapshot.empty) {
-                const nuevoMensaje = snapshot.docs[0].data();
-                setMensaje(nuevoMensaje);
-                setModalVisible(true); // Abre el modal cuando llega un nuevo mensaje
+                const mensajes = snapshot.docs.map(doc => doc.data());
+
+                // Buscar un mensaje cuya fecha coincida con la de hoy
+                const mensajeHoy = mensajes.find(mensaje => mensaje.fecha === formattedDate);
+
+                if (mensajeHoy) {
+                    setMensaje(mensajeHoy);
+                    setModalVisible(true); // Muestra el modal si hay mensaje del día
+                } else {
+                    console.log("No hay mensaje para hoy.");
+                }
             }
         }, (error) => {
             console.error("Error al obtener mensajes:", error);
@@ -80,6 +93,8 @@ export default function HomeScreen() {
 
         return () => unsubscribe(); // Cleanup del listener
     }, []);
+
+
 
     const handleOptionPress = (option: string) => {
         navigation.navigate(option as never);
@@ -128,7 +143,7 @@ export default function HomeScreen() {
                     <TouchableOpacity
                         style={[styles.smallButton, styles.medicinaButton]}
                         onPress={() => setModalVisible(true)}
-                        >
+                    >
                         <FontAwesome name="heart" size={16} color="white" />
                         <Text style={styles.smallButtonText}>Medicina al Corazón</Text>
                     </TouchableOpacity>
@@ -179,8 +194,9 @@ export default function HomeScreen() {
                         <Text style={styles.modalTitle}>{mensaje?.titulo || "Nuevo mensaje"}</Text>
 
                         <Text style={styles.modalDate}>
-                            📅 {mensaje?.fecha ? formatFecha(mensaje.fecha) : "Fecha no disponible"}
+                            📅 {`${String(new Date().getDate()).padStart(2, '0')}/${String(new Date().getMonth() + 1).padStart(2, '0')}/${new Date().getFullYear()}`}
                         </Text>
+
 
                         {/* Botón para cambiar idioma */}
                         <Pressable
@@ -309,11 +325,11 @@ const styles = StyleSheet.create({
         marginHorizontal: 5, // 📌 Espacio entre botones
         justifyContent: 'center',
     },
-    
+
     medicinaButton: {
         backgroundColor: '#C0392B', // 🔴 Rojo para "Medicina al Corazón"
     },
-    
+
     smallButtonText: {
         color: 'white',
         fontSize: 14, // 📌 Texto más pequeño
