@@ -29,7 +29,7 @@ const Metrics: React.FC = () => {
       try {
         const db = getFirestore();
         let documentCount = 0;
-        const collectionNames = ['Usuarios', 'RedesSociales', 'Noticias', 'Contactos', 'rutas', 'Personas', 'Feligreses'];
+        const collectionNames = ['Audios','Bienvenida','Noticias','Personas','RedesSociales','Usuarios','actividades','actividades_otros','culos','mensajes','rutas'];
         
         for (const name of collectionNames) {
           const querySnapshot = await getDocs(collection(db, name));
