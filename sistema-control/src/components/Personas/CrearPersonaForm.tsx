@@ -10,6 +10,8 @@ import ChurchInfoForm from './ChurchInfoForm';
 import PersonalInfoForm from './PersonalInfoForm';
 import ContactInfoForm from './ContactInfoForm';
 import Navbar from '../Navbar';
+import BautismoInfoForm from './BautismoInfoForm';
+import MatrimonioInfoForm from './MatrimonioInfoForm';
 
 export interface Person {
     Nombres: string;
@@ -61,7 +63,7 @@ const CrearPersonaForm: React.FC = () => {
         Correo: '',
         Ministro: '',
         IglesiaActual: '',
-        IglesiaMatrimonio:'',
+        IglesiaMatrimonio: '',
         CargoIglesia: '',
         BautizadoAgua: '',
         FechaBaustismo: '',
@@ -168,7 +170,7 @@ const CrearPersonaForm: React.FC = () => {
                         Crear Nueva Persona
                     </Typography>
                     <Stepper activeStep={activeStep} alternativeLabel>
-                        {['Información Personal', 'Información de Contacto', 'Información Eclesiástica'].map((label) => (
+                        {['Información Personal', 'Información de Contacto', 'Información Actual', 'Información Bautismo', 'Infomación Matrimonio'].map((label) => (
                             <Step key={label}>
                                 <StepLabel>{label}</StepLabel>
                             </Step>
@@ -197,6 +199,20 @@ const CrearPersonaForm: React.FC = () => {
                                 setIsStepValid={(isValid) => setIsStepValid(isValid)}
                             />
                         )}
+                        {activeStep === 3 && (
+                            <BautismoInfoForm
+                                newPerson={newPerson}
+                                setNewPerson={setNewPerson}
+                                setIsStepValid={(isValid) => setIsStepValid(isValid)}
+                            />
+                        )}
+                        {activeStep === 4 && (
+                            <MatrimonioInfoForm
+                                newPerson={newPerson}
+                                setNewPerson={setNewPerson}
+                                setIsStepValid={(isValid) => setIsStepValid(isValid)}
+                            />
+                        )}
                     </Box>
 
 
@@ -204,7 +220,7 @@ const CrearPersonaForm: React.FC = () => {
                         <Button disabled={activeStep === 0} onClick={handleBack}>
                             Atrás
                         </Button>
-                        {activeStep === 2 ? (
+                        {activeStep === 4 ? (
                             <Button variant="contained" color="primary" onClick={handleCreatePerson}>
                                 Crear Persona
                             </Button>
