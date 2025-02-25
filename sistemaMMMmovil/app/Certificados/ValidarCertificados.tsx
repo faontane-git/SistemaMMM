@@ -12,7 +12,7 @@ interface CertificadoData {
   Cedula: string;
   Conyuge?: string;
   PastorBautismo?: string;
-  Ministro?:string;
+  Ministro?: string;
   Photo?: string;
   FechaBautizo?: string;
   FechaMatrimonio?: string;
@@ -134,7 +134,6 @@ export default function ValidarCertificados() {
               <Text style={styles.certificadoText}>Nombres: {certificadoData.Nombres}</Text>
               <Text style={styles.certificadoText}>Apellidos: {certificadoData.Apellidos}</Text>
               <Text style={styles.certificadoText}>Cédula: {certificadoData.Cedula}</Text>
-              <Text style={styles.certificadoText}>Cónyuge: {certificadoData.Conyuge}</Text>
               <Text style={styles.certificadoText}>Pastor: {certificadoData.PastorBautismo}</Text>
               <Text style={styles.certificadoText}>Fecha de Bautizo: {certificadoData.FechaBautizo}</Text>
             </>
@@ -147,7 +146,7 @@ export default function ValidarCertificados() {
               <Text style={styles.certificadoText}>Cédula: {certificadoData.Cedula}</Text>
               <Text style={styles.certificadoText}>Cónyuge: {certificadoData.Conyuge}</Text>
               <Text style={styles.certificadoText}>Fecha de Matrimonio: {certificadoData.FechaMatrimonio}</Text>
-              <Text style={styles.certificadoText}>Pastor: {certificadoData.Ministro}</Text>
+              <Text style={styles.certificadoText}>Ministro: {certificadoData.Ministro}</Text>
             </>
           )}
           <TouchableOpacity style={styles.button} onPress={() => { setScanned(false); setCertificadoData(null); }}>
