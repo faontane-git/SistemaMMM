@@ -9,6 +9,8 @@ import Swal from 'sweetalert2';
 import ChurchInfoForm from './ChurchInfoForm';
 import PersonalInfoForm from './PersonalInfoForm';
 import ContactInfoForm from './ContactInfoForm';
+import BautismoInfoForm from './BautismoInfoForm';
+import MatrimonioInfoForm from './MatrimonioInfoForm';
 import Navbar from '../Navbar';
 
 export interface Person {
@@ -34,7 +36,7 @@ export interface Person {
     BautizadoAgua: string;
     FechaBaustismo?: string;
     Pastor: string;
-    PastorBautismo:string;
+    PastorBautismo: string;
     IglesiaBautismo: string;
     BautizadoEspirutoSanto: string;
     CasadoEclesiaticamnete: string;
@@ -172,7 +174,7 @@ const EditarPersona: React.FC = () => {
                         Editar Persona
                     </Typography>
                     <Stepper activeStep={activeStep} alternativeLabel>
-                        {['Información Personal', 'Información de Contacto', 'Información Eclesiástica'].map((label) => (
+                        {['Información Personal', 'Información de Contacto', 'Información Actual', 'Información Bautismo', 'Infomación Matrimonio'].map((label) => (
                             <Step key={label}>
                                 <StepLabel>{label}</StepLabel>
                             </Step>
@@ -201,8 +203,21 @@ const EditarPersona: React.FC = () => {
                                 setIsStepValid={(isValid) => setIsStepValid(isValid)}
                             />
                         )}
+                        {activeStep === 3 && (
+                            <BautismoInfoForm
+                                newPerson={newPerson}
+                                setNewPerson={setNewPerson}
+                                setIsStepValid={(isValid) => setIsStepValid(isValid)}
+                            />
+                        )}
+                        {activeStep === 4 && (
+                            <MatrimonioInfoForm
+                                newPerson={newPerson}
+                                setNewPerson={setNewPerson}
+                                setIsStepValid={(isValid) => setIsStepValid(isValid)}
+                            />
+                        )}
                     </Box>
-
                     <Box mt={3} display="flex" justifyContent="space-between">
                         <Button disabled={activeStep === 0} onClick={handleBack}>
                             Atrás

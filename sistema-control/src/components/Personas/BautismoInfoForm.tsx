@@ -71,7 +71,7 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, setNewPerson
                                 fullWidth
                                 label="Pastor de bautizmo"
                                 name="PastorBautismo"
-                                value={newPerson.Pastor || ''}
+                                value={newPerson.PastorBautismo || ''}
                                 onChange={handleInputChange}
                                 required
                             />
