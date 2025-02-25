@@ -22,7 +22,7 @@ interface Persona {
   apellidos: string;
   cedula: string;
   conyuge: string;
-  pastor: string;
+  pastorBautismo: string;
   fechaBautizo: string;
 }
 
@@ -33,8 +33,8 @@ export default function CertificadoBautismo() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { Nombres, Apellidos, FechaBaustismo, Pastor, Cedula } =
-    route.params as { Nombres: string, Apellidos: string, FechaBaustismo: string, Pastor: string, Cedula: string };
+  const { Nombres, Apellidos, FechaBaustismo, PastorBautismo, Cedula } =
+    route.params as { Nombres: string, Apellidos: string, FechaBaustismo: string, PastorBautismo: string, Cedula: string };
 
   useEffect(() => {
     setIsViewReady(true);
@@ -186,7 +186,7 @@ export default function CertificadoBautismo() {
     apellidos: Apellidos || '',
     cedula: Cedula || '',
     conyuge: '',
-    pastor: Pastor || '',
+    pastorBautismo: PastorBautismo || '',
     fechaBautizo: FechaBaustismo || '',
   });
 
@@ -219,7 +219,7 @@ export default function CertificadoBautismo() {
         <Image source={require('../../assets/images/Cbautismo.jpg')} style={styles.image} resizeMode="contain" />
         <Text style={[styles.text, { top: '53%', left: '27%' }]}>{Nombres} {Apellidos}</Text>
         <Text style={[styles.textDate, { top: '62%', left: '20%' }]}>{FechaBaustismo}</Text>
-        <Text style={[styles.signature, { top: '67%', left: '30%' }]}>{Pastor}</Text>
+        <Text style={[styles.signature, { top: '67%', left: '30%' }]}>{PastorBautismo}</Text>
         <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '26.5%', left: '75%' }]} />
       </View>
 

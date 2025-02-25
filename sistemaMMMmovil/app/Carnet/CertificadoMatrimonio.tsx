@@ -25,7 +25,7 @@ interface Persona {
   casadoEclesiasticamente: string;
   conyuge: string;
   fechaMatrimonio: string;
-  pastor: string;
+  ministro: string;
 }
 
 export default function CertificadoMatrimonio() {
@@ -35,8 +35,8 @@ export default function CertificadoMatrimonio() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { Nombres, Apellidos, NombreCoyuge, EstadoCivil, Pastor, Cedula, FechaMatrimonio } =
-    route.params as { Nombres: string, Apellidos: string, EstadoCivil: string, NombreCoyuge: string, Pastor: string, Cedula: string, FechaMatrimonio: string };
+  const { Nombres, Apellidos, NombreCoyuge, EstadoCivil, Ministro, Cedula, FechaMatrimonio } =
+    route.params as { Nombres: string, Apellidos: string, EstadoCivil: string, NombreCoyuge: string, Ministro: string, Cedula: string, FechaMatrimonio: string };
 
   useEffect(() => {
     if (EstadoCivil !== 'CASADO') {
@@ -191,7 +191,7 @@ export default function CertificadoMatrimonio() {
     cedula: Cedula,
     conyuge: persona?.conyuge || '',
     fechaMatrimonio: persona?.fechaMatrimonio || '',
-    pastor: persona?.pastor || '',
+    ministro: persona?.ministro || '',
   });
 
 
@@ -223,7 +223,7 @@ export default function CertificadoMatrimonio() {
         <Image source={require('../../assets/images/Cmatrimonio.jpg')} style={styles.image} resizeMode="contain" />
         <Text style={[styles.text, { top: '48%', left: '17%' }]}>{Nombres} {Apellidos}</Text>
         <Text style={[styles.text, { top: '48%', left: '59%' }]}>{NombreCoyuge}</Text>
-        <Text style={[styles.text, { top: '59%', left: '70%' }]}>{Pastor}</Text>
+        <Text style={[styles.text, { top: '59%', left: '70%' }]}>{Ministro}</Text>
         <Text style={[styles.text, { top: '59%', left: '20%' }]}>{FechaMatrimonio}</Text>
         <Text style={[styles.text, { top: '63%', left: '15%' }]}>{Nombres} {Apellidos}</Text>
         <Text style={[styles.text, { top: '63%', left: '66%' }]}>{NombreCoyuge}</Text>

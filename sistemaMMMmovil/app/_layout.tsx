@@ -30,8 +30,8 @@ export type RootStackParamList = {
   "Agenda/HorarioOtrosScreen": undefined;
   "IniciarSesion/IniciarSesion": undefined;
   "Carnet/CarnetScreen": { Nombres: string, Apellidos: string, Cedula: string, Photo: string, IglesiaActual: string, CargoIglesia: string };
-  "Carnet/CertificadoBautismo": { Nombres: string, Apellidos: string, Cedula: string, Pastor: string, FechaBaustismo: string };
-  "Carnet/CertificadoMatrimonio": { Nombres: string, Apellidos: string, EstadoCivil: string, NombreCoyuge: string, Pastor: string, Cedula: string, FechaMatrimonio: string };
+  "Carnet/CertificadoBautismo": { Nombres: string, Apellidos: string, Cedula: string, PastorBautismo: string, FechaBaustismo: string };
+  "Carnet/CertificadoMatrimonio": { Nombres: string, Apellidos: string, EstadoCivil: string, NombreCoyuge: string, Ministro: string, Cedula: string, FechaMatrimonio: string };
   "Cambio/CambioC": { Password: string, Cedula: string };
   "QuienesSomos/QuienesSomosScreen": undefined;
   "Doctrina/DoctrinaScreen": undefined;
@@ -61,6 +61,7 @@ export type RootStackParamList = {
     NombreCoyuge: string;
     Password: string;
     Pastor: string;
+    PastorBautismo: string;
     País: string;
     Photo: string;
     Sexo: string;

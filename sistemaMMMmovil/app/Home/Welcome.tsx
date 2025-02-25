@@ -31,7 +31,7 @@ async function scheduleDailyNotification() {
         
         await Notifications.scheduleNotificationAsync({
             content: {
-                title: "📢 ¡Dios no espera!",
+                title: "📢 Dios tiene un mensaje para ti. !Léelo ahora!",
                 body: "Por favor, visualiza el mensaje del día.",
             },
             trigger: {
@@ -61,7 +61,7 @@ async function setupNotifications() {
             // Mostrar notificación inmediata usando el método actualizado
             await Notifications.scheduleNotificationAsync({
                 content: {
-                    title: "📢 ¡Dios no espera!",
+                    title: "📢 Dios tiene un mensaje para ti. !Léelo ahora!",
                     body: "Por favor, visualiza el mensaje del día.",
                 },
                 trigger: null, // Se envía inmediatamente
