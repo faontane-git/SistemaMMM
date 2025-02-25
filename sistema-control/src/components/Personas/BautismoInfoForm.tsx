@@ -69,8 +69,8 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, setNewPerson
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth
-                                label="Pastor"
-                                name="Pastor"
+                                label="Pastor de bautizmo"
+                                name="PastorBautismo"
                                 value={newPerson.Pastor || ''}
                                 onChange={handleInputChange}
                                 required

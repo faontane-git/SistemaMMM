@@ -30,8 +30,8 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, setNewPerson
             newPerson.CargoIglesia?.trim() &&
             newPerson.BautizadoAgua?.trim() &&
             newPerson.CasadoEclesiaticamnete?.trim() &&
-            (newPerson.CasadoEclesiaticamnete === "NO" || 
-             (newPerson.FechaMatrimonio?.trim() && newPerson.IglesiaMatrimonio?.trim()));
+            (newPerson.CasadoEclesiaticamnete === "NO" ||
+                (newPerson.FechaMatrimonio?.trim() && newPerson.IglesiaMatrimonio?.trim()));
 
         setIsStepValid(!!isValid);
     }, [newPerson, setIsStepValid]);
@@ -69,6 +69,37 @@ const ChurchInfoForm: React.FC<ChurchInfoFormProps> = ({ newPerson, setNewPerson
 
                 {newPerson.CasadoEclesiaticamnete === "SI" && (
                     <>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Nombre del Cónyuge"
+                                name="NombreCoyuge"
+                                value={newPerson.NombreCoyuge || ''}
+                                onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Fecha de Matrimonio"
+                                name="FechaMatrimonio"
+                                InputLabelProps={{ shrink: true }}
+                                value={newPerson.FechaMatrimonio || ''}
+                                onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Ministro"
+                                name="Ministro"
+                                value={newPerson.Ministro || ''}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth

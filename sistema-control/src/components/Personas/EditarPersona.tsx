@@ -34,6 +34,7 @@ export interface Person {
     BautizadoAgua: string;
     FechaBaustismo?: string;
     Pastor: string;
+    PastorBautismo:string;
     IglesiaBautismo: string;
     BautizadoEspirutoSanto: string;
     CasadoEclesiaticamnete: string;
@@ -73,6 +74,7 @@ const EditarPersona: React.FC = () => {
         BautizadoAgua: '',
         FechaBaustismo: '',
         Pastor: '',
+        PastorBautismo: '',
         IglesiaBautismo: '',
         BautizadoEspirutoSanto: '',
         CasadoEclesiaticamnete: '',
@@ -145,13 +147,13 @@ const EditarPersona: React.FC = () => {
 
     const handleUpdatePerson = async () => {
         if (!validateForm(0) || !validateForm(1) || !validateForm(2)) return;
-    
+
         try {
             const personDocRef = doc(db, 'Personas', id as string);
-            
+
             // ✅ Convertimos el objeto a Partial<Person> para evitar problemas con Firestore
             await updateDoc(personDocRef, { ...newPerson } as Partial<Person>);
-            
+
             Swal.fire('Éxito', 'Persona actualizada correctamente', 'success');
             navigate('/personas');
         } catch (error) {
@@ -159,7 +161,7 @@ const EditarPersona: React.FC = () => {
             Swal.fire('Error', 'No se pudo actualizar la persona', 'error');
         }
     };
-    
+
 
     return (
         <div>

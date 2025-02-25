@@ -8,13 +8,73 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { collection, getDocs, DocumentData } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '@/firebaseConfig';
+import * as Notifications from 'expo-notifications';
 
 interface BienvenidaData {
     Titulo: string;
     Mensaje: string;
 }
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+    }),
+});
+
+async function scheduleDailyNotification() {
+    try {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "📢 ¡Dios no espera!",
+                body: "Por favor, visualiza el mensaje del día.",
+            },
+            trigger: {
+                hour: 12,
+                minute: 0,
+                repeats: true,
+            },
+        });
+    } catch (error) {
+        console.error("Error al programar notificación:", error);
+    }
+}
+
+async function setupNotifications() {
+    try {
+        let { status } = await Notifications.getPermissionsAsync();
+
+        if (status !== "granted") {
+            const { status: newStatus } = await Notifications.requestPermissionsAsync();
+            status = newStatus;
+        }
+
+        if (status === "granted") {
+            // Programar notificación diaria
+            await scheduleDailyNotification();
+
+            // Mostrar notificación inmediata usando el método actualizado
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: "📢 ¡Dios no espera!",
+                    body: "Por favor, visualiza el mensaje del día.",
+                },
+                trigger: null, // Se envía inmediatamente
+            });
+            
+        } else {
+            console.warn("⚠️ Permisos de notificaciones denegados");
+        }
+    } catch (error) {
+        console.error("❌ Error en configuración de notificaciones:", error);
+    }
+}
+
 
 export default function WelcomeScreen() {
     const navigation = useNavigation();
@@ -22,21 +82,33 @@ export default function WelcomeScreen() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchBienvenida = async () => {
+        const initializeData = async () => {
             try {
+                // Obtener datos de Firebase
                 const querySnapshot = await getDocs(collection(firestore, 'Bienvenida'));
                 querySnapshot.forEach((doc) => {
-                    const data = doc.data() as BienvenidaData; // 🔥 Se forzó el tipo aquí
-                    setBienvenida(data);
+                    setBienvenida(doc.data() as BienvenidaData);
                 });
+                
+                // Configurar notificaciones
+                await setupNotifications();
             } catch (error) {
-                console.error('Error al obtener los datos de Bienvenida:', error);
+                console.error('Error inicializando datos:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchBienvenida();
+        initializeData();
+
+        // Configurar el listener de notificaciones
+        const notificationSubscription = Notifications.addNotificationReceivedListener(notification => {
+            console.log('Notificación recibida:', notification);
+        });
+
+        return () => {
+            notificationSubscription.remove();
+        };
     }, []);
 
     const handleContinue = () => {
@@ -45,25 +117,24 @@ export default function WelcomeScreen() {
 
     return (
         <View style={styles.container}>
-            {/* Logo */}
             <Image
-                source={require('../../assets/logo.png')} // Cambia esta ruta al logo correcto
+                source={require('../../assets/logo.png')}
                 style={styles.logo}
+                resizeMode="contain"
             />
 
-            {/* Muestra un loader mientras se carga la información */}
             {loading ? (
                 <ActivityIndicator size="large" color="#1B4F72" />
             ) : (
                 <>
-                    {/* Título dinámico */}
                     <Text style={styles.title}>{bienvenida.Titulo}</Text>
-
-                    {/* Mensaje dinámico */}
                     <Text style={styles.message}>{bienvenida.Mensaje}</Text>
 
-                    {/* Botón */}
-                    <TouchableOpacity style={styles.button} onPress={handleContinue}>
+                    <TouchableOpacity 
+                        style={styles.button} 
+                        onPress={handleContinue}
+                        activeOpacity={0.8}
+                    >
                         <Text style={styles.buttonText}>Ingresar</Text>
                     </TouchableOpacity>
                 </>
@@ -72,6 +143,7 @@ export default function WelcomeScreen() {
     );
 }
 
+// Los estilos se mantienen igual que en la versión anterior
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -98,6 +170,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 40,
         lineHeight: 24,
+        paddingHorizontal: 15,
     },
     button: {
         backgroundColor: '#1B4F72',
@@ -113,6 +186,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
+        letterSpacing: 0.5,
     },
 });
-

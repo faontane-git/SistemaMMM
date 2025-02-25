@@ -217,32 +217,6 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                         </Select>
                     </FormControl>
                 </Grid>
-
-                {newPerson.EstadoCivil === 'CASADO' && (
-                    <>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Nombre del Cónyuge"
-                                name="NombreCoyuge"
-                                value={newPerson.NombreCoyuge || ''}
-                                onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Fecha de Matrimonio"
-                                name="FechaMatrimonio"
-                                InputLabelProps={{ shrink: true }}
-                                value={newPerson.FechaMatrimonio || ''}
-                                onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
-                                required
-                            />
-                        </Grid>
-                    </>
-                )}
             </Grid>
         </Box>
     );

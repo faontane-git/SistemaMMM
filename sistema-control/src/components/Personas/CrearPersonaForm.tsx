@@ -36,6 +36,7 @@ export interface Person {
     BautizadoAgua: string;
     FechaBaustismo?: string;
     Pastor: string;
+    PastorBautismo: string;
     IglesiaBautismo: string;
     BautizadoEspirutoSanto: string;
     CasadoEclesiaticamnete: string;
@@ -68,6 +69,7 @@ const CrearPersonaForm: React.FC = () => {
         BautizadoAgua: '',
         FechaBaustismo: '',
         Pastor: '',
+        PastorBautismo: '',
         IglesiaBautismo: '',
         BautizadoEspirutoSanto: '',
         CasadoEclesiaticamnete: '',
