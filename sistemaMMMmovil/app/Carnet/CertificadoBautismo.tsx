@@ -182,12 +182,12 @@ export default function CertificadoBautismo() {
 
   const qrData = JSON.stringify({
     tipoCertificado: "bautismo",
-    nombres: Nombres || '',
-    apellidos: Apellidos || '',
-    cedula: Cedula || '',
-    conyuge: '',
-    pastorBautismo: PastorBautismo || '',
-    fechaBautizo: FechaBaustismo || '',
+    Nombres: Nombres || '',
+    Apellidos: Apellidos || '',
+    Cedula: Cedula || '',
+    Conyuge: '',
+    PastorBautismo: PastorBautismo || '',
+    FechaBautizo: FechaBaustismo || '',
   });
 
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;

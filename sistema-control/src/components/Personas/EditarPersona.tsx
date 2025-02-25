@@ -222,7 +222,7 @@ const EditarPersona: React.FC = () => {
                         <Button disabled={activeStep === 0} onClick={handleBack}>
                             Atrás
                         </Button>
-                        {activeStep === 2 ? (
+                        {activeStep === 4 ? (
                             <Button variant="contained" color="primary" onClick={handleUpdatePerson}>
                                 Guardar Cambios
                             </Button>

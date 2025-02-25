@@ -186,12 +186,12 @@ export default function CertificadoMatrimonio() {
 
   const qrData = JSON.stringify({
     tipoCertificado: "matrimonio",
-    nombres: persona?.nombres || '',
-    apellidos: persona?.apellidos || '',
-    cedula: Cedula,
-    conyuge: persona?.conyuge || '',
-    fechaMatrimonio: persona?.fechaMatrimonio || '',
-    ministro: persona?.ministro || '',
+    Nombres: persona?.nombres || '',
+    Apellidos: persona?.apellidos || '',
+    Cedula: Cedula,
+    Conyuge: persona?.conyuge || '',
+    FechaMatrimonio: persona?.fechaMatrimonio || '',
+    Ministro: persona?.ministro || '',
   });
 
 
