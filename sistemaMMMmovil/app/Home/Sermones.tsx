@@ -43,16 +43,18 @@ const Sermones: React.FC<SermonesProps> = ({ sermones, handleMoreSermonsPress })
                 onPress={() => handleMoreSermonsPress('Home/VerMasSermones')}
             >
                 <FontAwesome name="music" size={20} color="white" />
-                <Text style={styles.moreSermonsButtonText}>Escuchar más sermones</Text>
+                <Text style={styles.moreSermonsButtonText}>Escuchar más mensajes</Text>
             </TouchableOpacity>
         </View>
     );
 
     return (
         <View style={styles.container}>
-            <Text style={styles.sectionTitle}>🎤 Sermones</Text>
+            <Text style={styles.sectionTitle}>🎤 Mensajes que edifican</Text>
             <FlatList
-                data={sermones}
+                data={sermones.length > 0 ? [sermones.reduce((latest, current) =>
+                    new Date(current.uploadedAt) > new Date(latest.uploadedAt) ? current : latest
+                )] : []} // Filtra el más reciente
                 keyExtractor={(item) => item.id}
                 renderItem={renderSermonItem}
                 contentContainerStyle={styles.listContainer}
