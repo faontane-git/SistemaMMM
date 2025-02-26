@@ -95,7 +95,7 @@ const SubirAudio: React.FC = () => {
             <Box display="flex" justifyContent="center" alignItems="center" mb={3}>
               <AudiotrackIcon sx={{ fontSize: 40, color: 'primary.main', mr: 1 }} />
               <Typography variant="h4" align="center">
-                Subir Audio
+                Subir Mensaje
               </Typography>
             </Box>
             <Box component="form" noValidate sx={{ mt: 2 }}>

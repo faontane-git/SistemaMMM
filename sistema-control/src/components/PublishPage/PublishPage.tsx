@@ -36,7 +36,7 @@ const publishOptions = [
   {
     to: "/detalle-audio",
     icon: <AudiotrackIcon sx={{ fontSize: 35, color: '#673ab7', mb: 1 }} />,
-    title: "Audios",
+    title: "Mensajes",
     description: "Escucha sermones y mensajes de audio de nuestros líderes.",
   },
   {

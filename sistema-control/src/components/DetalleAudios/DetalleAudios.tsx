@@ -225,12 +225,12 @@ const SubirMusica: React.FC = () => {
             Regresar
           </Button>
           <Typography variant="h4" align="center">
-            Audios
+            Mensajes
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
           <Button variant="contained" color="primary" onClick={() => handleNavigation("/crear-audio")}>
-            Crear Audio
+            Crear Mensaje
           </Button>
         </Box>
 
