@@ -31,47 +31,17 @@ async function scheduleDailyNotification() {
         
         await Notifications.scheduleNotificationAsync({
             content: {
-                title: "📢 Dios tiene un mensaje para ti. !Léelo ahora!",
+                title: "📢 Tiempo con Dios",
                 body: "Por favor, visualiza el mensaje del día.",
             },
             trigger: {
-                hour: 12,
+                hour: 7,
                 minute: 0,
                 repeats: true,
             },
         });
     } catch (error) {
         console.error("Error al programar notificación:", error);
-    }
-}
-
-async function setupNotifications() {
-    try {
-        let { status } = await Notifications.getPermissionsAsync();
-
-        if (status !== "granted") {
-            const { status: newStatus } = await Notifications.requestPermissionsAsync();
-            status = newStatus;
-        }
-
-        if (status === "granted") {
-            // Programar notificación diaria
-            await scheduleDailyNotification();
-
-            // Mostrar notificación inmediata usando el método actualizado
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: "📢 Dios tiene un mensaje para ti. !Léelo ahora!",
-                    body: "Por favor, visualiza el mensaje del día.",
-                },
-                trigger: null, // Se envía inmediatamente
-            });
-            
-        } else {
-            console.warn("⚠️ Permisos de notificaciones denegados");
-        }
-    } catch (error) {
-        console.error("❌ Error en configuración de notificaciones:", error);
     }
 }
 
@@ -89,9 +59,6 @@ export default function WelcomeScreen() {
                 querySnapshot.forEach((doc) => {
                     setBienvenida(doc.data() as BienvenidaData);
                 });
-                
-                // Configurar notificaciones
-                await setupNotifications();
             } catch (error) {
                 console.error('Error inicializando datos:', error);
             } finally {

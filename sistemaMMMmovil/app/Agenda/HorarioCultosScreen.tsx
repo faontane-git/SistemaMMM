@@ -35,42 +35,14 @@ export default function HorarioCultosScreen({ navigation }: any) {
             try {
                 const querySnapshot = await getDocs(collection(firestore, 'cultos'));
                 const actividadesData: Actividad[] = querySnapshot.docs.map((doc) => ({
-                    ...doc.data(),
-                })) as Actividad[];
+                    dia_num: doc.data().dia_num.toString(),
+                    materia: doc.data().materia || 'Sin nombre',
+                    hora_inicio: doc.data().hora_inicio || '00:00',
+                    hora_final: doc.data().hora_final || '00:00',
+                    color: doc.data().color || '#3498db',
+                }));
 
-                setActividades(actividadesData);
-
-                // Obtener el día actual
-                const diaActual = new Date().getDay();
-
-                // Agrupar actividades por día
-                const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-                const actividadesAgrupadas = actividadesData.reduce<Record<string, Actividad[]>>((acc, actividad) => {
-                    const diaNombre = diasSemana[parseInt(actividad.dia_num, 10)];
-                    if (!acc[diaNombre]) {
-                        acc[diaNombre] = [];
-                    }
-                    acc[diaNombre].push(actividad);
-                    return acc;
-                }, {});
-
-                // Convertir a un array y reorganizar para que el día actual esté primero
-                const datosOrdenados: DiaActividades[] = Object.keys(actividadesAgrupadas)
-                    .map((dia) => ({
-                        dia,
-                        actividades: actividadesAgrupadas[dia],
-                    }))
-                    .sort((a, b) => {
-                        const indexA = diasSemana.indexOf(a.dia);
-                        const indexB = diasSemana.indexOf(b.dia);
-                        return indexA === diaActual
-                            ? -1
-                            : indexB === diaActual
-                                ? 1
-                                : indexA - indexB;
-                    });
-
-                setDatos(datosOrdenados); // Actualiza el estado con los datos agrupados y ordenados
+                organizarActividades(actividadesData);
             } catch (error) {
                 console.error('Error fetching data from Firebase:', error);
             } finally {
@@ -81,6 +53,37 @@ export default function HorarioCultosScreen({ navigation }: any) {
         fetchActividades();
     }, []);
 
+    const organizarActividades = (actividadesData: Actividad[]) => {
+        const diaActual = new Date().getDay();
+        const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+        const actividadesAgrupadas = actividadesData.reduce<Record<string, Actividad[]>>((acc, actividad) => {
+            const diaNombre = diasSemana[parseInt(actividad.dia_num, 10)];
+            if (!acc[diaNombre]) {
+                acc[diaNombre] = [];
+            }
+            acc[diaNombre].push(actividad);
+            return acc;
+        }, {});
+
+        const datosOrdenados: DiaActividades[] = [];
+        for (let i = 0; i < diasSemana.length; i++) {
+            const diaIndex = (diaActual + i) % diasSemana.length;
+            const diaNombre = diasSemana[diaIndex];
+
+            if (actividadesAgrupadas[diaNombre]) {
+                actividadesAgrupadas[diaNombre].sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
+
+                datosOrdenados.push({
+                    dia: diaNombre,
+                    actividades: actividadesAgrupadas[diaNombre],
+                });
+            }
+        }
+
+        setDatos(datosOrdenados);
+    };
+    
     const renderItem = ({ item }: { item: DiaActividades }) => (
         <View style={styles.dayContainer}>
             <Text style={styles.dayText}>{item.dia}</Text>
