@@ -41,6 +41,18 @@ const publishOptions = [
     description: "Escucha sermones y mensajes de audio de nuestros líderes.",
   },
   {
+    to: "/doctrina",
+    icon: <BookIcon sx={{ fontSize: 35, color: '#8bc34a', mb: 1 }} />,
+    title: "Doctrina",
+    description: "Descubre nuestras creencias y enseñanzas fundamentales.",
+  },
+  {
+    to: "/quienes-somos",
+    icon: <InfoIcon sx={{ fontSize: 35, color: '#2196f3', mb: 1 }} />,
+    title: "¿Quiénes Somos?",
+    description: "Conoce nuestra historia, misión y valores.",
+  },
+  {
     to: "/rutas",
     icon: <MapIcon sx={{ fontSize: 35, color: '#4caf50', mb: 1 }} />,
     title: "Rutas",
@@ -57,18 +69,6 @@ const publishOptions = [
     icon: <ShareIcon sx={{ fontSize: 35, color: '#ff5722', mb: 1 }} />,
     title: "Redes Sociales",
     description: "Conéctate con nosotros a través de nuestras redes sociales oficiales.",
-  },
-  {
-    to: "/quienes-somos",
-    icon: <InfoIcon sx={{ fontSize: 35, color: '#2196f3', mb: 1 }} />,
-    title: "¿Quiénes Somos?",
-    description: "Conoce nuestra historia, misión y valores.",
-  },
-  {
-    to: "/doctrina",
-    icon: <BookIcon sx={{ fontSize: 35, color: '#8bc34a', mb: 1 }} />,
-    title: "Doctrina",
-    description: "Descubre nuestras creencias y enseñanzas fundamentales.",
   },
   {
     to: "#",

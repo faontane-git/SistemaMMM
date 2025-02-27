@@ -25,6 +25,7 @@ import CrearAudio from './components/DetalleAudios/CrearAudio';
 import FormularioNotificacion from './components/Sermones/FormularioNotificacion';
 import BienvenidaPage from './components/Bienvenida/Bienvenida';
 import QuienesSomos from './components/QuienesSomos/QuienesSomos';
+import Doctrina from './components/Doctrina/Doctrina';
 
 const App: React.FC = () => {
     return (
@@ -54,6 +55,7 @@ const App: React.FC = () => {
                         <Route path="/crear-audio" element={<CrearAudio />} />
                         <Route path='/bienvenida' element={<BienvenidaPage />} />
                         <Route path='/quienes-somos' element={<QuienesSomos />} />
+                        <Route path='/doctrina' element={<Doctrina />} />
                     </Route>
                 </Routes>
             </Router>
