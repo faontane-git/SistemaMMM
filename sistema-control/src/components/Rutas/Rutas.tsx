@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, TextField, Button } from '@mui/material';
+import { Container, Typography, Box, Grid, TextField, Button } from '@mui/material';
 import Navbar from '../Navbar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,9 @@ const Rutas: React.FC = () => {
   const [gpsLink, setGpsLink] = useState('');
   const [videoLink, setVideoLink] = useState('');
   const [buses, setBuses] = useState('');
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [foto, setFoto] = useState<File | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +65,14 @@ const Rutas: React.FC = () => {
         title: 'Error',
         text: 'Hubo un problema al actualizar los datos.',
       });
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setFoto(file);
+      setFotoPreview(URL.createObjectURL(file)); // Vista previa de la imagen
     }
   };
 
@@ -126,7 +136,22 @@ const Rutas: React.FC = () => {
             variant="outlined"
             value={buses}
             onChange={(e) => setBuses(e.target.value)}
+            sx={{ mb: 2 }}
           />
+          
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+            <Button variant="contained" component="label" sx={{ fontSize: '14px', fontWeight: 'bold', padding: '8px 16px' }}>
+              Subir Foto
+              <input type="file" accept="image/*" hidden onChange={handleFileChange} />
+            </Button>
+          </Box>
+
+          {fotoPreview && (
+            <Grid item xs={12} sx={{ textAlign: 'center' }}>
+              <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>Vista previa de la foto:</Typography>
+              <Box component="img" src={fotoPreview} alt="Vista previa de la foto" sx={{ width: '100%', maxHeight: '300px', objectFit: 'contain', borderRadius: 2, boxShadow: 2 }} />
+            </Grid>
+          )}
         </Box>
 
         <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
@@ -136,9 +161,9 @@ const Rutas: React.FC = () => {
             sx={{
               backgroundColor: '#3a6073',
               color: '#fff',
-              px: 4,
-              py: 1.5,
-              fontSize: '16px',
+              px: 3,
+              py: 1,
+              fontSize: '14px',
               '&:hover': { backgroundColor: '#2e4e5e' },
             }}
           >

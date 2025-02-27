@@ -12,14 +12,15 @@ import {
   useTheme
 } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
-import ContactsIcon from '@mui/icons-material/Contacts';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import ShareIcon from '@mui/icons-material/Share';
 import MapIcon from '@mui/icons-material/Map';
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import HomeIcon from '@mui/icons-material/Home';
+import InfoIcon from '@mui/icons-material/Info';
+import BookIcon from '@mui/icons-material/Book';
+import ChurchIcon from '@mui/icons-material/Church';
 
-// Definimos los items fuera del componente para evitar recreaciones innecesarias
 const publishOptions = [
   {
     to: "/bienvenida",
@@ -56,20 +57,37 @@ const publishOptions = [
     icon: <ShareIcon sx={{ fontSize: 35, color: '#ff5722', mb: 1 }} />,
     title: "Redes Sociales",
     description: "Conéctate con nosotros a través de nuestras redes sociales oficiales.",
+  },
+  {
+    to: "/quienes-somos",
+    icon: <InfoIcon sx={{ fontSize: 35, color: '#2196f3', mb: 1 }} />,
+    title: "¿Quiénes Somos?",
+    description: "Conoce nuestra historia, misión y valores.",
+  },
+  {
+    to: "/doctrina",
+    icon: <BookIcon sx={{ fontSize: 35, color: '#8bc34a', mb: 1 }} />,
+    title: "Doctrina",
+    description: "Descubre nuestras creencias y enseñanzas fundamentales.",
+  },
+  {
+    to: "#",
+    icon: <ChurchIcon sx={{ fontSize: 35, color: '#9e9e9e', mb: 1 }} />,
+    title: "Iglesias",
+    description: "Próximamente",
   }
 ];
 
 const PublishPage: React.FC = () => {
-  const theme = useTheme(); // Usamos el tema para obtener los colores correctos
+  const theme = useTheme();
 
   return (
     <div>
       <Navbar />
-
       <Box
         sx={{
           minHeight: '100vh',
-          backgroundColor: theme.palette.background.default, // Usamos el tema global
+          backgroundColor: theme.palette.background.default,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-start',
@@ -78,11 +96,7 @@ const PublishPage: React.FC = () => {
         }}
       >
         <Container maxWidth="lg">
-          <Typography
-            variant="h4"
-            align="center"
-            gutterBottom
-          >
+          <Typography variant="h4" align="center" gutterBottom>
             Panel de Publicaciones
           </Typography>
 
@@ -106,7 +120,7 @@ const PublishPage: React.FC = () => {
                     transition: 'all 0.3s ease-in-out',
                   }}
                 >
-                  <CardActionArea component={Link} to={to} aria-label={title}>
+                  <CardActionArea component={Link} to={to} aria-label={title} disabled={title === "Iglesias"}>
                     <CardContent sx={{ textAlign: 'center', padding: 1.5 }}>
                       {icon}
                       <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
