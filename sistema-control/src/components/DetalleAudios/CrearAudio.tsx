@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Box, Button, TextField, Typography, Paper } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Box, Button, TextField, Typography, Paper, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { firestore } from "../../firebase";
 import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
@@ -8,11 +8,13 @@ import Navbar from '../Navbar';
 
 const CrearAudio: React.FC = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const audioToEdit = location.state?.audio || null;
 
     const [audioData, setAudioData] = useState({
         name: '',
         description: '',
+        type: '',
         url: '',
         uploadedAt: '',
     });
@@ -22,6 +24,7 @@ const CrearAudio: React.FC = () => {
             setAudioData({
                 name: audioToEdit.name,
                 description: audioToEdit.description,
+                type: audioToEdit.type || '',
                 url: audioToEdit.url,
                 uploadedAt: audioToEdit.uploadedAt,
             });
@@ -30,9 +33,10 @@ const CrearAudio: React.FC = () => {
 
     const handleSave = async () => {
         try {
+            let docRef;
             if (audioToEdit) {
                 // Actualizar audio existente
-                const docRef = doc(firestore, 'Audios', audioToEdit.id);
+                docRef = doc(firestore, 'Audios', audioToEdit.id);
                 await updateDoc(docRef, audioData);
                 Swal.fire({
                     icon: 'success',
@@ -41,13 +45,14 @@ const CrearAudio: React.FC = () => {
                 });
             } else {
                 // Guardar nuevo audio
-                const docRef = await addDoc(collection(firestore, 'Audios'), audioData);
+                docRef = await addDoc(collection(firestore, 'Audios'), audioData);
                 Swal.fire({
                     icon: 'success',
                     title: 'Audio guardado',
                     text: `El audio se guardó con éxito.`,
                 });
             }
+            navigate(`/detalle-audio`);
         } catch (error) {
             console.error('Error al guardar en Firestore:', error);
             Swal.fire({
@@ -92,6 +97,17 @@ const CrearAudio: React.FC = () => {
                             value={audioData.description}
                             onChange={(e) => setAudioData({ ...audioData, description: e.target.value })}
                         />
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel>Tipo</InputLabel>
+                            <Select
+                                value={audioData.type}
+                                onChange={(e) => setAudioData({ ...audioData, type: e.target.value })}
+                            >
+                                <MenuItem value="Sermones">Sermones</MenuItem>
+                                <MenuItem value="Música">Música</MenuItem>
+                                <MenuItem value="Juventud Victoriosa">Juventud Victoriosa</MenuItem>
+                            </Select>
+                        </FormControl>
                         <TextField
                             fullWidth
                             label="URL"
@@ -109,7 +125,10 @@ const CrearAudio: React.FC = () => {
                             value={audioData.uploadedAt}
                             onChange={(e) => setAudioData({ ...audioData, uploadedAt: e.target.value })}
                         />
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                            <Button variant="outlined" color="secondary" onClick={() => navigate(-1)}>
+                                Regresar
+                            </Button>
                             <Button variant="contained" color="primary" onClick={handleSave}>
                                 {audioToEdit ? 'Actualizar' : 'Guardar'}
                             </Button>

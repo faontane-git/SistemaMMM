@@ -34,6 +34,7 @@ interface Audio {
   name: string;
   description: string;
   url: string;
+  type:string;
   uploadedAt: string;
 }
 
@@ -57,6 +58,7 @@ const SubirMusica: React.FC = () => {
     name: '',
     description: '',
     url: '',
+    type:'',
     uploadedAt: '',
   });
 
@@ -71,7 +73,13 @@ const SubirMusica: React.FC = () => {
           id: doc.id,
           ...doc.data() as Omit<Audio, 'id'>,
         }));
-        setAudios(audiosData);
+  
+        // Ordenar de la más reciente a la más antigua
+        const audiosOrdenados = audiosData.sort((a, b) => 
+          new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+        );
+  
+        setAudios(audiosOrdenados);
       } catch (error) {
         console.error('Error al obtener audios:', error);
         Swal.fire({
@@ -84,9 +92,10 @@ const SubirMusica: React.FC = () => {
         setLoading(false);
       }
     };
-
+  
     obtenerAudios();
   }, []);
+  
 
   const handleOpenDialog = (audio?: Audio) => {
     if (audio) {
@@ -95,11 +104,12 @@ const SubirMusica: React.FC = () => {
         name: audio.name,
         description: audio.description,
         url: audio.url,
+        type:audio.type,
         uploadedAt: audio.uploadedAt ? new Date(audio.uploadedAt).toISOString().split("T")[0] : '',
       });
     } else {
       setEditingAudioId(null);
-      setNewAudio({ name: '', description: '', url: '', uploadedAt: '' });
+      setNewAudio({ name: '', description: '', url: '', type:'',uploadedAt: '' });
     }
     setOpen(true);
   };
@@ -138,12 +148,12 @@ const SubirMusica: React.FC = () => {
 
   const handleCloseDialog = () => {
     setOpen(false);
-    setNewAudio({ name: '', description: '', url: '', uploadedAt: '' });
+    setNewAudio({ name: '', description: '', url: '',type:'',uploadedAt: '' });
     setEditingAudioId(null);
   };
 
   const handleGuardarAudio = async () => {
-    if (!newAudio.name || !newAudio.description || !newAudio.url || !newAudio.uploadedAt) {
+    if (!newAudio.name || !newAudio.description || !newAudio.url || !newAudio.type || !newAudio.uploadedAt) {
       Swal.fire({
         title: 'Error',
         text: 'Por favor, completa todos los campos.',
@@ -214,7 +224,7 @@ const SubirMusica: React.FC = () => {
     <div>
       <Navbar />
 
-      <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
         <Box position="relative" display="flex" justifyContent="center" alignItems="center" mb={2}>
           <Button
             variant="outlined"
@@ -243,6 +253,7 @@ const SubirMusica: React.FC = () => {
                 <StyledTableCell>Nombre</StyledTableCell>
                 <StyledTableCell>Descripción</StyledTableCell>
                 <StyledTableCell>Fecha</StyledTableCell>
+                <StyledTableCell>Tipo</StyledTableCell>
                 <StyledTableCell>Archivo</StyledTableCell>
                 <StyledTableCell>Acciones</StyledTableCell>
               </TableRow>
@@ -253,6 +264,7 @@ const SubirMusica: React.FC = () => {
                   <TableCell>{audio.name}</TableCell>
                   <TableCell>{audio.description}</TableCell>
                   <TableCell>{new Date(audio.uploadedAt).toLocaleDateString()}</TableCell>
+                  <TableCell>{audio.type}</TableCell>
                   <TableCell>
                     <a href={audio.url} target="_blank" rel="noopener noreferrer">
                       Ver Archivo
