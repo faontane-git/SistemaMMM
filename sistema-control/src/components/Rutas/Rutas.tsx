@@ -7,6 +7,7 @@ import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2'; // Importar SweetAlert2
 
 const Rutas: React.FC = () => {
+  const [nombreIglesia, setNombreIglesia] = useState(''); // Nuevo estado para el nombre de la iglesia
   const [direccion, setDireccion] = useState('');
   const [gpsLink, setGpsLink] = useState('');
   const [videoLink, setVideoLink] = useState('');
@@ -24,6 +25,7 @@ const Rutas: React.FC = () => {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
+          setNombreIglesia(data.nombreIglesia || ''); // Cargar el nombre de la iglesia si existe
           setDireccion(data.direccion);
           setGpsLink(data.gpsLink);
           setVideoLink(data.videoLink);
@@ -44,6 +46,7 @@ const Rutas: React.FC = () => {
       const db = getFirestore();
       const docRef = doc(db, 'rutas', 'ubicacionInfo');
       await updateDoc(docRef, {
+        nombreIglesia, 
         direccion,
         gpsLink,
         videoLink,
@@ -106,6 +109,14 @@ const Rutas: React.FC = () => {
             boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
           }}
         >
+          <TextField
+            label="Nombre de la Iglesia"
+            fullWidth
+            variant="outlined"
+            value={nombreIglesia}
+            onChange={(e) => setNombreIglesia(e.target.value)}
+            sx={{ mb: 2 }}
+          />
           <TextField
             label="Dirección"
             fullWidth
