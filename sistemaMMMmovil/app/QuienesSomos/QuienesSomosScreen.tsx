@@ -185,7 +185,6 @@ export default function ContactosScreen() {
           <Text style={styles.title}>
             Iglesia Cristiana Pentecostés Movimiento Misionero Mundial
           </Text>
-          <Text style={styles.subtitle}>Francisco de Orellana-Vergeles</Text>
           <Image source={require('../../assets/images/logo-MMM.png')} style={styles.logoCuerpo} />
           <Text style={styles.description}>
             Somos una organización sin fines de lucro, llevamos el mensaje de Dios a las vidas necesitadas,

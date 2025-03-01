@@ -5,60 +5,83 @@ import {
     StyleSheet,
     TouchableOpacity,
     Linking,
-    FlatList,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
+interface Sermon {
+    id: string;
+    name: string;
+    description: string;
+    type: string;
+    uploadedAt: string;
+    url: string;
+}
+
 interface SermonesProps {
-    sermones: Array<{
-        id: string;
-        name: string;
-        description: string;
-        uploadedAt: string;
-        url: string;
-    }>;
-    handleMoreSermonsPress: (option: string) => void;
+    sermones: Sermon[];
+    handleMoreSermonsPress: (type: string) => void;
 }
 
 const Sermones: React.FC<SermonesProps> = ({ sermones, handleMoreSermonsPress }) => {
-    const renderSermonItem = ({ item }: { item: any }) => (
-        <View style={styles.sermonItem}>
-            <View style={styles.sermonHeader}>
-                <FontAwesome name="podcast" size={24} color="#2c3e50" />
-                <Text style={styles.sermonTitle}>{item.name}</Text>
+    // Función para obtener el último registro de cada tipo
+    const getLatestByType = (type: string) => {
+        const filtered = sermones.filter((sermon) => sermon.type === type);
+        return filtered.length > 0
+            ? filtered.reduce((latest, current) =>
+                new Date(current.uploadedAt) > new Date(latest.uploadedAt) ? current : latest
+              )
+            : null;
+    };
+
+    const categories = [
+        { title: '🎤 Mensajes que Edifican', type: 'Sermones' },
+        { title: '🎶 Música', type: 'Música' },
+        { title: '🔥 Juventud Victoriosa', type: 'Juventud Victoriosa' },
+    ];
+
+    const renderSermonItem = (item: Sermon | null) => {
+        if (!item) return null;
+
+        return (
+            <View style={styles.sermonItem}>
+                <View style={styles.sermonHeader}>
+                    <FontAwesome name="podcast" size={24} color="#2c3e50" />
+                    <Text style={styles.sermonTitle}>{item.name}</Text>
+                </View>
+                <Text style={styles.sermonDescription}>{item.type}</Text>
+                <Text style={styles.sermonDescription}>{item.description}</Text>
+                <Text style={styles.sermonDate}>
+                    Subido el: {new Date(item.uploadedAt).toLocaleDateString()}
+                </Text>
+                <TouchableOpacity
+                    style={styles.playButtonSmall}
+                    onPress={() => Linking.openURL(item.url)}
+                >
+                    <FontAwesome name="play-circle" size={16} color="white" />
+                    <Text style={styles.playButtonTextSmall}>Escuchar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.moreSermonsButton}
+                    onPress={() => handleMoreSermonsPress(item.type)} 
+                >
+                    <FontAwesome name="music" size={20} color="white" />
+                    <Text style={styles.moreSermonsButtonText}>Escuchar más {(item.type)}</Text>
+                </TouchableOpacity>
             </View>
-            <Text style={styles.sermonDescription}>{item.description}</Text>
-            <Text style={styles.sermonDate}>
-                Subido el: {new Date(item.uploadedAt).toLocaleDateString()}
-            </Text>
-            <TouchableOpacity
-                style={styles.playButtonSmall}
-                onPress={() => Linking.openURL(item.url)}
-            >
-                <FontAwesome name="play-circle" size={16} color="white" />
-                <Text style={styles.playButtonTextSmall}>Escuchar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={styles.moreSermonsButton}
-                onPress={() => handleMoreSermonsPress('Home/VerMasSermones')}
-            >
-                <FontAwesome name="music" size={20} color="white" />
-                <Text style={styles.moreSermonsButtonText}>Escuchar más mensajes</Text>
-            </TouchableOpacity>
-        </View>
-    );
+        );
+    };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.sectionTitle}>🎤 Mensajes que edifican</Text>
-            <FlatList
-                data={sermones.length > 0 ? [sermones.reduce((latest, current) =>
-                    new Date(current.uploadedAt) > new Date(latest.uploadedAt) ? current : latest
-                )] : []} // Filtra el más reciente
-                keyExtractor={(item) => item.id}
-                renderItem={renderSermonItem}
-                contentContainerStyle={styles.listContainer}
-            />
+            {categories.map(({ title, type }) => {
+                const latestSermon = getLatestByType(type);
+                return (
+                    <View key={type}>
+                        <Text style={styles.sectionTitle}>{title}</Text>
+                        {renderSermonItem(latestSermon)}
+                    </View>
+                );
+            })}
         </View>
     );
 };
@@ -76,9 +99,6 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
         color: '#2C3E50',
-    },
-    listContainer: {
-        paddingBottom: 15,
     },
     sermonItem: {
         backgroundColor: '#FFFFFF',
@@ -116,10 +136,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#2980B9',
-        paddingVertical: 6, // Más pequeño
+        paddingVertical: 6,
         paddingHorizontal: 12,
         borderRadius: 15,
-        alignSelf: 'flex-start', // Tamaño ajustado al contenido
+        alignSelf: 'flex-start',
         shadowColor: '#000',
         shadowOpacity: 0.2,
         shadowRadius: 3,
@@ -128,7 +148,7 @@ const styles = StyleSheet.create({
     },
     playButtonTextSmall: {
         color: 'white',
-        fontSize: 14, // Más pequeño
+        fontSize: 14,
         fontWeight: 'bold',
         marginLeft: 5,
     },

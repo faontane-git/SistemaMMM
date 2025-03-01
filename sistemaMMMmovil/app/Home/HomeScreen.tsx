@@ -97,7 +97,7 @@ export default function HomeScreen() {
 
 
     const handleOptionPress = (option: string) => {
-        navigation.navigate(option as never);
+        navigation.navigate("Home/VerMasSermones" as never);
     };
 
     if (loading) {

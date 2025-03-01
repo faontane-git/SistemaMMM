@@ -3,7 +3,7 @@ import {
     View,
     Text,
     StyleSheet,
-    FlatList,
+    SectionList,
     TouchableOpacity,
     ActivityIndicator,
     Image,
@@ -19,13 +19,17 @@ interface Sermon {
     name: string;
     description: string;
     uploadedAt: string;
+    type: string;
     url: string;
 }
 
 export default function VerMasSermones() {
-    const [sermones, setSermones] = useState<Sermon[]>([]);
+    const [sermones, setSermones] = useState<{ title: string; data: Sermon[] }[]>([]);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
+
+    // Tipos permitidos
+    const allowedTypes = ['Sermones', 'Música', 'Juventud Victoriosa'];
 
     const handleGoBack = () => {
         if (navigation.canGoBack()) {
@@ -39,11 +43,19 @@ export default function VerMasSermones() {
         const fetchSermones = async () => {
             try {
                 const snapshot = await getDocs(collection(firestore, 'Audios'));
-                const sermonesArray = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                })) as Sermon[];
-                setSermones(sermonesArray);
+                const sermonesArray = snapshot.docs
+                    .map((doc) => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    })) as Sermon[];
+
+                // Filtrar y agrupar los sermones por tipo
+                const groupedSermones = allowedTypes.map((type) => ({
+                    title: type,
+                    data: sermonesArray.filter((sermon) => sermon.type === type),
+                })).filter((section) => section.data.length > 0);
+
+                setSermones(groupedSermones);
             } catch (error) {
                 console.error('Error fetching sermones:', error);
             } finally {
@@ -57,16 +69,14 @@ export default function VerMasSermones() {
     const renderSermonItem = ({ item }: { item: Sermon }) => (
         <View style={styles.sermonItem}>
             <Text style={styles.title}>{item.name}</Text>
-            <Text style={styles.date}>
-                Publicado el: {new Date(item.uploadedAt).toLocaleDateString()}
-            </Text>
+            <Text style={styles.date}>Publicado el: {new Date(item.uploadedAt).toLocaleDateString()}</Text>
             <Text style={styles.description}>{item.description}</Text>
             <TouchableOpacity
                 style={styles.audioButton}
                 onPress={() => Linking.openURL(item.url)}
             >
                 <FontAwesome name="play-circle" size={24} color="white" />
-                <Text style={styles.audioButtonText}>Escuchar Sermón</Text>
+                <Text style={styles.audioButtonText}>Escuchar</Text>
             </TouchableOpacity>
         </View>
     );
@@ -78,7 +88,7 @@ export default function VerMasSermones() {
                 <View style={styles.logoContainer}>
                     <Image source={require('../../assets/logo.png')} style={styles.logo} />
                 </View>
-                <Text style={styles.headerText}>Sermones</Text>
+                <Text style={styles.headerText}>Mensajes</Text>
                 <TouchableOpacity onPress={handleGoBack}>
                     <FontAwesome name="arrow-left" size={24} color="white" />
                 </TouchableOpacity>
@@ -89,10 +99,13 @@ export default function VerMasSermones() {
                     <Text style={styles.loadingText}>Cargando sermones...</Text>
                 </View>
             ) : sermones.length > 0 ? (
-                <FlatList
-                    data={sermones}
+                <SectionList
+                    sections={sermones}
                     keyExtractor={(item) => item.id}
                     renderItem={renderSermonItem}
+                    renderSectionHeader={({ section: { title } }) => (
+                        <Text style={styles.sectionHeader}>{title}</Text>
+                    )}
                     contentContainerStyle={styles.listContainer}
                 />
             ) : (
@@ -105,6 +118,13 @@ export default function VerMasSermones() {
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 0, backgroundColor: '#F8F9FA' },
     listContainer: { paddingBottom: 15 },
+    sectionHeader: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        backgroundColor: '#ecf0f1',
+        padding: 10,
+        color: '#2C3E50',
+    },
     sermonItem: {
         backgroundColor: '#FFFFFF',
         padding: 15,
