@@ -35,8 +35,8 @@ export default function CertificadoMatrimonio() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { Nombres, Apellidos, NombreCoyuge, EstadoCivil, Ministro, Cedula, FechaMatrimonio } =
-    route.params as { Nombres: string, Apellidos: string, EstadoCivil: string, NombreCoyuge: string, Ministro: string, Cedula: string, FechaMatrimonio: string };
+  const { Nombres, Apellidos, NombreCoyuge, EstadoCivil, IglesiaMatrimonio,Ministro, Cedula, FechaMatrimonio } =
+    route.params as { Nombres: string, Apellidos: string, EstadoCivil: string, NombreCoyuge: string, IglesiaMatrimonio:string, Ministro: string, Cedula: string, FechaMatrimonio: string };
 
   useEffect(() => {
     if (EstadoCivil !== 'CASADO') {
@@ -220,14 +220,13 @@ export default function CertificadoMatrimonio() {
           }
         ]}
       >
-        <Image source={require('../../assets/images/Cmatrimonio.jpg')} style={styles.image} resizeMode="contain" />
+        <Image source={require('../../assets/images/Cmatrimonio.png')} style={styles.image} resizeMode="contain" />
+        <Text style={[styles.title, { top: '28%', left: '39.5%' }]}>{IglesiaMatrimonio}</Text>
         <Text style={[styles.text, { top: '48%', left: '17%' }]}>{Nombres} {Apellidos}</Text>
         <Text style={[styles.text, { top: '48%', left: '59%' }]}>{NombreCoyuge}</Text>
-        <Text style={[styles.text, { top: '59%', left: '70%' }]}>{Ministro}</Text>
-        <Text style={[styles.text, { top: '59%', left: '20%' }]}>{FechaMatrimonio}</Text>
-        <Text style={[styles.text, { top: '63%', left: '15%' }]}>{Nombres} {Apellidos}</Text>
-        <Text style={[styles.text, { top: '63%', left: '66%' }]}>{NombreCoyuge}</Text>
-        <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '35.5%', left: '80%' }]} />
+        <Text style={[styles.text, { top: '62.5%', left: '70%' }]}>{Ministro}</Text>
+        <Text style={[styles.text, { top: '62.5%', left: '20%' }]}>{FechaMatrimonio}</Text>
+        <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '30%', left: '77%' }]} />
       </View>
 
       <TouchableOpacity
@@ -295,6 +294,12 @@ const styles = StyleSheet.create({
     height: '100%',
     position: 'absolute',
   },
+  title: {
+    position: 'absolute',
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#000',
+  },
   text: {
     position: 'absolute',
     fontSize: 6,
@@ -303,8 +308,8 @@ const styles = StyleSheet.create({
   },
   qrCode: {
     position: 'absolute',
-    width: 50,
-    height: 50,
+    width: 70,
+    height: 70,
   },
   saveButton: {
     marginTop: 20,

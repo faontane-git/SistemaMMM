@@ -153,15 +153,22 @@ export default function ContactosScreen() {
     </View>
   );
 
-  const ContactCard = ({ contacto }: { contacto: Persona }) => (
-    <View style={styles.contactCard}>
-      <Image source={{ uri: contacto.Photo }} style={styles.contactImage} />
-      <View style={styles.contactInfo}>
-        <Text style={styles.contactName}>{contacto.CargoIglesia} {contacto.Nombres}</Text>
-        <Text style={styles.contactPhone}>Teléfono: {contacto.ContactoPersonal}</Text>
+  const ContactCard = ({ contacto }: { contacto: Persona }) => {
+    const primerNombre = contacto.Nombres ? contacto.Nombres.split(" ")[0] : contacto.Nombres;
+    const primerApellido = contacto.Apellidos ? contacto.Apellidos.split(" ")[0] : contacto.Apellidos;
+
+    return (
+      <View style={styles.contactCard}>
+        <Image source={{ uri: contacto.Photo }} style={styles.contactImage} />
+        <View style={styles.contactInfo}>
+          <Text style={styles.contactName}>
+            {contacto.CargoIglesia} {primerNombre} {primerApellido}
+          </Text>
+          <Text style={styles.contactPhone}>Teléfono: {contacto.ContactoPersonal}</Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>

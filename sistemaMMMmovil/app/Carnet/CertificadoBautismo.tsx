@@ -33,8 +33,8 @@ export default function CertificadoBautismo() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { Nombres, Apellidos, FechaBaustismo, PastorBautismo, Cedula } =
-    route.params as { Nombres: string, Apellidos: string, FechaBaustismo: string, PastorBautismo: string, Cedula: string };
+  const { Nombres, Apellidos, Cedula, IglesiaBautismo, PastorBautismo, FechaBaustismo } =
+    route.params as { Nombres: string, Apellidos: string, FechaBaustismo: string, IglesiaBautismo: string, PastorBautismo: string, Cedula: string };
 
   useEffect(() => {
     setIsViewReady(true);
@@ -216,7 +216,8 @@ export default function CertificadoBautismo() {
           }
         ]}
       >
-        <Image source={require('../../assets/images/Cbautismo.jpg')} style={styles.image} resizeMode="contain" />
+        <Image source={require('../../assets/images/Cbautismo.png')} style={styles.image} resizeMode="contain" />
+        <Text style={[styles.text, { top: '27%', left: '37%' }]}>{IglesiaBautismo}</Text>
         <Text style={[styles.text, { top: '53%', left: '27%' }]}>{Nombres} {Apellidos}</Text>
         <Text style={[styles.textDate, { top: '62%', left: '20%' }]}>{FechaBaustismo}</Text>
         <Text style={[styles.signature, { top: '67%', left: '30%' }]}>{PastorBautismo}</Text>
@@ -294,7 +295,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
     color: '#000',
-  },  
+  },
   textDate: {
     position: 'absolute',
     fontSize: 8,

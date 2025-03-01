@@ -32,6 +32,7 @@ type RouteParams = {
     NombreCoyuge: string;
     Password: string;
     Pastor: string;
+    PastorBautismo:string;
     País: string;
     Photo: string;
     Sexo: string;
@@ -45,7 +46,7 @@ export default function MenuScreen() {
     const { Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto
         , CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
         Correo, DireccionDomicilio, EstadoCivil, FechaBaustismo, FechaMatrimonio, Funcion, IglesiaActual,
-        IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, País, Photo, Sexo } = route.params as RouteParams;
+        IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, PastorBautismo,País, Photo, Sexo } = route.params as RouteParams;
 
     const [isBirthdayModalVisible, setIsBirthdayModalVisible] = useState(false);
 
@@ -75,10 +76,10 @@ export default function MenuScreen() {
         navigation.navigate('Carnet/CarnetScreen', { Nombres, Apellidos, Cedula, Photo, IglesiaActual, CargoIglesia });
     };
     const handleOptionPress2 = () => {
-        navigation.navigate('Carnet/CertificadoBautismo', { Nombres, Apellidos, Cedula, Pastor, FechaBaustismo });
+        navigation.navigate('Carnet/CertificadoBautismo', { Nombres, Apellidos, Cedula, IglesiaBautismo,PastorBautismo, FechaBaustismo });
     };
     const handleOptionPress3 = () => {
-        navigation.navigate('Carnet/CertificadoMatrimonio', { Nombres, Apellidos, EstadoCivil, NombreCoyuge, Pastor, Cedula, FechaMatrimonio });
+        navigation.navigate('Carnet/CertificadoMatrimonio', { Nombres, Apellidos, EstadoCivil, NombreCoyuge, IglesiaMatrimonio,Ministro, Cedula, FechaMatrimonio });
     };
     const handleValidateCertificatesPress = () => {
         navigation.navigate('Certificados/ValidarCertificados');

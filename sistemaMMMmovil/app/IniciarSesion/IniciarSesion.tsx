@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { 
-    View, Text, TextInput, TouchableOpacity, StyleSheet, 
-    Alert, Image, ActivityIndicator 
+import {
+    View, Text, TextInput, TouchableOpacity, StyleSheet,
+    Alert, Image, ActivityIndicator
 } from 'react-native';
 import { getDocs, collection, query, where } from 'firebase/firestore';
 import { firestore } from '../../firebaseConfig';
@@ -40,14 +40,14 @@ export default function LoginScreen() {
                     Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto,
                     CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
                     Correo, DireccionDomicilio, EstadoCivil, FechaBaustismo, FechaMatrimonio, Funcion, IglesiaActual,
-                    IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, País, Photo, Sexo
+                    IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, PastorBautismo, País, Photo, Sexo
                 } = userData;
 
                 navigation.navigate('MenuLogin/MenuScreen', {
                     Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto,
                     CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
                     Correo, DireccionDomicilio, EstadoCivil, FechaBaustismo, FechaMatrimonio, Funcion, IglesiaActual,
-                    IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, País, Photo, Sexo
+                    IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, PastorBautismo, País, Photo, Sexo
                 });
 
             } else {
