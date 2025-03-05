@@ -26,6 +26,7 @@ import FormularioNotificacion from './components/Sermones/FormularioNotificacion
 import BienvenidaPage from './components/Bienvenida/Bienvenida';
 import QuienesSomos from './components/QuienesSomos/QuienesSomos';
 import Doctrina from './components/Doctrina/Doctrina';
+import FormularioActividad from './components/Agenda/FormularioActividad';
 
 const App: React.FC = () => {
     return (
