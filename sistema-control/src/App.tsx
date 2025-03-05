@@ -27,6 +27,7 @@ import BienvenidaPage from './components/Bienvenida/Bienvenida';
 import QuienesSomos from './components/QuienesSomos/QuienesSomos';
 import Doctrina from './components/Doctrina/Doctrina';
 import FormularioActividad from './components/Agenda/FormularioActividad';
+import HorarioOtros from './components/Agenda/HorarioOtros';
 
 const App: React.FC = () => {
     return (
@@ -57,6 +58,7 @@ const App: React.FC = () => {
                         <Route path='/bienvenida' element={<BienvenidaPage />} />
                         <Route path='/quienes-somos' element={<QuienesSomos />} />
                         <Route path='/doctrina' element={<Doctrina />} />
+                        <Route path='horariosOtros' element={<HorarioOtros/>}/>
                     </Route>
                 </Routes>
             </Router>

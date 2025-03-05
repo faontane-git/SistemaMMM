@@ -3,6 +3,7 @@ import { Typography, Box, Paper, Grid, Button } from '@mui/material';
 import 'react-datepicker/dist/react-datepicker.css';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../firebase';
+import { useNavigate } from 'react-router-dom';
 import FormularioActividad from './FormularioActividad';
 
 interface Actividad {
@@ -18,6 +19,8 @@ const HorarioOtros: React.FC = () => {
   const [actividades, setActividades] = useState<Actividad[]>([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [actividadSeleccionada, setActividadSeleccionada] = useState<Actividad | null>(null);
+
+  const navigate = useNavigate();
 
   const actividadesCollection = collection(firestore, 'actividades_otros');
 
@@ -81,6 +84,13 @@ const HorarioOtros: React.FC = () => {
       backgroundImage: 'url(https://www.transparenttextures.com/patterns/black-linen.png)',
       minHeight: '100vh'
     }}>
+      {/* 🔹 Botón Regresar */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+        <Button variant="outlined" onClick={() => navigate('/agenda')}>
+          Regresar
+        </Button>
+      </Box>
+
       <Typography variant="h4" gutterBottom sx={{ color: '#F5F5F5', mb: 4 }}>
         Horario de Actividades 📌
       </Typography>
