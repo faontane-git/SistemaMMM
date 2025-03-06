@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box, TextField, Button, Grid } from '@mui/material';
 import Navbar from '../Navbar';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 
 const QuienesSomos: React.FC = () => {
@@ -11,6 +11,23 @@ const QuienesSomos: React.FC = () => {
   const [vision, setVision] = useState('');
   const [galeria, setGaleria] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const db = getFirestore();
+      const docRef = doc(db, 'iglesia', 'quienesSomos');
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setNombreIglesia(data.nombreIglesia || '');
+        setDescripcion(data.descripcion || '');
+        setMision(data.mision || '');
+        setVision(data.vision || '');
+        setPreviews(data.galeria || []);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -24,13 +41,15 @@ const QuienesSomos: React.FC = () => {
     try {
       const db = getFirestore();
       const docRef = doc(db, 'iglesia', 'quienesSomos');
+
       await setDoc(docRef, {
         nombreIglesia,
         descripcion,
         mision,
         vision,
+        galeria: previews, // Guardamos las URLs locales de las imágenes
       });
-      
+
       Swal.fire({
         icon: 'success',
         title: 'Información guardada',

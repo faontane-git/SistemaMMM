@@ -28,6 +28,8 @@ import QuienesSomos from './components/QuienesSomos/QuienesSomos';
 import Doctrina from './components/Doctrina/Doctrina';
 import FormularioActividad from './components/Agenda/FormularioActividad';
 import HorarioOtros from './components/Agenda/HorarioOtros';
+import HorarioConsojeria from './components/Agenda/HorarioConsejeria';
+import HorarioCultos from './components/Agenda/HorarioCultos';
 
 const App: React.FC = () => {
     return (
@@ -58,7 +60,9 @@ const App: React.FC = () => {
                         <Route path='/bienvenida' element={<BienvenidaPage />} />
                         <Route path='/quienes-somos' element={<QuienesSomos />} />
                         <Route path='/doctrina' element={<Doctrina />} />
-                        <Route path='horariosOtros' element={<HorarioOtros/>}/>
+                        <Route path='/horario-otros' element={<HorarioOtros/>}/>
+                        <Route path='/horario-consejeria' element={<HorarioConsojeria/>}/>
+                        <Route path='/horario-cultos' element={<HorarioCultos/>}/>
                     </Route>
                 </Routes>
             </Router>
