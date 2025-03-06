@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, TextField, Button, Grid } from '@mui/material';
+import { Container, Typography, Box, TextField, Button, Grid, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Navbar from '../Navbar';
-import { getFirestore, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 
 const QuienesSomos: React.FC = () => {
@@ -9,8 +10,7 @@ const QuienesSomos: React.FC = () => {
   const [descripcion, setDescripcion] = useState('');
   const [mision, setMision] = useState('');
   const [vision, setVision] = useState('');
-  const [galeria, setGaleria] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [galeria, setGaleria] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,18 +23,47 @@ const QuienesSomos: React.FC = () => {
         setDescripcion(data.descripcion || '');
         setMision(data.mision || '');
         setVision(data.vision || '');
-        setPreviews(data.galeria || []);
+        setGaleria(data.galeria || []);
       }
     };
     fetchData();
   }, []);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxWidth = 800;
+          const scaleSize = maxWidth / img.width;
+          canvas.width = maxWidth;
+          canvas.height = img.height * scaleSize;
+
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          resolve(compressedBase64);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
-      setGaleria([...galeria, ...files]);
-      setPreviews([...previews, ...files.map(file => URL.createObjectURL(file))]);
+      const compressedImages = await Promise.all(files.map(compressImage));
+      setGaleria([...galeria, ...compressedImages]);
     }
+  };
+
+  const eliminarImagen = (index: number) => {
+    const nuevaGaleria = galeria.filter((_, i) => i !== index);
+    setGaleria(nuevaGaleria);
   };
 
   const handleSubmit = async () => {
@@ -47,7 +76,7 @@ const QuienesSomos: React.FC = () => {
         descripcion,
         mision,
         vision,
-        galeria: previews, // Guardamos las URLs locales de las imágenes
+        galeria,
       });
 
       Swal.fire({
@@ -116,9 +145,28 @@ const QuienesSomos: React.FC = () => {
             <input type="file" accept="image/*" multiple hidden onChange={handleFileChange} />
           </Button>
           <Grid container spacing={2}>
-            {previews.map((src, index) => (
-              <Grid item xs={4} key={index}>
-                <Box component="img" src={src} alt={`Imagen ${index + 1}`} sx={{ width: '100%', borderRadius: 1 }} />
+            {galeria.map((src, index) => (
+              <Grid item xs={4} key={index} sx={{ position: 'relative' }}>
+                <Box
+                  component="img"
+                  src={src}
+                  alt={`Imagen ${index + 1}`}
+                  sx={{ width: '100%', borderRadius: 1 }}
+                />
+                <IconButton
+                  size="small"
+                  onClick={() => eliminarImagen(index)}
+                  sx={{
+                    position: 'absolute',
+                    top: 5,
+                    right: 5,
+                    backgroundColor: 'rgba(0,0,0,0.6)',
+                    color: 'white',
+                    '&:hover': { backgroundColor: 'rgba(0,0,0,0.8)' }
+                  }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
               </Grid>
             ))}
           </Grid>
