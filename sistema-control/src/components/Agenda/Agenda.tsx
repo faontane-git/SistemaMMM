@@ -19,7 +19,7 @@ const Agenda: React.FC = () => {
           <Button
             variant="outlined"
             startIcon={<ArrowBackIcon />}
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/publicar')}
             sx={{ position: 'absolute', left: 0 }}
           >
             Regresar

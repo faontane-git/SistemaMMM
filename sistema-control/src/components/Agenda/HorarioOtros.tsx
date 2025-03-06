@@ -83,9 +83,6 @@ const HorarioOtros: React.FC = () => {
       <div style={{
         textAlign: 'center',
         padding: '20px',
-        backgroundColor: '#2e2e2e',
-        backgroundImage: 'url(https://www.transparenttextures.com/patterns/black-linen.png)',
-        minHeight: '100vh'
       }}>
         {/* 🔹 Botón Regresar */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
@@ -94,7 +91,7 @@ const HorarioOtros: React.FC = () => {
           </Button>
         </Box>
 
-        <Typography variant="h4" gutterBottom sx={{ color: '#F5F5F5', mb: 4 }}>
+        <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
           Horario de Actividades 📌
         </Typography>
 

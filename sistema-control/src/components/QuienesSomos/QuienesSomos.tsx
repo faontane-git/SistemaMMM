@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box, TextField, Button, Grid, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Navbar from '../Navbar';
 import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const QuienesSomos: React.FC = () => {
+  const navigate = useNavigate();
   const [nombreIglesia, setNombreIglesia] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [mision, setMision] = useState('');
@@ -61,9 +64,28 @@ const QuienesSomos: React.FC = () => {
     }
   };
 
-  const eliminarImagen = (index: number) => {
-    const nuevaGaleria = galeria.filter((_, i) => i !== index);
-    setGaleria(nuevaGaleria);
+  const eliminarImagen = async (index: number) => {
+    const result = await Swal.fire({
+      title: '¿Eliminar imagen?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    });
+
+    if (result.isConfirmed) {
+      const nuevaGaleria = galeria.filter((_, i) => i !== index);
+      setGaleria(nuevaGaleria);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Eliminada',
+        text: 'La imagen se eliminó correctamente.',
+      });
+    }
   };
 
   const handleSubmit = async () => {
@@ -98,6 +120,16 @@ const QuienesSomos: React.FC = () => {
     <div>
       <Navbar />
       <Container maxWidth="sm" sx={{ mt: 6 }}>
+        {/* 🔹 Botón Regresar */}
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate(-1)}
+          sx={{ mb: 3 }}
+        >
+          Regresar
+        </Button>
+
         <Typography variant="h4" align="center" gutterBottom>
           ¿Quiénes Somos?
         </Typography>
