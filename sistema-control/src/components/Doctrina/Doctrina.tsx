@@ -60,18 +60,17 @@ const Doctrina: React.FC = () => {
   return (
     <div>
       <Navbar />
-      <Container maxWidth="sm" sx={{ mt: 6, position: 'relative' }}>
-        <Box display="flex" justifyContent="flex-start" mb={2}>
-          <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)}>
-            Regresar
-          </Button>
-        </Box>
 
+      {/* 🔹 Botón Regresar fuera del formulario */}
+      <Box sx={{ p: 2 }}>
+        <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)}>
+          Regresar
+        </Button>
+      </Box>
+
+      <Container maxWidth="sm" sx={{ mt: 2 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Doctrina
-        </Typography>
-        <Typography variant="body1" align="center" color="textSecondary" sx={{ mb: 4 }}>
-          Información sobre nuestra doctrina y enseñanzas.
         </Typography>
 
         <Box

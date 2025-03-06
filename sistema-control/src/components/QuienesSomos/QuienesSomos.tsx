@@ -119,17 +119,19 @@ const QuienesSomos: React.FC = () => {
   return (
     <div>
       <Navbar />
-      <Container maxWidth="sm" sx={{ mt: 6 }}>
-        {/* 🔹 Botón Regresar */}
+
+      {/* 🔹 Botón Regresar afuera del contenedor */}
+      <Box sx={{ p: 2 }}>
         <Button
           variant="outlined"
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(-1)}
-          sx={{ mb: 3 }}
         >
           Regresar
         </Button>
+      </Box>
 
+      <Container maxWidth="sm" sx={{ mt: 2 }}>
         <Typography variant="h4" align="center" gutterBottom>
           ¿Quiénes Somos?
         </Typography>

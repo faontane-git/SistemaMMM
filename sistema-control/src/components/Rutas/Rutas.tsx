@@ -103,13 +103,19 @@ const Rutas: React.FC = () => {
   return (
     <div>
       <Navbar />
-      <Container maxWidth="sm" sx={{ mt: 6, position: 'relative' }}>
-        <Box display="flex" justifyContent="flex-start" mb={2}>
-          <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)}>
-            Regresar
-          </Button>
-        </Box>
 
+      {/* 🔹 Botón Regresar afuera del formulario */}
+      <Box sx={{ p: 2 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate(-1)}
+        >
+          Regresar
+        </Button>
+      </Box>
+
+      <Container maxWidth="sm" sx={{ mt: 2 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Rutas y Ubicación
         </Typography>
@@ -120,7 +126,7 @@ const Rutas: React.FC = () => {
           <TextField label="Ubicación GPS (Google Maps)" fullWidth variant="outlined" value={gpsLink} onChange={(e) => setGpsLink(e.target.value)} sx={{ mb: 2 }} />
           <TextField label="Video de Cómo llegar" fullWidth variant="outlined" value={videoLink} onChange={(e) => setVideoLink(e.target.value)} sx={{ mb: 2 }} />
           <TextField label="Buses que pasan por la zona" fullWidth variant="outlined" value={buses} onChange={(e) => setBuses(e.target.value)} sx={{ mb: 2 }} />
-          
+
           <Button variant="contained" component="label">
             Subir Foto
             <input type="file" accept="image/*" hidden onChange={handleFileChange} />

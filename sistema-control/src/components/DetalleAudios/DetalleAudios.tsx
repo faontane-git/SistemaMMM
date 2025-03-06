@@ -18,6 +18,10 @@ import {
   TextField,
   IconButton,
   CircularProgress,
+  FormControl,
+  MenuItem,
+  Select,
+  InputLabel,
 } from '@mui/material';
 import Navbar from '../Navbar';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -28,13 +32,13 @@ import { firestore } from "../../firebase";
 import { collection, getDocs, doc, addDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
- 
+
 interface Audio {
   id: string;
   name: string;
   description: string;
   url: string;
-  type:string;
+  type: string;
   uploadedAt: string;
 }
 
@@ -58,10 +62,10 @@ const SubirMusica: React.FC = () => {
     name: '',
     description: '',
     url: '',
-    type:'',
+    type: '',
     uploadedAt: '',
   });
-
+  const [filterType, setFilterType] = useState<string>('Todos');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -73,12 +77,12 @@ const SubirMusica: React.FC = () => {
           id: doc.id,
           ...doc.data() as Omit<Audio, 'id'>,
         }));
-  
+
         // Ordenar de la más reciente a la más antigua
-        const audiosOrdenados = audiosData.sort((a, b) => 
+        const audiosOrdenados = audiosData.sort((a, b) =>
           new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
         );
-  
+
         setAudios(audiosOrdenados);
       } catch (error) {
         console.error('Error al obtener audios:', error);
@@ -92,10 +96,10 @@ const SubirMusica: React.FC = () => {
         setLoading(false);
       }
     };
-  
+
     obtenerAudios();
   }, []);
-  
+
 
   const handleOpenDialog = (audio?: Audio) => {
     if (audio) {
@@ -104,12 +108,12 @@ const SubirMusica: React.FC = () => {
         name: audio.name,
         description: audio.description,
         url: audio.url,
-        type:audio.type,
+        type: audio.type,
         uploadedAt: audio.uploadedAt ? new Date(audio.uploadedAt).toISOString().split("T")[0] : '',
       });
     } else {
       setEditingAudioId(null);
-      setNewAudio({ name: '', description: '', url: '', type:'',uploadedAt: '' });
+      setNewAudio({ name: '', description: '', url: '', type: '', uploadedAt: '' });
     }
     setOpen(true);
   };
@@ -148,7 +152,7 @@ const SubirMusica: React.FC = () => {
 
   const handleCloseDialog = () => {
     setOpen(false);
-    setNewAudio({ name: '', description: '', url: '',type:'',uploadedAt: '' });
+    setNewAudio({ name: '', description: '', url: '', type: '', uploadedAt: '' });
     setEditingAudioId(null);
   };
 
@@ -238,6 +242,7 @@ const SubirMusica: React.FC = () => {
             Mensajes
           </Typography>
         </Box>
+
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
           <Button variant="contained" color="primary" onClick={() => handleNavigation("/crear-audio")}>
             Crear Mensaje
@@ -253,37 +258,55 @@ const SubirMusica: React.FC = () => {
                 <StyledTableCell>Nombre</StyledTableCell>
                 <StyledTableCell>Descripción</StyledTableCell>
                 <StyledTableCell>Fecha</StyledTableCell>
-                <StyledTableCell>Tipo</StyledTableCell>
+                <StyledTableCell>
+                  <FormControl fullWidth variant="standard">
+                    <InputLabel>Tipo</InputLabel>
+                    <Select
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value)}
+                      label="Tipo"
+                    >
+                      <MenuItem value="Todos">Todos</MenuItem>
+                      <MenuItem value="Sermones">Sermones</MenuItem>
+                      <MenuItem value="Música">Música</MenuItem>
+                      <MenuItem value="Juventud Victoriosa">Juventud Victoriosa</MenuItem>
+                    </Select>
+                  </FormControl>
+                </StyledTableCell>
                 <StyledTableCell>Archivo</StyledTableCell>
                 <StyledTableCell>Acciones</StyledTableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {audios.map((audio) => (
-                <StyledTableRow key={audio.id}>
-                  <TableCell>{audio.name}</TableCell>
-                  <TableCell>{audio.description}</TableCell>
-                  <TableCell>{new Date(audio.uploadedAt).toLocaleDateString()}</TableCell>
-                  <TableCell>{audio.type}</TableCell>
-                  <TableCell>
-                    <a href={audio.url} target="_blank" rel="noopener noreferrer">
-                      Ver Archivo
-                    </a>
-                  </TableCell>
-                  <TableCell>
-                    <IconButton color="primary" onClick={() => handleEditAudio(audio)}>
-                      <EditIcon />
-                    </IconButton>
 
-                    <IconButton color="secondary" onClick={() => handleEliminarAudio(audio.id)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </StyledTableRow>
-              ))}
+            <TableBody>
+              {audios
+                .filter((audio) => filterType === 'Todos' || audio.type === filterType)
+                .map((audio) => (
+                  <StyledTableRow key={audio.id}>
+                    <TableCell>{audio.name}</TableCell>
+                    <TableCell>{audio.description}</TableCell>
+                    <TableCell>{new Date(audio.uploadedAt).toLocaleDateString()}</TableCell>
+                    <TableCell>{audio.type}</TableCell>
+                    <TableCell>
+                      <a href={audio.url} target="_blank" rel="noopener noreferrer">
+                        Ver Archivo
+                      </a>
+                    </TableCell>
+                    <TableCell>
+                      <IconButton color="primary" onClick={() => handleEditAudio(audio)}>
+                        <EditIcon />
+                      </IconButton>
+
+                      <IconButton color="secondary" onClick={() => handleEliminarAudio(audio.id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </StyledTableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
+
       </Container>
 
       <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="sm">
