@@ -97,42 +97,42 @@ export default function CertificadoBautismo() {
   // 📌 Función para guardar en la galería (JPG)
   const saveToGallery = async () => {
     try {
-      // 📌 Verificar si la referencia existe
-      if (!certificateRef.current) {
-        Alert.alert('Error', 'No se pudo capturar el certificado.');
-        return;
-      }
+        // 🛑 SOLUCIÓN: Solicitar permisos DE FORMA ASINCRÓNICA
+        const { status } = await MediaLibrary.requestPermissionsAsync();
 
-      // 📌 Pedir permisos
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permiso denegado', 'No se puede guardar en la galería sin permisos.');
-        return;
-      }
+        if (status !== 'granted') {
+            Alert.alert('Permiso denegado', 'Debes otorgar permisos para guardar en la galería.');
+            return;
+        }
 
-      // 📸 Capturar la imagen
-      const uri = await captureRef(certificateRef.current, {
-        format: 'jpg',
-        quality: 1,
-      });
+        if (!certificateRef.current) {
+            Alert.alert('Error', 'No se pudo capturar el certificado.');
+            return;
+        }
 
-      // 📂 Guardar la imagen en la galería
-      const asset = await MediaLibrary.createAssetAsync(uri);
-      let album = await MediaLibrary.getAlbumAsync('Certificados');
+        // 📸 Capturar la imagen
+        const uri = await captureRef(certificateRef.current, {
+            format: 'jpg',
+            quality: 1,
+        });
 
-      if (!album) {
-        album = await MediaLibrary.createAlbumAsync('Certificados', asset, false);
-      } else {
-        await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
-      }
+        // 📂 Guardar la imagen en la galería
+        const asset = await MediaLibrary.createAssetAsync(uri);
+        let album = await MediaLibrary.getAlbumAsync('Certificados');
 
-      Alert.alert('Éxito', 'El certificado se ha guardado en la galería.');
+        if (!album) {
+            album = await MediaLibrary.createAlbumAsync('Certificados', asset, false);
+        } else {
+            await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+        }
+
+        Alert.alert('Éxito', 'El certificado se ha guardado en la galería.');
 
     } catch (error) {
-      console.error('Error guardando en galería:', error);
-      Alert.alert('Error', 'No se pudo guardar la imagen en la galería.');
+        console.error('Error guardando en galería:', error);
+        Alert.alert('Error', 'No se pudo guardar la imagen en la galería.');
     }
-  };
+};
 
 
   // 📌 Función para guardar como PDF
