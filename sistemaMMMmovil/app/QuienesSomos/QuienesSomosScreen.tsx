@@ -55,16 +55,32 @@ export default function ContactosScreen() {
   const navigation = useNavigation();
   const [contactos, setContactos] = useState<Persona[]>([]);
   const [loading, setLoading] = useState(true);
-  const [galeria, setGaleria] = useState<number[]>([
-    require('../../assets/images/galeria1.jpeg'),
-    require('../../assets/images/galeria2.jpeg'),
-    require('../../assets/images/galeria3.jpeg'),
-    require('../../assets/images/galeria4.jpeg'),
-    require('../../assets/images/galeria5.jpeg'),
-    require('../../assets/images/galeria6.jpeg'),
-  ]);
+  const [galeria, setGaleria] = useState<string[]>([]);
+  const [iglesias, setIglesias] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const db = getFirestore();
+
+  useEffect(() => {
+    const fetchIglesias = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'iglesia'));
+        if (!querySnapshot.empty) {
+          const iglesiaData = querySnapshot.docs[0].data();
+
+          setIglesias([iglesiaData]);
+
+          if (iglesiaData.galeria && Array.isArray(iglesiaData.galeria)) {
+            setGaleria(iglesiaData.galeria);
+          }
+        }
+      } catch (error) {
+        console.error('Error al obtener los datos de la iglesia:', error);
+      }
+    };
+
+    fetchIglesias();
+  }, []);
+
 
   useEffect(() => {
     const obtenerContactos = async (db: any, setContactos: (data: Persona[]) => void, setLoading: (loading: boolean) => void) => {
@@ -133,11 +149,14 @@ export default function ContactosScreen() {
     ToastAndroid.show('Correo copiado al portapapeles', ToastAndroid.SHORT);
   };
 
-  const renderItem = (item: number) => (
+  const renderItem = (item: string) => (
     <View style={styles.carouselItem}>
-      <Image source={item} style={styles.carouselImage} resizeMode="cover" />
+      <Image source={{ uri: item.startsWith("data:image") ? item : `data:image/jpeg;base64,${item}` }}
+        style={styles.carouselImage}
+        resizeMode="cover" />
     </View>
   );
+
 
   const renderPagination = () => (
     <View style={styles.paginationContainer}>
@@ -183,24 +202,19 @@ export default function ContactosScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={styles.contentSection}>
         <View style={styles.introSection}>
           <Text style={styles.title}>
-            Iglesia Cristiana Pentecostés Movimiento Misionero Mundial
+            {iglesias[0]?.nombreIglesia}
           </Text>
           <Image source={require('../../assets/images/logo-MMM.png')} style={styles.logoCuerpo} />
           <Text style={styles.description}>
-            Somos una organización sin fines de lucro, llevamos el mensaje de Dios a las vidas necesitadas,
-            y predicamos que la sangre de Cristo puede transformar las vidas y los hogares destruidos.
+            {iglesias[0]?.descripcion}
           </Text>
           <Text style={styles.missionTitle}>Misión:</Text>
           <Text style={styles.description}>
-            Llevamos un enfoque en la pesca de almas para nuestro Señor Jesucristo, alcanzar jóvenes y
-            familias destruidas por las redes del enemigo, proclamar el evangelio llamando a nuevas
-            personas a la fe en Cristo.
+            {iglesias[0]?.mision}
           </Text>
           <Text style={styles.visionTitle}>Visión:</Text>
           <Text style={styles.description}>
-            Está enfocada en reflejar nuestros valores fundamentales, metas espirituales y facilitar una
-            conexión con Dios, ser un lugar donde las personas puedan experimentar un cambio radical
-            en sus vidas a través de la fe en Jesucristo.
+            {iglesias[0]?.vision}
           </Text>
         </View>
 
@@ -253,6 +267,7 @@ export default function ContactosScreen() {
           />
           {renderPagination()}
         </View>
+
       </ScrollView>
     </View>
   );

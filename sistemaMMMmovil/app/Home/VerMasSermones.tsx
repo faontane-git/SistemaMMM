@@ -9,10 +9,14 @@ import {
     Image,
     Linking,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { getDocs, collection } from 'firebase/firestore';
 import { firestore } from '../../firebaseConfig';
 import { FontAwesome } from '@expo/vector-icons';
+
+type RouteParams = {
+    type?: string;
+};
 
 interface Sermon {
     id: string;
@@ -26,34 +30,33 @@ interface Sermon {
 export default function VerMasSermones() {
     const [sermones, setSermones] = useState<{ title: string; data: Sermon[] }[]>([]);
     const [loading, setLoading] = useState(true);
+    const route = useRoute();
     const navigation = useNavigation();
 
-    // Tipos permitidos
-    const allowedTypes = ['Sermones', 'Música', 'Juventud Victoriosa'];
-
-    const handleGoBack = () => {
-        if (navigation.canGoBack()) {
-            navigation.goBack();
-        } else {
-            navigation.navigate('Home' as never);
-        }
-    };
+    // Obtener el tipo desde los parámetros, con un valor predeterminado si es `undefined`
+    const { type } = (route.params as RouteParams) || {};
+    
 
     useEffect(() => {
+        console.log(type);
+        // Solo buscar datos si `type` tiene un valor válido
+        if (!type) return;
+
         const fetchSermones = async () => {
             try {
                 const snapshot = await getDocs(collection(firestore, 'Audios'));
-                const sermonesArray = snapshot.docs
-                    .map((doc) => ({
-                        id: doc.id,
-                        ...doc.data(),
-                    })) as Sermon[];
+                const sermonesArray = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                })) as Sermon[];
 
-                // Filtrar y agrupar los sermones por tipo
-                const groupedSermones = allowedTypes.map((type) => ({
-                    title: type,
-                    data: sermonesArray.filter((sermon) => sermon.type === type),
-                })).filter((section) => section.data.length > 0);
+                // Filtrar los sermones según el tipo recibido
+                const filteredSermones = sermonesArray.filter((sermon) => sermon.type === type);
+
+                // Agrupar los sermones por tipo solo si hay datos
+                const groupedSermones = filteredSermones.length > 0
+                    ? [{ title: type, data: filteredSermones }]
+                    : [];
 
                 setSermones(groupedSermones);
             } catch (error) {
@@ -64,17 +67,22 @@ export default function VerMasSermones() {
         };
 
         fetchSermones();
-    }, []);
+    }, [type]);
+
+    const handleGoBack = () => {
+        if (navigation.canGoBack()) {
+            navigation.goBack();
+        } else {
+            navigation.navigate('Home' as never);
+        }
+    };
 
     const renderSermonItem = ({ item }: { item: Sermon }) => (
         <View style={styles.sermonItem}>
             <Text style={styles.title}>{item.name}</Text>
             <Text style={styles.date}>Publicado el: {new Date(item.uploadedAt).toLocaleDateString()}</Text>
             <Text style={styles.description}>{item.description}</Text>
-            <TouchableOpacity
-                style={styles.audioButton}
-                onPress={() => Linking.openURL(item.url)}
-            >
+            <TouchableOpacity style={styles.audioButton} onPress={() => Linking.openURL(item.url)}>
                 <FontAwesome name="play-circle" size={24} color="white" />
                 <Text style={styles.audioButtonText}>Escuchar</Text>
             </TouchableOpacity>
@@ -88,11 +96,13 @@ export default function VerMasSermones() {
                 <View style={styles.logoContainer}>
                     <Image source={require('../../assets/logo.png')} style={styles.logo} />
                 </View>
-                <Text style={styles.headerText}>Mensajes</Text>
+                <Text style={styles.headerText}>Mensajes - {type}</Text>
                 <TouchableOpacity onPress={handleGoBack}>
                     <FontAwesome name="arrow-left" size={24} color="white" />
                 </TouchableOpacity>
             </View>
+
+            {/* Contenido */}
             {loading ? (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="#2980B9" />

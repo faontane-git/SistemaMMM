@@ -68,7 +68,7 @@ export type RootStackParamList = {
   };
   "RedesSociales/RedesSocialesScreen": undefined;
   "Noticias/VerMasNoticias": undefined;
-  "Home/VerMasSermones": undefined;
+  "Home/VerMasSermones": {type: string};
   "Certificados/ValidarCertificados": undefined;
 };
 

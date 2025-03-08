@@ -30,6 +30,16 @@ export default function HorarioOtrosScreen({ navigation }: any) {
                 const actividadesData: ActividadOtros[] = querySnapshot.docs.map((doc) => ({
                     ...doc.data(),
                 })) as ActividadOtros[];
+    
+                // Función para convertir "DD/MM/YYYY" a un objeto Date
+                const parseFecha = (fechaStr: string) => {
+                    const [dia, mes, año] = fechaStr.split('/').map(num => parseInt(num, 10));
+                    return new Date(año, mes - 1, dia); // mes - 1 porque en JavaScript los meses van de 0 a 11
+                };
+    
+                // Ordenar actividades por fecha
+                actividadesData.sort((a, b) => parseFecha(a.fechas).getTime() - parseFecha(b.fechas).getTime());
+    
                 setActividades(actividadesData);
             } catch (error) {
                 console.error('Error fetching data from Firebase:', error);
@@ -37,9 +47,11 @@ export default function HorarioOtrosScreen({ navigation }: any) {
                 setLoading(false);
             }
         };
-
+    
         fetchActividades();
     }, []);
+    
+    
 
     const renderItem = ({ item }: { item: ActividadOtros }) => (
         <View style={styles.card}>
