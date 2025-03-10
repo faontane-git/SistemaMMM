@@ -7,6 +7,13 @@ import {
     Linking,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+// Definir los parámetros de navegación
+type RootStackParamList = {
+    "Home/VerMasSermones": { type: string };
+};
 
 interface Sermon {
     id: string;
@@ -19,27 +26,33 @@ interface Sermon {
 
 interface SermonesProps {
     sermones: Sermon[];
-    handleMoreSermonsPress: (type: string) => void;
 }
 
-const Sermones: React.FC<SermonesProps> = ({ sermones, handleMoreSermonsPress }) => {
+const Sermones: React.FC<SermonesProps> = ({ sermones }) => {
+    // Definir el tipo correcto para `useNavigation`
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
     // Función para obtener el último registro de cada tipo
     const getLatestByType = (type: string) => {
         const filtered = sermones.filter((sermon) => sermon.type === type);
         return filtered.length > 0
             ? filtered.reduce((latest, current) =>
                 new Date(current.uploadedAt) > new Date(latest.uploadedAt) ? current : latest
-              )
+            )
             : null;
     };
 
     const categories = [
-        { title: '🎤 Mensajes que Edifican', type: 'Sermones' },
-        { title: '🎶 Música', type: 'Música' },
-        { title: '🔥 Juventud Victoriosa', type: 'Juventud Victoriosa' },
+        { title: '🎤 Mensajes que Edifican', type: 'Sermones', route: 'Home/VerMasSermones' },
+        { title: '🎶 Música', type: 'Música', route: 'Home/VerMasSermones' },
+        { title: '🔥 Juventud Victoriosa', type: 'Juventud Victoriosa', route: 'Home/VerMasSermones' },
     ];
 
-    const renderSermonItem = (item: Sermon | null) => {
+    const handleMoreSermonsPress = (route: string, type: string) => {
+        navigation.navigate(route as keyof RootStackParamList, { type });
+    };
+
+    const renderSermonItem = (item: Sermon | null, route: string) => {
         if (!item) return null;
 
         return (
@@ -62,10 +75,10 @@ const Sermones: React.FC<SermonesProps> = ({ sermones, handleMoreSermonsPress })
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.moreSermonsButton}
-                    onPress={() => handleMoreSermonsPress(item.type)} 
+                    onPress={() => handleMoreSermonsPress(route, item.type)} // 🔹 Ahora pasa la ruta y el type correctamente
                 >
                     <FontAwesome name="music" size={20} color="white" />
-                    <Text style={styles.moreSermonsButtonText}>Escuchar más {(item.type)}</Text>
+                    <Text style={styles.moreSermonsButtonText}>Escuchar más {item.type}</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -73,12 +86,12 @@ const Sermones: React.FC<SermonesProps> = ({ sermones, handleMoreSermonsPress })
 
     return (
         <View style={styles.container}>
-            {categories.map(({ title, type }) => {
+            {categories.map(({ title, type, route }) => {
                 const latestSermon = getLatestByType(type);
                 return (
                     <View key={type}>
                         <Text style={styles.sectionTitle}>{title}</Text>
-                        {renderSermonItem(latestSermon)}
+                        {renderSermonItem(latestSermon, route)}
                     </View>
                 );
             })}

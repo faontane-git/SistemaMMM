@@ -90,17 +90,14 @@ export default function RutasScreen({ navigation }: any) {
             {/* Título de la Iglesia */}
             <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>
-                    Iglesia Cristiana Pentecostes del Movimiento Misionero Mundial
-                </Text>
-                <Text style={styles.titleText}>
-                    Fco. De Orellana
+                    {rutaData.nombreIglesia}
                 </Text>
             </View>
 
             {/* Imagen de ejemplo antes de "Buses Disponibles" */}
             <View style={styles.imageContainer}>
                 <Image
-                    source={require('../../assets/images/lugar.jpg')} // Cambia la ruta según tu imagen
+                    source={{ uri: rutaData.fotoBase64 || "" }}
                     style={styles.exampleImage}
                 />
             </View>
