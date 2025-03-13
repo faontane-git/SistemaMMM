@@ -10,7 +10,9 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.faontane.sistemaMMMmovil"
+      "bundleIdentifier": "com.faontane.sistemaMMMmovil",
+      "useFrameworks": "static",
+      "useModularHeaders": true
     },
     "android": {
       "useNextNotificationsApi": true,
@@ -36,7 +38,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true

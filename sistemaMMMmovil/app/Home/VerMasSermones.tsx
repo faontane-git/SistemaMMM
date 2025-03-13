@@ -36,7 +36,7 @@ export default function VerMasSermones() {
     const navigation = useNavigation();
 
     const { type } = (route.params as RouteParams) || {};
-    
+
     useEffect(() => {
         console.log(type);
         if (!type) return;
@@ -87,18 +87,15 @@ export default function VerMasSermones() {
 
     return (
         <View style={styles.container}>
-            {/* Header con SafeAreaView */}
-            <SafeAreaView style={styles.safeArea}>
-                <View style={styles.header}>
-                    <View style={styles.logoContainer}>
-                        <Image source={require('../../assets/logo.png')} style={styles.logo} />
-                    </View>
-                    <Text style={styles.headerText}>Mensajes - {type}</Text>
-                    <TouchableOpacity onPress={handleGoBack}>
-                        <FontAwesome name="arrow-left" size={24} color="white" />
-                    </TouchableOpacity>
+            <View style={styles.header}>
+                <View style={styles.logoContainer}>
+                    <Image source={require('../../assets/logo.png')} style={styles.logo} />
                 </View>
-            </SafeAreaView>
+                <Text style={styles.headerText}>Mensajes - {type}</Text>
+                <TouchableOpacity onPress={handleGoBack}>
+                    <FontAwesome name="arrow-left" size={24} color="white" />
+                </TouchableOpacity>
+            </View>
 
             {/* Contenido */}
             {loading ? (
@@ -199,8 +196,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 15,
         backgroundColor: '#2c3e50',
-        paddingTop: Platform.OS === 'ios' ? 50 : 15, // Ajuste de margen superior en iOS
-    },
+     },
     logoContainer: {
         justifyContent: 'center',
         alignItems: 'center',
