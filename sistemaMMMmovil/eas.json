@@ -12,7 +12,22 @@
     },
     "production": {
       "android": {
-        "buildType": "apk" 
+        "buildType": "apk"
+      },
+      "ios": {
+        "distribution": "store",
+        "env": {
+          "EXPO_EAS_BUILD_PRE_INSTALL_HOOK": "./eas-build-pre-install.sh"
+        }
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "proyectommm9@gmail.com",
+        "ascAppId": "6743226909",
+        "appleTeamId": "2YJ333MT97"
       }
     }
   }
