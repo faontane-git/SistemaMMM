@@ -15,10 +15,7 @@
         "buildType": "apk"
       },
       "ios": {
-        "distribution": "store",
-        "env": {
-          "EXPO_EAS_BUILD_PRE_INSTALL_HOOK": "./eas-build-pre-install.sh"
-        }
+        "distribution": "store"
       }
     }
   },

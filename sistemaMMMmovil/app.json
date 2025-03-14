@@ -11,15 +11,18 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.faontane.sistemaMMMmovil",
-      "useFrameworks": "static",
-      "useModularHeaders": true
+      "buildNumber": "1.0.1", 
+      "icon": "./assets/logo.png",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "useNextNotificationsApi": true,
-      "googleSerivesFile": "./google-services.json",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo.png",
-        "backgroundColor": " #ffffff"
+        "backgroundColor": "#ffffff"
       },
       "package": "com.faontane.sistemaMMMmovil"
     },
@@ -39,7 +42,19 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-build-properties"
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static",
+            "useModularHeaders": true
+          },
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
