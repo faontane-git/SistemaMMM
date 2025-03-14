@@ -8,6 +8,8 @@ import {
     ActivityIndicator,
     Image,
     Linking,
+    SafeAreaView,
+    Platform,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { getDocs, collection } from 'firebase/firestore';
@@ -33,13 +35,10 @@ export default function VerMasSermones() {
     const route = useRoute();
     const navigation = useNavigation();
 
-    // Obtener el tipo desde los parámetros, con un valor predeterminado si es `undefined`
     const { type } = (route.params as RouteParams) || {};
-    
 
     useEffect(() => {
         console.log(type);
-        // Solo buscar datos si `type` tiene un valor válido
         if (!type) return;
 
         const fetchSermones = async () => {
@@ -50,10 +49,7 @@ export default function VerMasSermones() {
                     ...doc.data(),
                 })) as Sermon[];
 
-                // Filtrar los sermones según el tipo recibido
                 const filteredSermones = sermonesArray.filter((sermon) => sermon.type === type);
-
-                // Agrupar los sermones por tipo solo si hay datos
                 const groupedSermones = filteredSermones.length > 0
                     ? [{ title: type, data: filteredSermones }]
                     : [];
@@ -91,7 +87,6 @@ export default function VerMasSermones() {
 
     return (
         <View style={styles.container}>
-            {/* Header */}
             <View style={styles.header}>
                 <View style={styles.logoContainer}>
                     <Image source={require('../../assets/logo.png')} style={styles.logo} />
@@ -191,6 +186,9 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#555',
     },
+    safeArea: {
+        backgroundColor: '#2c3e50',
+    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -198,7 +196,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 15,
         backgroundColor: '#2c3e50',
-    },
+     },
     logoContainer: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -215,3 +213,4 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 });
+
