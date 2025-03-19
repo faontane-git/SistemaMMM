@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, SafeAreaView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { getFirestore, doc, updateDoc } from 'firebase/firestore';
@@ -55,59 +55,61 @@ export default function ChangePasswordScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.logoContainer}>
-                    <Image
-                        source={require('../../assets/logo.png')} // Ruta local al logo
-                        style={styles.logo}
+        <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <View style={styles.logoContainer}>
+                        <Image
+                            source={require('../../assets/logo.png')} // Ruta local al logo
+                            style={styles.logo}
+                        />
+                    </View>
+                    <Text style={styles.headerText}>Cambiar Contraseña</Text>
+                    <TouchableOpacity onPress={handleGoBack}>
+                        <FontAwesome name="arrow-left" size={24} color="white" />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Formulario */}
+                <View style={styles.form}>
+                    <Text style={styles.label}>Antigua contraseña</Text>
+                    <TextInput
+                        style={styles.input}
+                        secureTextEntry
+                        placeholder="Ingrese su contraseña actual"
+                        placeholderTextColor="#aaa"
+                        value={oldPassword}
+                        onChangeText={setOldPassword}
+                    />
+
+                    <Text style={styles.label}>Nueva Contraseña</Text>
+                    <TextInput
+                        style={styles.input}
+                        secureTextEntry
+                        placeholder="Ingrese su nueva contraseña"
+                        placeholderTextColor="#aaa"
+                        value={newPassword}
+                        onChangeText={setNewPassword}
+                    />
+
+                    <Text style={styles.label}>Repita Su contraseña</Text>
+                    <TextInput
+                        style={styles.input}
+                        secureTextEntry
+                        placeholder="Repita su nueva contraseña"
+                        placeholderTextColor="#aaa"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
                     />
                 </View>
-                <Text style={styles.headerText}>Cambiar Contraseña</Text>
-                <TouchableOpacity onPress={handleGoBack}>
-                    <FontAwesome name="arrow-left" size={24} color="white" />
+
+                {/* Botón */}
+                <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
+                    <Text style={styles.buttonText}>Cambiar contraseña</Text>
                 </TouchableOpacity>
             </View>
-
-            {/* Formulario */}
-            <View style={styles.form}>
-                <Text style={styles.label}>Antigua contraseña</Text>
-                <TextInput
-                    style={styles.input}
-                    secureTextEntry
-                    placeholder="Ingrese su contraseña actual"
-                    placeholderTextColor="#aaa"
-                    value={oldPassword}
-                    onChangeText={setOldPassword}
-                />
-
-                <Text style={styles.label}>Nueva Contraseña</Text>
-                <TextInput
-                    style={styles.input}
-                    secureTextEntry
-                    placeholder="Ingrese su nueva contraseña"
-                    placeholderTextColor="#aaa"
-                    value={newPassword}
-                    onChangeText={setNewPassword}
-                />
-
-                <Text style={styles.label}>Repita Su contraseña</Text>
-                <TextInput
-                    style={styles.input}
-                    secureTextEntry
-                    placeholder="Repita su nueva contraseña"
-                    placeholderTextColor="#aaa"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                />
-            </View>
-
-            {/* Botón */}
-            <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
-                <Text style={styles.buttonText}>Cambiar contraseña</Text>
-            </TouchableOpacity>
-        </View>
+        </SafeAreaView>
     );
 }
 

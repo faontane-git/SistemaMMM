@@ -16,6 +16,7 @@ import { getDocs, collection, onSnapshot, query, orderBy, limit } from 'firebase
 import { firestore } from '../../firebaseConfig';
 import Noticias from './Noticias';
 import Sermones from './Sermones';
+import { SafeAreaView } from 'react-native';
 
 export default function HomeScreen() {
     const [noticias, setNoticias] = useState<any[]>([]);
@@ -155,124 +156,126 @@ export default function HomeScreen() {
     );
 
     return (
-        <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.logoContainer}>
-                    <Image source={require('../../assets/logo.png')} style={styles.logo} />
-                </View>
-                <Text style={styles.headerText}>Mi Iglesia MMM</Text>
-                <TouchableOpacity
-                    style={styles.loginButton}
-                    onPress={() => handleOptionPress('IniciarSesion/IniciarSesion')}
-                >
-                    <FontAwesome name="user-circle" size={24} color="white" />
-                </TouchableOpacity>
-            </View>
-
-            {/* Contenido Principal */}
-            <FlatList
-                data={[]} // Se usa FlatList pero no renderiza elementos directos
-                keyExtractor={(_, index) => index.toString()}
-                renderItem={null}
-                ListHeaderComponent={renderHeader}
-                contentContainerStyle={styles.mainContent}
-            />
-
-            {/* Modal de Notificación */}
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        {/* Logo en la parte superior */}
-                        <Image source={require('../../assets/logoJV.jpg')} style={styles.modalLogo} />
-
-                        <Text style={styles.modalTitle}>{mensaje?.titulo || "Nuevo mensaje"}</Text>
-
-                        <Text style={styles.modalDate}>
-                            📅 {`${String(new Date().getDate()).padStart(2, '0')}/${String(new Date().getMonth() + 1).padStart(2, '0')}/${new Date().getFullYear()}`}
-                        </Text>
-
-
-                        {/* Botón para cambiar idioma */}
-                        <Pressable
-                            style={styles.languageButton}
-                            onPress={() => setIdioma((prev) => (prev === 'es' ? 'en' : 'es'))}
-                        >
-                            <Text style={styles.languageButtonText}>
-                                {idioma === 'es' ? "Switch to English" : "Cambiar a Español"}
-                            </Text>
-                        </Pressable>
-
-                        {/* Mensaje en Español o Inglés */}
-                        {idioma === 'es' ? (
-                            <>
-                                <Text style={styles.modalMessage}>
-                                    📖 {mensaje?.referenciaEs || "Sin referencia"}
-                                </Text>
-                                <Text style={styles.modalMessage}>
-                                    📝 {mensaje?.mensaje_es || "No hay contenido disponible."}
-                                </Text>
-                            </>
-                        ) : (
-                            <>
-                                <Text style={styles.modalMessage}>
-                                    📖 {mensaje?.referenciaEn || "No reference"}
-                                </Text>
-                                <Text style={styles.modalMessage}>
-                                    📝 {mensaje?.mensaje_en || "No content available."}
-                                </Text>
-                            </>
-                        )}
-
-                        <Pressable
-                            style={styles.closeButton}
-                            onPress={() => setModalVisible(false)}
-                        >
-                            <Text style={styles.closeButtonText}>{idioma === 'es' ? "Cerrar" : "Close"}</Text>
-                        </Pressable>
+        <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <View style={styles.logoContainer}>
+                        <Image source={require('../../assets/logo.png')} style={styles.logo} />
                     </View>
+                    <Text style={styles.headerText}>Mi Iglesia MMM</Text>
+                    <TouchableOpacity
+                        style={styles.loginButton}
+                        onPress={() => handleOptionPress('IniciarSesion/IniciarSesion')}
+                    >
+                        <FontAwesome name="user-circle" size={24} color="white" />
+                    </TouchableOpacity>
                 </View>
-            </Modal>
 
-            {/* Barra de menú inferior */}
-            <View style={styles.bottomMenu}>
-                <TouchableOpacity
-                    style={styles.menuItem}
-                    onPress={() => handleOptionPress('QuienesSomos/QuienesSomosScreen')}
+                {/* Contenido Principal */}
+                <FlatList
+                    data={[]} // Se usa FlatList pero no renderiza elementos directos
+                    keyExtractor={(_, index) => index.toString()}
+                    renderItem={null}
+                    ListHeaderComponent={renderHeader}
+                    contentContainerStyle={styles.mainContent}
+                />
+
+                {/* Modal de Notificación */}
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => setModalVisible(false)}
                 >
-                    <FontAwesome name="info-circle" size={24} color="white" />
-                    <Text style={styles.menuItemText}>¿Quiénes somos?</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.menuItem}
-                    onPress={() => handleOptionPress('Rutas/RutasScreen')}
-                >
-                    <FontAwesome name="map-marker" size={24} color="white" />
-                    <Text style={styles.menuItemText}>Rutas</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.menuItem}
-                    onPress={() => handleOptionPress('Agenda/AgendaScreen')}
-                >
-                    <FontAwesome name="calendar" size={24} color="white" />
-                    <Text style={styles.menuItemText}>Agenda</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.menuItem}
-                    onPress={() => handleOptionPress('RedesSociales/RedesSocialesScreen')}
-                >
-                    <FontAwesome name="share-alt" size={24} color="white" />
-                    <Text style={styles.menuItemText}>Redes Sociales</Text>
-                </TouchableOpacity>
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            {/* Logo en la parte superior */}
+                            <Image source={require('../../assets/logoJV.jpg')} style={styles.modalLogo} />
+
+                            <Text style={styles.modalTitle}>{mensaje?.titulo || "Nuevo mensaje"}</Text>
+
+                            <Text style={styles.modalDate}>
+                                📅 {`${String(new Date().getDate()).padStart(2, '0')}/${String(new Date().getMonth() + 1).padStart(2, '0')}/${new Date().getFullYear()}`}
+                            </Text>
+
+
+                            {/* Botón para cambiar idioma */}
+                            <Pressable
+                                style={styles.languageButton}
+                                onPress={() => setIdioma((prev) => (prev === 'es' ? 'en' : 'es'))}
+                            >
+                                <Text style={styles.languageButtonText}>
+                                    {idioma === 'es' ? "Switch to English" : "Cambiar a Español"}
+                                </Text>
+                            </Pressable>
+
+                            {/* Mensaje en Español o Inglés */}
+                            {idioma === 'es' ? (
+                                <>
+                                    <Text style={styles.modalMessage}>
+                                        📖 {mensaje?.referenciaEs || "Sin referencia"}
+                                    </Text>
+                                    <Text style={styles.modalMessage}>
+                                        📝 {mensaje?.mensaje_es || "No hay contenido disponible."}
+                                    </Text>
+                                </>
+                            ) : (
+                                <>
+                                    <Text style={styles.modalMessage}>
+                                        📖 {mensaje?.referenciaEn || "No reference"}
+                                    </Text>
+                                    <Text style={styles.modalMessage}>
+                                        📝 {mensaje?.mensaje_en || "No content available."}
+                                    </Text>
+                                </>
+                            )}
+
+                            <Pressable
+                                style={styles.closeButton}
+                                onPress={() => setModalVisible(false)}
+                            >
+                                <Text style={styles.closeButtonText}>{idioma === 'es' ? "Cerrar" : "Close"}</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </Modal>
+
+                {/* Barra de menú inferior */}
+                <View style={styles.bottomMenu}>
+                    <TouchableOpacity
+                        style={styles.menuItem}
+                        onPress={() => handleOptionPress('QuienesSomos/QuienesSomosScreen')}
+                    >
+                        <FontAwesome name="info-circle" size={24} color="white" />
+                        <Text style={styles.menuItemText}>¿Quiénes somos?</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.menuItem}
+                        onPress={() => handleOptionPress('Rutas/RutasScreen')}
+                    >
+                        <FontAwesome name="map-marker" size={24} color="white" />
+                        <Text style={styles.menuItemText}>Rutas</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.menuItem}
+                        onPress={() => handleOptionPress('Agenda/AgendaScreen')}
+                    >
+                        <FontAwesome name="calendar" size={24} color="white" />
+                        <Text style={styles.menuItemText}>Agenda</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.menuItem}
+                        onPress={() => handleOptionPress('RedesSociales/RedesSocialesScreen')}
+                    >
+                        <FontAwesome name="share-alt" size={24} color="white" />
+                        <Text style={styles.menuItemText}>Redes Sociales</Text>
+                    </TouchableOpacity>
+                </View>
+
+
             </View>
-
-
-        </View>
+        </SafeAreaView>
     );
 }
 

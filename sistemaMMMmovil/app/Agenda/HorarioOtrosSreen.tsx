@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../firebaseConfig';
 import { FontAwesome } from '@expo/vector-icons'; // Para los iconos
@@ -30,16 +30,16 @@ export default function HorarioOtrosScreen({ navigation }: any) {
                 const actividadesData: ActividadOtros[] = querySnapshot.docs.map((doc) => ({
                     ...doc.data(),
                 })) as ActividadOtros[];
-    
+
                 // Función para convertir "DD/MM/YYYY" a un objeto Date
                 const parseFecha = (fechaStr: string) => {
                     const [dia, mes, año] = fechaStr.split('/').map(num => parseInt(num, 10));
                     return new Date(año, mes - 1, dia); // mes - 1 porque en JavaScript los meses van de 0 a 11
                 };
-    
+
                 // Ordenar actividades por fecha
                 actividadesData.sort((a, b) => parseFecha(a.fechas).getTime() - parseFecha(b.fechas).getTime());
-    
+
                 setActividades(actividadesData);
             } catch (error) {
                 console.error('Error fetching data from Firebase:', error);
@@ -47,11 +47,11 @@ export default function HorarioOtrosScreen({ navigation }: any) {
                 setLoading(false);
             }
         };
-    
+
         fetchActividades();
     }, []);
-    
-    
+
+
 
     const renderItem = ({ item }: { item: ActividadOtros }) => (
         <View style={styles.card}>
@@ -74,30 +74,32 @@ export default function HorarioOtrosScreen({ navigation }: any) {
     }
 
     return (
-        <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.logoContainer}>
-                    <Image
-                        source={require('../../assets/logo.png')} // Ajusta esta ruta al logo correcto
-                        style={styles.logo}
-                    />
+        <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <View style={styles.logoContainer}>
+                        <Image
+                            source={require('../../assets/logo.png')} // Ajusta esta ruta al logo correcto
+                            style={styles.logo}
+                        />
+                    </View>
+                    <Text style={styles.headerText}>Actividades Nacionales</Text>
+                    <TouchableOpacity onPress={handleGoBack}>
+                        <FontAwesome name="arrow-left" size={24} color="white" />
+                    </TouchableOpacity>
                 </View>
-                <Text style={styles.headerText}>Actividades Nacionales</Text>
-                <TouchableOpacity onPress={handleGoBack}>
-                    <FontAwesome name="arrow-left" size={24} color="white" />
-                </TouchableOpacity>
+
+                {/* Lista de actividades */}
+                <FlatList
+                    data={actividades}
+                    renderItem={renderItem}
+                    keyExtractor={(item, index) => index.toString()}
+                    style={styles.dayContainer}
+
+                />
             </View>
-
-            {/* Lista de actividades */}
-            <FlatList
-                data={actividades}
-                renderItem={renderItem}
-                keyExtractor={(item, index) => index.toString()}
-                style={styles.dayContainer}
-
-            />
-        </View>
+        </SafeAreaView>
     );
 }
 

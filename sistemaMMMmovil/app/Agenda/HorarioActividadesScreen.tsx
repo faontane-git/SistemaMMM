@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator, SafeAreaView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../firebaseConfig'; // Ajusta la ruta según tu proyecto
@@ -95,36 +95,38 @@ export default function HorarioActividadesScreen({ navigation }: any) {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.logoContainer}>
-                    <Image source={require('../../assets/logo.png')} style={styles.logo} />
-                </View>
-                <Text style={styles.headerText}>Horarios de Consejería Pastoral</Text>
-                <TouchableOpacity onPress={handleGoBack} accessibilityLabel="Volver a la pantalla anterior">
-                    <FontAwesome name="arrow-left" size={24} color="white" />
-                </TouchableOpacity>
-            </View>
-
-            <FlatList
-                data={datos}
-                keyExtractor={(item) => item.dia}
-                renderItem={({ item }) => (
-                    <View style={styles.dayContainer}>
-                        <Text style={styles.dayText}>{item.dia}</Text>
-                        {item.actividades.map((actividad, idx) => (
-                            <View key={idx} style={[styles.activityCard, { backgroundColor: actividad.color }]}>
-                                <Text style={styles.activityText}>{actividad.materia}</Text>
-                                <Text style={styles.activityText}>
-                                    {actividad.hora_inicio} - {actividad.hora_final}
-                                </Text>
-                            </View>
-                        ))}
+        <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <View style={styles.logoContainer}>
+                        <Image source={require('../../assets/logo.png')} style={styles.logo} />
                     </View>
-                )}
-                contentContainerStyle={{ paddingBottom: 20 }}
-            />
-        </View>
+                    <Text style={styles.headerText}>Horarios de Consejería Pastoral</Text>
+                    <TouchableOpacity onPress={handleGoBack} accessibilityLabel="Volver a la pantalla anterior">
+                        <FontAwesome name="arrow-left" size={24} color="white" />
+                    </TouchableOpacity>
+                </View>
+
+                <FlatList
+                    data={datos}
+                    keyExtractor={(item) => item.dia}
+                    renderItem={({ item }) => (
+                        <View style={styles.dayContainer}>
+                            <Text style={styles.dayText}>{item.dia}</Text>
+                            {item.actividades.map((actividad, idx) => (
+                                <View key={idx} style={[styles.activityCard, { backgroundColor: actividad.color }]}>
+                                    <Text style={styles.activityText}>{actividad.materia}</Text>
+                                    <Text style={styles.activityText}>
+                                        {actividad.hora_inicio} - {actividad.hora_final}
+                                    </Text>
+                                </View>
+                            ))}
+                        </View>
+                    )}
+                    contentContainerStyle={{ paddingBottom: 20 }}
+                />
+            </View>
+        </SafeAreaView>
     );
 }
 

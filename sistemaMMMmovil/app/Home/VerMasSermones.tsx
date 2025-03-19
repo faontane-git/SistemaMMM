@@ -86,37 +86,39 @@ export default function VerMasSermones() {
     );
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.logoContainer}>
-                    <Image source={require('../../assets/logo.png')} style={styles.logo} />
+        <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <View style={styles.logoContainer}>
+                        <Image source={require('../../assets/logo.png')} style={styles.logo} />
+                    </View>
+                    <Text style={styles.headerText}>Mensajes - {type}</Text>
+                    <TouchableOpacity onPress={handleGoBack}>
+                        <FontAwesome name="arrow-left" size={24} color="white" />
+                    </TouchableOpacity>
                 </View>
-                <Text style={styles.headerText}>Mensajes - {type}</Text>
-                <TouchableOpacity onPress={handleGoBack}>
-                    <FontAwesome name="arrow-left" size={24} color="white" />
-                </TouchableOpacity>
-            </View>
 
-            {/* Contenido */}
-            {loading ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#2980B9" />
-                    <Text style={styles.loadingText}>Cargando sermones...</Text>
-                </View>
-            ) : sermones.length > 0 ? (
-                <SectionList
-                    sections={sermones}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderSermonItem}
-                    renderSectionHeader={({ section: { title } }) => (
-                        <Text style={styles.sectionHeader}>{title}</Text>
-                    )}
-                    contentContainerStyle={styles.listContainer}
-                />
-            ) : (
-                <Text style={styles.noDataText}>No hay sermones disponibles.</Text>
-            )}
-        </View>
+                {/* Contenido */}
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#2980B9" />
+                        <Text style={styles.loadingText}>Cargando sermones...</Text>
+                    </View>
+                ) : sermones.length > 0 ? (
+                    <SectionList
+                        sections={sermones}
+                        keyExtractor={(item) => item.id}
+                        renderItem={renderSermonItem}
+                        renderSectionHeader={({ section: { title } }) => (
+                            <Text style={styles.sectionHeader}>{title}</Text>
+                        )}
+                        contentContainerStyle={styles.listContainer}
+                    />
+                ) : (
+                    <Text style={styles.noDataText}>No hay sermones disponibles.</Text>
+                )}
+            </View>
+        </SafeAreaView>
     );
 }
 
@@ -196,7 +198,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 15,
         backgroundColor: '#2c3e50',
-     },
+    },
     logoContainer: {
         justifyContent: 'center',
         alignItems: 'center',

@@ -8,6 +8,7 @@ import {
     ScrollView,
     Image,
     ActivityIndicator,
+    SafeAreaView,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { getDocs, collection } from 'firebase/firestore';
@@ -72,72 +73,74 @@ export default function RutasScreen({ navigation }: any) {
     const { buses, direccion, gpsLink, videoLink } = rutaData;
 
     return (
-        <ScrollView style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.logoContainer}>
+        <SafeAreaView style={{ flex: 1 }}>
+            <ScrollView style={styles.container}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <View style={styles.logoContainer}>
+                        <Image
+                            source={require('../../assets/logo.png')}
+                            style={styles.logo}
+                        />
+                    </View>
+                    <Text style={styles.headerText}>Rutas</Text>
+                    <TouchableOpacity onPress={handleGoBack}>
+                        <FontAwesome name="arrow-left" size={24} color="white" />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Título de la Iglesia */}
+                <View style={styles.titleContainer}>
+                    <Text style={styles.titleText}>
+                        {rutaData.nombreIglesia}
+                    </Text>
+                </View>
+
+                {/* Imagen de ejemplo antes de "Buses Disponibles" */}
+                <View style={styles.imageContainer}>
                     <Image
-                        source={require('../../assets/logo.png')}
-                        style={styles.logo}
+                        source={{ uri: rutaData.fotoBase64 || "" }}
+                        style={styles.exampleImage}
                     />
                 </View>
-                <Text style={styles.headerText}>Rutas</Text>
-                <TouchableOpacity onPress={handleGoBack}>
-                    <FontAwesome name="arrow-left" size={24} color="white" />
-                </TouchableOpacity>
-            </View>
 
-            {/* Título de la Iglesia */}
-            <View style={styles.titleContainer}>
-                <Text style={styles.titleText}>
-                    {rutaData.nombreIglesia}
-                </Text>
-            </View>
+                {/* Información de buses */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Buses Disponibles:</Text>
+                    <Text style={styles.sectionText}>{buses}</Text>
+                </View>
 
-            {/* Imagen de ejemplo antes de "Buses Disponibles" */}
-            <View style={styles.imageContainer}>
-                <Image
-                    source={{ uri: rutaData.fotoBase64 || "" }}
-                    style={styles.exampleImage}
-                />
-            </View>
+                {/* Dirección */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Dirección:</Text>
+                    <Text style={styles.sectionText}>{direccion}</Text>
+                </View>
 
-            {/* Información de buses */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Buses Disponibles:</Text>
-                <Text style={styles.sectionText}>{buses}</Text>
-            </View>
+                {/* Enlace GPS */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Ubicación en el Mapa:</Text>
+                    <TouchableOpacity
+                        style={styles.linkButton}
+                        onPress={() => Linking.openURL(gpsLink)}
+                    >
+                        <FontAwesome name="map-marker" size={20} color="white" />
+                        <Text style={styles.linkButtonText}>Abrir en Google Maps</Text>
+                    </TouchableOpacity>
+                </View>
 
-            {/* Dirección */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Dirección:</Text>
-                <Text style={styles.sectionText}>{direccion}</Text>
-            </View>
-
-            {/* Enlace GPS */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Ubicación en el Mapa:</Text>
-                <TouchableOpacity
-                    style={styles.linkButton}
-                    onPress={() => Linking.openURL(gpsLink)}
-                >
-                    <FontAwesome name="map-marker" size={20} color="white" />
-                    <Text style={styles.linkButtonText}>Abrir en Google Maps</Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* Video */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Video Informativo:</Text>
-                <TouchableOpacity
-                    style={styles.linkButton}
-                    onPress={() => Linking.openURL(videoLink)}
-                >
-                    <FontAwesome name="video-camera" size={20} color="white" />
-                    <Text style={styles.linkButtonText}>Ver en Facebook</Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
+                {/* Video */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Video Informativo:</Text>
+                    <TouchableOpacity
+                        style={styles.linkButton}
+                        onPress={() => Linking.openURL(videoLink)}
+                    >
+                        <FontAwesome name="video-camera" size={20} color="white" />
+                        <Text style={styles.linkButtonText}>Ver en Facebook</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 

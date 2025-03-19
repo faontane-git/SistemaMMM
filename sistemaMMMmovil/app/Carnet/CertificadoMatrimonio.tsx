@@ -7,6 +7,7 @@ import {
   Alert,
   Image,
   ActivityIndicator,
+  SafeAreaView,
 } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import * as MediaLibrary from 'expo-media-library';
@@ -35,8 +36,8 @@ export default function CertificadoMatrimonio() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { Nombres, Apellidos, NombreCoyuge, EstadoCivil, IglesiaMatrimonio,Ministro, Cedula, FechaMatrimonio } =
-    route.params as { Nombres: string, Apellidos: string, EstadoCivil: string, NombreCoyuge: string, IglesiaMatrimonio:string, Ministro: string, Cedula: string, FechaMatrimonio: string };
+  const { Nombres, Apellidos, NombreCoyuge, EstadoCivil, IglesiaMatrimonio, Ministro, Cedula, FechaMatrimonio } =
+    route.params as { Nombres: string, Apellidos: string, EstadoCivil: string, NombreCoyuge: string, IglesiaMatrimonio: string, Ministro: string, Cedula: string, FechaMatrimonio: string };
 
   useEffect(() => {
     if (EstadoCivil !== 'CASADO') {
@@ -198,48 +199,50 @@ export default function CertificadoMatrimonio() {
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(qrData)}`;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <Image source={require('../../assets/logo.png')} style={styles.logo} />
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <Image source={require('../../assets/logo.png')} style={styles.logo} />
+          </View>
+          <Text style={styles.headerText}>Certificado de Matrimonio</Text>
+          <TouchableOpacity onPress={handleGoBack}>
+            <FontAwesome name="arrow-left" size={24} color="white" />
+          </TouchableOpacity>
         </View>
-        <Text style={styles.headerText}>Certificado de Matrimonio</Text>
-        <TouchableOpacity onPress={handleGoBack}>
-          <FontAwesome name="arrow-left" size={24} color="white" />
+
+        <View
+          ref={certificateRef}
+          style={[
+            styles.certificate,
+            {
+              width: width * 1.1,
+              height: (width * 1.1) * 1.3, // 🔹 REDUCIMOS un poco la altura
+              transform: [{ rotate: '-90deg' }, { scale: 1.1 }],
+            }
+          ]}
+        >
+          <Image source={require('../../assets/images/Cmatrimonio.png')} style={styles.image} resizeMode="contain" />
+          <Text style={[styles.title, { top: '28%', left: '39.5%' }]}>{IglesiaMatrimonio}</Text>
+          <Text style={[styles.text, { top: '48%', left: '17%' }]}>{Nombres} {Apellidos}</Text>
+          <Text style={[styles.text, { top: '48%', left: '59%' }]}>{NombreCoyuge}</Text>
+          <Text style={[styles.text, { top: '62.5%', left: '70%' }]}>{Ministro}</Text>
+          <Text style={[styles.text, { top: '62.5%', left: '20%' }]}>{FechaMatrimonio}</Text>
+          <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '30%', left: '77%' }]} />
+        </View>
+
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={saveCertificate}
+          disabled={loading || !isViewReady}>
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.saveButtonText}>Guardar Certificado</Text>
+          )}
         </TouchableOpacity>
       </View>
-
-      <View
-        ref={certificateRef}
-        style={[
-          styles.certificate,
-          {
-            width: width * 1.1,
-            height: (width * 1.1) * 1.3, // 🔹 REDUCIMOS un poco la altura
-            transform: [{ rotate: '-90deg' }, { scale: 1.1 }],
-          }
-        ]}
-      >
-        <Image source={require('../../assets/images/Cmatrimonio.png')} style={styles.image} resizeMode="contain" />
-        <Text style={[styles.title, { top: '28%', left: '39.5%' }]}>{IglesiaMatrimonio}</Text>
-        <Text style={[styles.text, { top: '48%', left: '17%' }]}>{Nombres} {Apellidos}</Text>
-        <Text style={[styles.text, { top: '48%', left: '59%' }]}>{NombreCoyuge}</Text>
-        <Text style={[styles.text, { top: '62.5%', left: '70%' }]}>{Ministro}</Text>
-        <Text style={[styles.text, { top: '62.5%', left: '20%' }]}>{FechaMatrimonio}</Text>
-        <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '30%', left: '77%' }]} />
-      </View>
-
-      <TouchableOpacity
-        style={styles.saveButton}
-        onPress={saveCertificate}
-        disabled={loading || !isViewReady}>
-        {loading ? (
-          <ActivityIndicator size="small" color="#fff" />
-        ) : (
-          <Text style={styles.saveButtonText}>Guardar Certificado</Text>
-        )}
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 

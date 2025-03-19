@@ -15,6 +15,7 @@ import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import Carousel from 'react-native-reanimated-carousel';
 import { Dimensions } from 'react-native';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { SafeAreaView } from 'react-native';
 
 // Definir la interfaz Persona
 interface Persona {
@@ -190,86 +191,88 @@ export default function ContactosScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('../../assets/logo.png')} style={styles.logo} />
-        <Text style={styles.headerText}>¿Quiénes somos?</Text>
-        <TouchableOpacity onPress={handleGoBack}>
-          <FontAwesome name="arrow-left" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={styles.contentSection}>
-        <View style={styles.introSection}>
-          <Text style={styles.title}>
-            {iglesias[0]?.nombreIglesia}
-          </Text>
-          <Image source={require('../../assets/images/logo-MMM.png')} style={styles.logoCuerpo} />
-          <Text style={styles.description}>
-            {iglesias[0]?.descripcion}
-          </Text>
-          <Text style={styles.missionTitle}>Misión:</Text>
-          <Text style={styles.description}>
-            {iglesias[0]?.mision}
-          </Text>
-          <Text style={styles.visionTitle}>Visión:</Text>
-          <Text style={styles.description}>
-            {iglesias[0]?.vision}
-          </Text>
-        </View>
-
-        {loading ? (
-          <ActivityIndicator size="large" color="#3498db" style={styles.loadingIndicator} />
-        ) : (
-          <View>
-            <Text style={styles.contactHeader}>Contactos</Text>
-            {contactos
-              .filter((contacto) =>
-                ["PASTOR", "PASTORA", "CO-PASTOR"].includes(contacto.CargoIglesia)
-              ) // 🔥 Filtra solo los cargos especificados
-              .sort((a, b) => {
-                const order = { PASTOR: 1, PASTORA: 2, "CO-PASTOR": 3 }; // 📌 Orden deseado
-                return (
-                  (order[a.CargoIglesia as keyof typeof order] || 99) -
-                  (order[b.CargoIglesia as keyof typeof order] || 99)
-                );
-              }) // 🔥 Ordena los cargos según la prioridad definida
-              .map((contacto) => (
-                <ContactCard key={contacto.Cedula} contacto={contacto} />
-              ))}
-          </View>
-
-
-        )}
-
-        <View style={styles.emailBox}>
-          <MaterialIcons name="email" size={24} color="#ffffff" style={styles.emailIcon} />
-          <Text style={styles.emailText} numberOfLines={1} ellipsizeMode="tail">
-            mmmfranciscoorellana@gmail.com
-          </Text>
-          <TouchableOpacity onPress={copyToClipboard} style={styles.copyIcon}>
-            <MaterialIcons name="content-copy" size={20} color="white" />
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Image source={require('../../assets/logo.png')} style={styles.logo} />
+          <Text style={styles.headerText}>¿Quiénes somos?</Text>
+          <TouchableOpacity onPress={handleGoBack}>
+            <FontAwesome name="arrow-left" size={24} color="white" />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.gallerySection}>
-          <Text style={styles.galleryHeader}>Galería</Text>
-          <Carousel
-            width={screenWidth * 0.8}
-            height={200}
-            data={galeria}
-            renderItem={({ item }) => renderItem(item)}
-            loop
-            autoPlay
-            autoPlayInterval={3000}
-            onSnapToItem={(index) => setCurrentIndex(index)}
-            style={{ alignSelf: 'center' }}
-          />
-          {renderPagination()}
-        </View>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={styles.contentSection}>
+          <View style={styles.introSection}>
+            <Text style={styles.title}>
+              {iglesias[0]?.nombreIglesia}
+            </Text>
+            <Image source={require('../../assets/images/logo-MMM.png')} style={styles.logoCuerpo} />
+            <Text style={styles.description}>
+              {iglesias[0]?.descripcion}
+            </Text>
+            <Text style={styles.missionTitle}>Misión:</Text>
+            <Text style={styles.description}>
+              {iglesias[0]?.mision}
+            </Text>
+            <Text style={styles.visionTitle}>Visión:</Text>
+            <Text style={styles.description}>
+              {iglesias[0]?.vision}
+            </Text>
+          </View>
 
-      </ScrollView>
-    </View>
+          {loading ? (
+            <ActivityIndicator size="large" color="#3498db" style={styles.loadingIndicator} />
+          ) : (
+            <View>
+              <Text style={styles.contactHeader}>Contactos</Text>
+              {contactos
+                .filter((contacto) =>
+                  ["PASTOR", "PASTORA", "CO-PASTOR"].includes(contacto.CargoIglesia)
+                ) // 🔥 Filtra solo los cargos especificados
+                .sort((a, b) => {
+                  const order = { PASTOR: 1, PASTORA: 2, "CO-PASTOR": 3 }; // 📌 Orden deseado
+                  return (
+                    (order[a.CargoIglesia as keyof typeof order] || 99) -
+                    (order[b.CargoIglesia as keyof typeof order] || 99)
+                  );
+                }) // 🔥 Ordena los cargos según la prioridad definida
+                .map((contacto) => (
+                  <ContactCard key={contacto.Cedula} contacto={contacto} />
+                ))}
+            </View>
+
+
+          )}
+
+          <View style={styles.emailBox}>
+            <MaterialIcons name="email" size={24} color="#ffffff" style={styles.emailIcon} />
+            <Text style={styles.emailText} numberOfLines={1} ellipsizeMode="tail">
+              mmmfranciscoorellana@gmail.com
+            </Text>
+            <TouchableOpacity onPress={copyToClipboard} style={styles.copyIcon}>
+              <MaterialIcons name="content-copy" size={20} color="white" />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.gallerySection}>
+            <Text style={styles.galleryHeader}>Galería</Text>
+            <Carousel
+              width={screenWidth * 0.8}
+              height={200}
+              data={galeria}
+              renderItem={({ item }) => renderItem(item)}
+              loop
+              autoPlay
+              autoPlayInterval={3000}
+              onSnapToItem={(index) => setCurrentIndex(index)}
+              style={{ alignSelf: 'center' }}
+            />
+            {renderPagination()}
+          </View>
+
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 

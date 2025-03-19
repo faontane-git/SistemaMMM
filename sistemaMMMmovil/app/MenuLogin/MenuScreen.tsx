@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image, SafeAreaView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -32,7 +32,7 @@ type RouteParams = {
     NombreCoyuge: string;
     Password: string;
     Pastor: string;
-    PastorBautismo:string;
+    PastorBautismo: string;
     País: string;
     Photo: string;
     Sexo: string;
@@ -46,7 +46,7 @@ export default function MenuScreen() {
     const { Nombres, Apellidos, Cedula, FechaNacimiento, Activo, BautizadoAgua, BautizadoEspirutoSanto
         , CargoIglesia, CasadoEclesiaticamnete, CiudadResidencia, ContactoEmergencia, ContactoPersonal,
         Correo, DireccionDomicilio, EstadoCivil, FechaBaustismo, FechaMatrimonio, Funcion, IglesiaActual,
-        IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, PastorBautismo,País, Photo, Sexo } = route.params as RouteParams;
+        IglesiaBautismo, IglesiaMatrimonio, Ministro, NombreCoyuge, Password, Pastor, PastorBautismo, País, Photo, Sexo } = route.params as RouteParams;
 
     const [isBirthdayModalVisible, setIsBirthdayModalVisible] = useState(false);
 
@@ -76,10 +76,10 @@ export default function MenuScreen() {
         navigation.navigate('Carnet/CarnetScreen', { Nombres, Apellidos, Cedula, Photo, IglesiaActual, CargoIglesia });
     };
     const handleOptionPress2 = () => {
-        navigation.navigate('Carnet/CertificadoBautismo', { Nombres, Apellidos, Cedula, IglesiaBautismo,PastorBautismo, FechaBaustismo });
+        navigation.navigate('Carnet/CertificadoBautismo', { Nombres, Apellidos, Cedula, IglesiaBautismo, PastorBautismo, FechaBaustismo });
     };
     const handleOptionPress3 = () => {
-        navigation.navigate('Carnet/CertificadoMatrimonio', { Nombres, Apellidos, EstadoCivil, NombreCoyuge, IglesiaMatrimonio,Ministro, Cedula, FechaMatrimonio });
+        navigation.navigate('Carnet/CertificadoMatrimonio', { Nombres, Apellidos, EstadoCivil, NombreCoyuge, IglesiaMatrimonio, Ministro, Cedula, FechaMatrimonio });
     };
     const handleValidateCertificatesPress = () => {
         navigation.navigate('Certificados/ValidarCertificados');
@@ -90,85 +90,87 @@ export default function MenuScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            {/* Modal de cumpleaños */}
-            <Modal
-                visible={isBirthdayModalVisible}
-                transparent={true}
-                animationType="fade"
-                onRequestClose={handleCloseBirthdayModal}
-            >
-                <View style={styles.modalBackground}>
-                    <View style={styles.birthdayModal}>
-                        <Text style={styles.birthdayTitle}>¡Feliz cumpleaños!</Text>
-                        <FontAwesome name="birthday-cake" size={80} color="#f39c12" style={styles.birthdayIcon} />
-                        <Text style={styles.birthdayMessage}>
-                            ¡Hoy es tu cumpleaños, {Nombres}! Que tengas un gran día. 🥳
-                        </Text>
-                        <TouchableOpacity
-                            style={styles.birthdayButton}
-                            onPress={handleCloseBirthdayModal}
-                        >
-                            <Text style={styles.birthdayButtonText}>OK</Text>
-                        </TouchableOpacity>
+        <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                {/* Modal de cumpleaños */}
+                <Modal
+                    visible={isBirthdayModalVisible}
+                    transparent={true}
+                    animationType="fade"
+                    onRequestClose={handleCloseBirthdayModal}
+                >
+                    <View style={styles.modalBackground}>
+                        <View style={styles.birthdayModal}>
+                            <Text style={styles.birthdayTitle}>¡Feliz cumpleaños!</Text>
+                            <FontAwesome name="birthday-cake" size={80} color="#f39c12" style={styles.birthdayIcon} />
+                            <Text style={styles.birthdayMessage}>
+                                ¡Hoy es tu cumpleaños, {Nombres}! Que tengas un gran día. 🥳
+                            </Text>
+                            <TouchableOpacity
+                                style={styles.birthdayButton}
+                                onPress={handleCloseBirthdayModal}
+                            >
+                                <Text style={styles.birthdayButtonText}>OK</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-            </Modal>
+                </Modal>
 
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.logoContainer}>
-                    <Image source={require('../../assets/logo.png')} style={styles.logo} />
-                </View>
-                <Text style={styles.headerText}>Bienvenido</Text>
-                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                    <FontAwesome name="sign-out" size={24} color="white" />
-                </TouchableOpacity>
-            </View>
-
-            {/* Bienvenida y opciones */}
-            <View style={styles.body}>
-                <Text style={styles.nameText}>{Nombres}</Text>
-                <Text style={styles.nameText}>{Apellidos}</Text>
-
-                {/* Foto debajo del nombre */}
-                {Photo ? (
-                    <Image source={{ uri: Photo }} style={styles.profilePhoto} />
-                ) : (
-                    <FontAwesome name="user-circle" size={80} color="#ccc" style={styles.profilePhotoPlaceholder} />
-                )}
-
-                <Text style={styles.subtitle}>Seleccione una opción</Text>
-
-                {/* Opciones */}
-                <TouchableOpacity style={styles.optionButton} onPress={handleOptionPress}>
-                    <FontAwesome name="id-card" size={20} color="white" style={styles.optionIcon} />
-                    <Text style={styles.optionText}>Ver Carnet</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.optionButton} onPress={handleOptionPress2}>
-                    <FontAwesome name="certificate" size={20} color="white" style={styles.optionIcon} />
-                    <Text style={styles.optionText}>Certificado de Bautismo</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.optionButton} onPress={handleOptionPress3}>
-                    <FontAwesome name="heart" size={20} color="white" style={styles.optionIcon} />
-                    <Text style={styles.optionText}>Certificado de Matrimonio</Text>
-                </TouchableOpacity>
-
-                {Funcion === "Administrador" && (
-                    <TouchableOpacity style={styles.optionButton} onPress={handleValidateCertificatesPress}>
-                        <FontAwesome name="check-circle" size={20} color="white" style={styles.optionIcon} />
-                        <Text style={styles.optionText}>Validar Certificados</Text>
+                {/* Header */}
+                <View style={styles.header}>
+                    <View style={styles.logoContainer}>
+                        <Image source={require('../../assets/logo.png')} style={styles.logo} />
+                    </View>
+                    <Text style={styles.headerText}>Bienvenido</Text>
+                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                        <FontAwesome name="sign-out" size={24} color="white" />
                     </TouchableOpacity>
-                )}
+                </View>
 
-                <TouchableOpacity style={styles.optionButton} onPress={handleCambioPress}>
-                    <FontAwesome name="lock" size={20} color="white" style={styles.optionIcon} />
-                    <Text style={styles.optionText}>Cambiar Contraseña</Text>
-                </TouchableOpacity>
+                {/* Bienvenida y opciones */}
+                <View style={styles.body}>
+                    <Text style={styles.nameText}>{Nombres}</Text>
+                    <Text style={styles.nameText}>{Apellidos}</Text>
+
+                    {/* Foto debajo del nombre */}
+                    {Photo ? (
+                        <Image source={{ uri: Photo }} style={styles.profilePhoto} />
+                    ) : (
+                        <FontAwesome name="user-circle" size={80} color="#ccc" style={styles.profilePhotoPlaceholder} />
+                    )}
+
+                    <Text style={styles.subtitle}>Seleccione una opción</Text>
+
+                    {/* Opciones */}
+                    <TouchableOpacity style={styles.optionButton} onPress={handleOptionPress}>
+                        <FontAwesome name="id-card" size={20} color="white" style={styles.optionIcon} />
+                        <Text style={styles.optionText}>Ver Carnet</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.optionButton} onPress={handleOptionPress2}>
+                        <FontAwesome name="certificate" size={20} color="white" style={styles.optionIcon} />
+                        <Text style={styles.optionText}>Certificado de Bautismo</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.optionButton} onPress={handleOptionPress3}>
+                        <FontAwesome name="heart" size={20} color="white" style={styles.optionIcon} />
+                        <Text style={styles.optionText}>Certificado de Matrimonio</Text>
+                    </TouchableOpacity>
+
+                    {Funcion === "Administrador" && (
+                        <TouchableOpacity style={styles.optionButton} onPress={handleValidateCertificatesPress}>
+                            <FontAwesome name="check-circle" size={20} color="white" style={styles.optionIcon} />
+                            <Text style={styles.optionText}>Validar Certificados</Text>
+                        </TouchableOpacity>
+                    )}
+
+                    <TouchableOpacity style={styles.optionButton} onPress={handleCambioPress}>
+                        <FontAwesome name="lock" size={20} color="white" style={styles.optionIcon} />
+                        <Text style={styles.optionText}>Cambiar Contraseña</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 

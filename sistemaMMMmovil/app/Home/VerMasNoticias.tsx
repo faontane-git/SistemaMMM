@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     Image,
     ActivityIndicator,
+    SafeAreaView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getDocs, collection } from 'firebase/firestore';
@@ -65,33 +66,35 @@ export default function VerMasNoticias() { // Exportación por defecto
     );
 
     return (
-        <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.logoContainer}>
-                    <Image source={require('../../assets/logo.png')} style={styles.logo} />
+        <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <View style={styles.logoContainer}>
+                        <Image source={require('../../assets/logo.png')} style={styles.logo} />
+                    </View>
+                    <Text style={styles.headerText}>Noticias</Text>
+                    <TouchableOpacity onPress={handleGoBack}>
+                        <FontAwesome name="arrow-left" size={24} color="white" />
+                    </TouchableOpacity>
                 </View>
-                <Text style={styles.headerText}>Noticias</Text>
-                <TouchableOpacity onPress={handleGoBack}>
-                    <FontAwesome name="arrow-left" size={24} color="white" />
-                </TouchableOpacity>
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#2980B9" />
+                        <Text style={styles.loadingText}>Cargando noticias...</Text>
+                    </View>
+                ) : noticias.length > 0 ? (
+                    <FlatList
+                        data={noticias}
+                        keyExtractor={(item) => item.id}
+                        renderItem={renderNoticiaItem}
+                        contentContainerStyle={styles.listContainer}
+                    />
+                ) : (
+                    <Text style={styles.noDataText}>No hay noticias disponibles.</Text>
+                )}
             </View>
-            {loading ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#2980B9" />
-                    <Text style={styles.loadingText}>Cargando noticias...</Text>
-                </View>
-            ) : noticias.length > 0 ? (
-                <FlatList
-                    data={noticias}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderNoticiaItem}
-                    contentContainerStyle={styles.listContainer}
-                />
-            ) : (
-                <Text style={styles.noDataText}>No hay noticias disponibles.</Text>
-            )}
-        </View>
+        </SafeAreaView>
     );
 }
 

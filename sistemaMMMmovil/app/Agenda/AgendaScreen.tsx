@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -27,34 +27,36 @@ export default function ActividadesScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <Image
-            source={require('../../assets/logo.png')}
-            style={styles.logo}
-          />
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../../assets/logo.png')}
+              style={styles.logo}
+            />
+          </View>
+          <Text style={styles.headerText}>Agenda</Text>
+          <TouchableOpacity onPress={handleGoBack}>
+            <FontAwesome name="arrow-left" size={30} color="white" />
+          </TouchableOpacity>
         </View>
-        <Text style={styles.headerText}>Agenda</Text>
-        <TouchableOpacity onPress={handleGoBack}>
-          <FontAwesome name="arrow-left" size={30} color="white" />
-        </TouchableOpacity>
-      </View>
 
-      {/* Botones más grandes y con colores de la bandera de Ecuador */}
-      <View style={styles.buttonSection}>
-        <TouchableOpacity style={[styles.buttonCultos, styles.buttonYellow]} onPress={handleHorarioCultos}>
-          <Text style={styles.buttonText}>Horario de Cultos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.buttonBlue]} onPress={handleHorarioActividades}>
-          <Text style={styles.buttonText}>Horario de Consejería Pastoral</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.buttonRed]} onPress={handleOtros}>
-          <Text style={styles.buttonText}>Actividades Nacionales</Text>
-        </TouchableOpacity>
+        {/* Botones más grandes y con colores de la bandera de Ecuador */}
+        <View style={styles.buttonSection}>
+          <TouchableOpacity style={[styles.buttonCultos, styles.buttonYellow]} onPress={handleHorarioCultos}>
+            <Text style={styles.buttonText}>Horario de Cultos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.buttonBlue]} onPress={handleHorarioActividades}>
+            <Text style={styles.buttonText}>Horario de Consejería Pastoral</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.buttonRed]} onPress={handleOtros}>
+            <Text style={styles.buttonText}>Actividades Nacionales</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

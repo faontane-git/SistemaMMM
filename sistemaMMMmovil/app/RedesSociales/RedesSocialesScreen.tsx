@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Linking, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Linking, ActivityIndicator, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { getDocs, collection } from 'firebase/firestore';
@@ -50,43 +50,45 @@ export default function RedesSocialesScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <Image
-            source={require('../../assets/logo.png')}
-            style={styles.logo}
-          />
-        </View>
-        <Text style={styles.headerText}>Redes Sociales</Text>
-        <TouchableOpacity  onPress={handleGoBack}>
-          <FontAwesome name="arrow-left" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Contenido dinámico de redes sociales */}
-      <ScrollView style={styles.contentSection}>
-        <Text style={styles.sectionTitle}>Redes Sociales</Text>
-        {redes.map((red) => (
-          <View key={red.id} style={styles.socialCard}>
-            <Text style={styles.socialName}>{red.nombre}</Text>
-            <Text style={styles.userName}>{red.usuario}</Text>
-            <TouchableOpacity
-              onPress={() => openLink(red.url)}
-              style={[styles.socialButton, red.tipo === 'Facebook' ? styles.facebookButton : styles.instagramButton]}
-            >
-              <FontAwesome
-                name={red.tipo === 'Facebook' ? 'facebook' : 'instagram'}
-                size={20}
-                color="#fff"
-              />
-              <Text style={styles.socialButtonText}>Visitar {red.tipo}</Text>
-            </TouchableOpacity>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../../assets/logo.png')}
+              style={styles.logo}
+            />
           </View>
-        ))}
-      </ScrollView>
-    </View>
+          <Text style={styles.headerText}>Redes Sociales</Text>
+          <TouchableOpacity onPress={handleGoBack}>
+            <FontAwesome name="arrow-left" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Contenido dinámico de redes sociales */}
+        <ScrollView style={styles.contentSection}>
+          <Text style={styles.sectionTitle}>Redes Sociales</Text>
+          {redes.map((red) => (
+            <View key={red.id} style={styles.socialCard}>
+              <Text style={styles.socialName}>{red.nombre}</Text>
+              <Text style={styles.userName}>{red.usuario}</Text>
+              <TouchableOpacity
+                onPress={() => openLink(red.url)}
+                style={[styles.socialButton, red.tipo === 'Facebook' ? styles.facebookButton : styles.instagramButton]}
+              >
+                <FontAwesome
+                  name={red.tipo === 'Facebook' ? 'facebook' : 'instagram'}
+                  size={20}
+                  color="#fff"
+                />
+                <Text style={styles.socialButtonText}>Visitar {red.tipo}</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 

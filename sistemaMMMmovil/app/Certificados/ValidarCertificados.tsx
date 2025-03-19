@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Alert, Image, TouchableOpacity, Dimensions, SafeAreaView } from 'react-native';
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -89,74 +89,76 @@ export default function ValidarCertificados() {
   }
 
   return (
-    <View style={styles.container}>
-      {/* 🔹 Header con logo, título y botón de retroceso */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleGoBack}>
-          <FontAwesome name="arrow-left" size={24} color="white" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Certificado de Bautismo</Text>
-        <View style={styles.logoContainer}>
-          <Image source={require('../../assets/logo.png')} style={styles.logo} />
-        </View>
-      </View>
-
-      {/* 🔹 Contenedor de la cámara más pequeña */}
-      {!certificadoData && (
-        <View style={styles.cameraContainer}>
-          <CameraView
-            style={styles.camera}
-            barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-            onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-          />
-        </View>
-      )}
-
-      {/* 🔹 Datos del certificado */}
-      {certificadoData && (
-        <View style={styles.certificadoContainer}>
-          {certificadoData.tipoCertificado === 'carnet' && (
-            <>
-              <Text style={styles.validText}>Carnet Válido</Text>
-              <Text style={styles.certificadoText}>Nombres: {certificadoData.Nombres}</Text>
-              <Text style={styles.certificadoText}>Apellidos: {certificadoData.Apellidos}</Text>
-              <Text style={styles.certificadoText}>Cédula: {certificadoData.Cedula}</Text>
-              {certificadoData.Photo ? (
-                <Image source={{ uri: certificadoData.Photo }} style={styles.profileImage} />
-              ) : (
-                <Text style={styles.certificadoText}>No hay foto disponible</Text>
-              )}
-            </>
-          )}
-          {certificadoData.tipoCertificado === 'bautismo' && (
-            <>
-              <Text style={styles.validText}>Certificado de Bautismo Válido</Text>
-              <Text style={styles.certificadoText}>Nombres: {certificadoData.Nombres}</Text>
-              <Text style={styles.certificadoText}>Apellidos: {certificadoData.Apellidos}</Text>
-              <Text style={styles.certificadoText}>Cédula: {certificadoData.Cedula}</Text>
-              <Text style={styles.certificadoText}>Pastor: {certificadoData.PastorBautismo}</Text>
-              <Text style={styles.certificadoText}>Fecha de Bautizo: {certificadoData.FechaBautizo}</Text>
-            </>
-          )}
-          {certificadoData.tipoCertificado === 'matrimonio' && (
-            <>
-              <Text style={styles.validText}>Certificado de Matrimonio Válido</Text>
-              <Text style={styles.certificadoText}>Nombres: {certificadoData.Nombres}</Text>
-              <Text style={styles.certificadoText}>Apellidos: {certificadoData.Apellidos}</Text>
-              <Text style={styles.certificadoText}>Cédula: {certificadoData.Cedula}</Text>
-              <Text style={styles.certificadoText}>Cónyuge: {certificadoData.Conyuge}</Text>
-              <Text style={styles.certificadoText}>Fecha de Matrimonio: {certificadoData.FechaMatrimonio}</Text>
-              <Text style={styles.certificadoText}>Ministro: {certificadoData.Ministro}</Text>
-            </>
-          )}
-          <TouchableOpacity style={styles.button} onPress={() => { setScanned(false); setCertificadoData(null); }}>
-            <Text style={styles.buttonText}>Escanear otro QR</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        {/* 🔹 Header con logo, título y botón de retroceso */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={handleGoBack}>
+            <FontAwesome name="arrow-left" size={24} color="white" />
           </TouchableOpacity>
+          <Text style={styles.headerText}>Certificado de Bautismo</Text>
+          <View style={styles.logoContainer}>
+            <Image source={require('../../assets/logo.png')} style={styles.logo} />
+          </View>
         </View>
-      )}
 
-      {!certificadoData && <Text style={styles.scanText}>Escanea un código QR</Text>}
-    </View>
+        {/* 🔹 Contenedor de la cámara más pequeña */}
+        {!certificadoData && (
+          <View style={styles.cameraContainer}>
+            <CameraView
+              style={styles.camera}
+              barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+              onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+            />
+          </View>
+        )}
+
+        {/* 🔹 Datos del certificado */}
+        {certificadoData && (
+          <View style={styles.certificadoContainer}>
+            {certificadoData.tipoCertificado === 'carnet' && (
+              <>
+                <Text style={styles.validText}>Carnet Válido</Text>
+                <Text style={styles.certificadoText}>Nombres: {certificadoData.Nombres}</Text>
+                <Text style={styles.certificadoText}>Apellidos: {certificadoData.Apellidos}</Text>
+                <Text style={styles.certificadoText}>Cédula: {certificadoData.Cedula}</Text>
+                {certificadoData.Photo ? (
+                  <Image source={{ uri: certificadoData.Photo }} style={styles.profileImage} />
+                ) : (
+                  <Text style={styles.certificadoText}>No hay foto disponible</Text>
+                )}
+              </>
+            )}
+            {certificadoData.tipoCertificado === 'bautismo' && (
+              <>
+                <Text style={styles.validText}>Certificado de Bautismo Válido</Text>
+                <Text style={styles.certificadoText}>Nombres: {certificadoData.Nombres}</Text>
+                <Text style={styles.certificadoText}>Apellidos: {certificadoData.Apellidos}</Text>
+                <Text style={styles.certificadoText}>Cédula: {certificadoData.Cedula}</Text>
+                <Text style={styles.certificadoText}>Pastor: {certificadoData.PastorBautismo}</Text>
+                <Text style={styles.certificadoText}>Fecha de Bautizo: {certificadoData.FechaBautizo}</Text>
+              </>
+            )}
+            {certificadoData.tipoCertificado === 'matrimonio' && (
+              <>
+                <Text style={styles.validText}>Certificado de Matrimonio Válido</Text>
+                <Text style={styles.certificadoText}>Nombres: {certificadoData.Nombres}</Text>
+                <Text style={styles.certificadoText}>Apellidos: {certificadoData.Apellidos}</Text>
+                <Text style={styles.certificadoText}>Cédula: {certificadoData.Cedula}</Text>
+                <Text style={styles.certificadoText}>Cónyuge: {certificadoData.Conyuge}</Text>
+                <Text style={styles.certificadoText}>Fecha de Matrimonio: {certificadoData.FechaMatrimonio}</Text>
+                <Text style={styles.certificadoText}>Ministro: {certificadoData.Ministro}</Text>
+              </>
+            )}
+            <TouchableOpacity style={styles.button} onPress={() => { setScanned(false); setCertificadoData(null); }}>
+              <Text style={styles.buttonText}>Escanear otro QR</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {!certificadoData && <Text style={styles.scanText}>Escanea un código QR</Text>}
+      </View>
+    </SafeAreaView>
   );
 }
 

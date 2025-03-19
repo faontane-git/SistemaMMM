@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, StyleSheet,
-    Alert, Image, ActivityIndicator
+    Alert, Image, ActivityIndicator, SafeAreaView
 } from 'react-native';
 import { getDocs, collection, query, where } from 'firebase/firestore';
 import { firestore } from '../../firebaseConfig';
@@ -70,51 +70,53 @@ export default function LoginScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            {loading ? (
-                // Pantalla de carga con ActivityIndicator
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#2980b9" />
-                    <Text style={styles.loadingText}>Iniciando sesión...</Text>
-                </View>
-            ) : (
-                <>
-                    <Image
-                        source={require('../../assets/logo.png')}
-                        style={styles.logo}
-                    />
+        <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                {loading ? (
+                    // Pantalla de carga con ActivityIndicator
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#2980b9" />
+                        <Text style={styles.loadingText}>Iniciando sesión...</Text>
+                    </View>
+                ) : (
+                    <>
+                        <Image
+                            source={require('../../assets/logo.png')}
+                            style={styles.logo}
+                        />
 
-                    <Text style={styles.title}>Iniciar Sesión</Text>
+                        <Text style={styles.title}>Iniciar Sesión</Text>
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Cédula"
-                        placeholderTextColor="#aaa"
-                        keyboardType="numeric"
-                        autoCapitalize="none"
-                        value={cedula}
-                        onChangeText={setCedula}
-                    />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Cédula"
+                            placeholderTextColor="#aaa"
+                            keyboardType="numeric"
+                            autoCapitalize="none"
+                            value={cedula}
+                            onChangeText={setCedula}
+                        />
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Contraseña"
-                        placeholderTextColor="#aaa"
-                        secureTextEntry
-                        value={password}
-                        onChangeText={setPassword}
-                    />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Contraseña"
+                            placeholderTextColor="#aaa"
+                            secureTextEntry
+                            value={password}
+                            onChangeText={setPassword}
+                        />
 
-                    <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                        <Text style={styles.buttonText}>Ingresar</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                            <Text style={styles.buttonText}>Ingresar</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-                        <Text style={styles.backButtonText}>Regresar</Text>
-                    </TouchableOpacity>
-                </>
-            )}
-        </View>
+                        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+                            <Text style={styles.backButtonText}>Regresar</Text>
+                        </TouchableOpacity>
+                    </>
+                )}
+            </View>
+        </SafeAreaView>
     );
 }
 

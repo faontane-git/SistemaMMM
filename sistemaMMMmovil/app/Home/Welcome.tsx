@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     Image,
     ActivityIndicator,
+    SafeAreaView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { collection, getDocs } from 'firebase/firestore';
@@ -28,7 +29,7 @@ Notifications.setNotificationHandler({
 async function scheduleDailyNotification() {
     try {
         await Notifications.cancelAllScheduledNotificationsAsync();
-        
+
         await Notifications.scheduleNotificationAsync({
             content: {
                 title: "📢 Tiempo con Dios",
@@ -83,30 +84,32 @@ export default function WelcomeScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <Image
-                source={require('../../assets/logo.png')}
-                style={styles.logo}
-                resizeMode="contain"
-            />
+        <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                <Image
+                    source={require('../../assets/logo.png')}
+                    style={styles.logo}
+                    resizeMode="contain"
+                />
 
-            {loading ? (
-                <ActivityIndicator size="large" color="#1B4F72" />
-            ) : (
-                <>
-                    <Text style={styles.title}>{bienvenida.Titulo}</Text>
-                    <Text style={styles.message}>{bienvenida.Mensaje}</Text>
+                {loading ? (
+                    <ActivityIndicator size="large" color="#1B4F72" />
+                ) : (
+                    <>
+                        <Text style={styles.title}>{bienvenida.Titulo}</Text>
+                        <Text style={styles.message}>{bienvenida.Mensaje}</Text>
 
-                    <TouchableOpacity 
-                        style={styles.button} 
-                        onPress={handleContinue}
-                        activeOpacity={0.8}
-                    >
-                        <Text style={styles.buttonText}>Ingresar</Text>
-                    </TouchableOpacity>
-                </>
-            )}
-        </View>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={handleContinue}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={styles.buttonText}>Ingresar</Text>
+                        </TouchableOpacity>
+                    </>
+                )}
+            </View>
+        </SafeAreaView>
     );
 }
 

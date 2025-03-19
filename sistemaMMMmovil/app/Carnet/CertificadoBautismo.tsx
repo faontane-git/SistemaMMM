@@ -7,6 +7,7 @@ import {
   Alert,
   Image,
   ActivityIndicator,
+  SafeAreaView,
 } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import * as MediaLibrary from 'expo-media-library';
@@ -97,42 +98,42 @@ export default function CertificadoBautismo() {
   // 📌 Función para guardar en la galería (JPG)
   const saveToGallery = async () => {
     try {
-        // 🛑 SOLUCIÓN: Solicitar permisos DE FORMA ASINCRÓNICA
-        const { status } = await MediaLibrary.requestPermissionsAsync();
+      // 🛑 SOLUCIÓN: Solicitar permisos DE FORMA ASINCRÓNICA
+      const { status } = await MediaLibrary.requestPermissionsAsync();
 
-        if (status !== 'granted') {
-            Alert.alert('Permiso denegado', 'Debes otorgar permisos para guardar en la galería.');
-            return;
-        }
+      if (status !== 'granted') {
+        Alert.alert('Permiso denegado', 'Debes otorgar permisos para guardar en la galería.');
+        return;
+      }
 
-        if (!certificateRef.current) {
-            Alert.alert('Error', 'No se pudo capturar el certificado.');
-            return;
-        }
+      if (!certificateRef.current) {
+        Alert.alert('Error', 'No se pudo capturar el certificado.');
+        return;
+      }
 
-        // 📸 Capturar la imagen
-        const uri = await captureRef(certificateRef.current, {
-            format: 'jpg',
-            quality: 1,
-        });
+      // 📸 Capturar la imagen
+      const uri = await captureRef(certificateRef.current, {
+        format: 'jpg',
+        quality: 1,
+      });
 
-        // 📂 Guardar la imagen en la galería
-        const asset = await MediaLibrary.createAssetAsync(uri);
-        let album = await MediaLibrary.getAlbumAsync('Certificados');
+      // 📂 Guardar la imagen en la galería
+      const asset = await MediaLibrary.createAssetAsync(uri);
+      let album = await MediaLibrary.getAlbumAsync('Certificados');
 
-        if (!album) {
-            album = await MediaLibrary.createAlbumAsync('Certificados', asset, false);
-        } else {
-            await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
-        }
+      if (!album) {
+        album = await MediaLibrary.createAlbumAsync('Certificados', asset, false);
+      } else {
+        await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+      }
 
-        Alert.alert('Éxito', 'El certificado se ha guardado en la galería.');
+      Alert.alert('Éxito', 'El certificado se ha guardado en la galería.');
 
     } catch (error) {
-        console.error('Error guardando en galería:', error);
-        Alert.alert('Error', 'No se pudo guardar la imagen en la galería.');
+      console.error('Error guardando en galería:', error);
+      Alert.alert('Error', 'No se pudo guardar la imagen en la galería.');
     }
-};
+  };
 
 
   // 📌 Función para guardar como PDF
@@ -193,49 +194,51 @@ export default function CertificadoBautismo() {
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <Image source={require('../../assets/logo.png')} style={styles.logo} />
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <Image source={require('../../assets/logo.png')} style={styles.logo} />
+          </View>
+          <Text style={styles.headerText}>Certificado de Bautismo</Text>
+          <TouchableOpacity onPress={handleGoBack}>
+            <FontAwesome name="arrow-left" size={24} color="white" />
+          </TouchableOpacity>
         </View>
-        <Text style={styles.headerText}>Certificado de Bautismo</Text>
-        <TouchableOpacity onPress={handleGoBack}>
-          <FontAwesome name="arrow-left" size={24} color="white" />
+
+
+        <View
+          ref={certificateRef}
+          style={[
+            styles.certificate,
+            {
+              width: width * 1.1,
+              height: (width * 1.1) * 1.3, // 🔹 REDUCIMOS un poco la altura
+              transform: [{ rotate: '-90deg' }, { scale: 1.1 }],
+            }
+          ]}
+        >
+          <Image source={require('../../assets/images/Cbautismo.png')} style={styles.image} resizeMode="contain" />
+          <Text style={[styles.text, { top: '27%', left: '37%' }]}>{IglesiaBautismo}</Text>
+          <Text style={[styles.text, { top: '53%', left: '27%' }]}>{Nombres} {Apellidos}</Text>
+          <Text style={[styles.textDate, { top: '62%', left: '20%' }]}>{FechaBaustismo}</Text>
+          <Text style={[styles.signature, { top: '67%', left: '30%' }]}>{PastorBautismo}</Text>
+          <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '26.5%', left: '75%' }]} />
+        </View>
+
+
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={saveCertificate}
+          disabled={loading || !isViewReady}>
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.saveButtonText}>Guardar Certificado</Text>
+          )}
         </TouchableOpacity>
       </View>
-
-
-      <View
-        ref={certificateRef}
-        style={[
-          styles.certificate,
-          {
-            width: width * 1.1,
-            height: (width * 1.1) * 1.3, // 🔹 REDUCIMOS un poco la altura
-            transform: [{ rotate: '-90deg' }, { scale: 1.1 }],
-          }
-        ]}
-      >
-        <Image source={require('../../assets/images/Cbautismo.png')} style={styles.image} resizeMode="contain" />
-        <Text style={[styles.text, { top: '27%', left: '37%' }]}>{IglesiaBautismo}</Text>
-        <Text style={[styles.text, { top: '53%', left: '27%' }]}>{Nombres} {Apellidos}</Text>
-        <Text style={[styles.textDate, { top: '62%', left: '20%' }]}>{FechaBaustismo}</Text>
-        <Text style={[styles.signature, { top: '67%', left: '30%' }]}>{PastorBautismo}</Text>
-        <Image source={{ uri: qrUrl }} style={[styles.qrCode, { top: '26.5%', left: '75%' }]} />
-      </View>
-
-
-      <TouchableOpacity
-        style={styles.saveButton}
-        onPress={saveCertificate}
-        disabled={loading || !isViewReady}>
-        {loading ? (
-          <ActivityIndicator size="small" color="#fff" />
-        ) : (
-          <Text style={styles.saveButtonText}>Guardar Certificado</Text>
-        )}
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 

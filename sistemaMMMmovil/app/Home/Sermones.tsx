@@ -26,6 +26,7 @@ interface Sermon {
 
 interface SermonesProps {
     sermones: Sermon[];
+    handleMoreSermonsPress: (option: string) => void;
 }
 
 const Sermones: React.FC<SermonesProps> = ({ sermones }) => {

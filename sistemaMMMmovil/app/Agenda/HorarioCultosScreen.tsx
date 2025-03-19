@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator, ScrollView, SafeAreaView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../firebaseConfig'; // Asegúrate de ajustar la ruta según tu proyecto
@@ -83,7 +83,7 @@ export default function HorarioCultosScreen({ navigation }: any) {
 
         setDatos(datosOrdenados);
     };
-    
+
     const renderItem = ({ item }: { item: DiaActividades }) => (
         <View style={styles.dayContainer}>
             <Text style={styles.dayText}>{item.dia}</Text>
@@ -107,38 +107,40 @@ export default function HorarioCultosScreen({ navigation }: any) {
     }
 
     return (
-        <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.logoContainer}>
-                    <Image
-                        source={require('../../assets/logo.png')}
-                        style={styles.logo}
-                    />
-                </View>
-                <Text style={styles.headerText}>Horarios de Cultos</Text>
-                <TouchableOpacity onPress={handleGoBack}>
-                    <FontAwesome name="arrow-left" size={24} color="white" />
-                </TouchableOpacity>
-            </View>
-
-            {/* Horario semanal */}
-            <ScrollView style={styles.scheduleContainer}>
-                {datos.map((item, index) => (
-                    <View key={index} style={styles.dayContainer}>
-                        <Text style={styles.dayText}>{item.dia}</Text>
-                        {item.actividades.map((actividad, idx) => (
-                            <View key={idx} style={[styles.activityCard, { backgroundColor: actividad.color }]}>
-                                <Text style={styles.activityText}>{actividad.materia}</Text>
-                                <Text style={styles.activityText}>
-                                    {actividad.hora_inicio} - {actividad.hora_final}
-                                </Text>
-                            </View>
-                        ))}
+        <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <View style={styles.logoContainer}>
+                        <Image
+                            source={require('../../assets/logo.png')}
+                            style={styles.logo}
+                        />
                     </View>
-                ))}
-            </ScrollView>
-        </View>
+                    <Text style={styles.headerText}>Horarios de Cultos</Text>
+                    <TouchableOpacity onPress={handleGoBack}>
+                        <FontAwesome name="arrow-left" size={24} color="white" />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Horario semanal */}
+                <ScrollView style={styles.scheduleContainer}>
+                    {datos.map((item, index) => (
+                        <View key={index} style={styles.dayContainer}>
+                            <Text style={styles.dayText}>{item.dia}</Text>
+                            {item.actividades.map((actividad, idx) => (
+                                <View key={idx} style={[styles.activityCard, { backgroundColor: actividad.color }]}>
+                                    <Text style={styles.activityText}>{actividad.materia}</Text>
+                                    <Text style={styles.activityText}>
+                                        {actividad.hora_inicio} - {actividad.hora_final}
+                                    </Text>
+                                </View>
+                            ))}
+                        </View>
+                    ))}
+                </ScrollView>
+            </View>
+        </SafeAreaView>
     );
 }
 

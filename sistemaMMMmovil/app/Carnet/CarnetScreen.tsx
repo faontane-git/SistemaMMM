@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function CarnetScreen() {
     const navigation = useNavigation();
     const route = useRoute();
-    const { Nombres,Apellidos,Cedula,Photo,IglesiaActual,CargoIglesia
-     } = route.params as {Nombres:string,Apellidos:string,Cedula: string,Photo:string,IglesiaActual:string,CargoIglesia:string };
+    const { Nombres, Apellidos, Cedula, Photo, IglesiaActual, CargoIglesia
+    } = route.params as { Nombres: string, Apellidos: string, Cedula: string, Photo: string, IglesiaActual: string, CargoIglesia: string };
     const [loading, setLoading] = useState(true);
 
     const handleGoBack = () => {
@@ -29,65 +29,67 @@ export default function CarnetScreen() {
 
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
         JSON.stringify({
-            tipoCertificado:"carnet",
+            tipoCertificado: "carnet",
             Nombres: Nombres,
             Apellidos: Apellidos,
             Cedula: Cedula,
-         })
+        })
     )}`;
 
     return (
-        <View style={styles.container}>
-            {/* Imagen de la credencial */}
-            <View style={styles.cardContainer}>
-                <Image
-                    source={require('../../assets/images/credencial.jpg')}
-                    style={styles.cardImage}
-                />
+        <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                {/* Imagen de la credencial */}
+                <View style={styles.cardContainer}>
+                    <Image
+                        source={require('../../assets/images/credencial.jpg')}
+                        style={styles.cardImage}
+                    />
 
-                {/* Contenido superpuesto */}
-                <View style={styles.overlay}>
-                    {/* Título */}
-                    <Text style={styles.title}>{IglesiaActual}</Text>
- 
-                    {/* Foto de perfil */}
-                    <View style={styles.profileSection}>
-                        {Photo ? (
-                            <Image source={{ uri: Photo }} style={styles.profileImage} />
-                        ) : (
-                            <FontAwesome name="user-circle" size={100} color="#ccc" />
-                        )}
-                    </View>
+                    {/* Contenido superpuesto */}
+                    <View style={styles.overlay}>
+                        {/* Título */}
+                        <Text style={styles.title}>{IglesiaActual}</Text>
 
-                    {/* Información personal */}
-                    <View style={styles.infoContainer}>
-                        <Text style={styles.infoValue}>{Nombres}</Text>
-                    </View>
-                    <View style={styles.infoContainer}>
-                        <Text style={styles.infoValue}>{Apellidos}</Text>
-                    </View>
-                    <View style={styles.infoContainer}>
-                        <Text style={styles.infoValue}>{Cedula}</Text>
-                    </View>
-                    <View style={styles.infoContainer}>
-                        <Text style={styles.infoValue}>{CargoIglesia}</Text>
-                    </View>
+                        {/* Foto de perfil */}
+                        <View style={styles.profileSection}>
+                            {Photo ? (
+                                <Image source={{ uri: Photo }} style={styles.profileImage} />
+                            ) : (
+                                <FontAwesome name="user-circle" size={100} color="#ccc" />
+                            )}
+                        </View>
 
-                    {/* Código QR */}
-                    <View style={styles.qrContainer}>
-                        <Image source={{ uri: qrUrl }} style={styles.qrImage} />
+                        {/* Información personal */}
+                        <View style={styles.infoContainer}>
+                            <Text style={styles.infoValue}>{Nombres}</Text>
+                        </View>
+                        <View style={styles.infoContainer}>
+                            <Text style={styles.infoValue}>{Apellidos}</Text>
+                        </View>
+                        <View style={styles.infoContainer}>
+                            <Text style={styles.infoValue}>{Cedula}</Text>
+                        </View>
+                        <View style={styles.infoContainer}>
+                            <Text style={styles.infoValue}>{CargoIglesia}</Text>
+                        </View>
+
+                        {/* Código QR */}
+                        <View style={styles.qrContainer}>
+                            <Image source={{ uri: qrUrl }} style={styles.qrImage} />
+                        </View>
                     </View>
                 </View>
-            </View>
 
-            {/* Barra de menú inferior */}
-            <View style={styles.bottomMenu}>
-                <TouchableOpacity style={styles.menuButton} onPress={handleGoBack}>
-                    <FontAwesome name="arrow-left" size={24} color="white" />
-                    <Text style={styles.menuButtonText}>Regresar</Text>
-                </TouchableOpacity>
+                {/* Barra de menú inferior */}
+                <View style={styles.bottomMenu}>
+                    <TouchableOpacity style={styles.menuButton} onPress={handleGoBack}>
+                        <FontAwesome name="arrow-left" size={24} color="white" />
+                        <Text style={styles.menuButtonText}>Regresar</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
