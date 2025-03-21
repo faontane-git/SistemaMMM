@@ -2,7 +2,7 @@
   "expo": {
     "name": "Mi iglesia MMM",
     "slug": "sistemaMMMmovil",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -11,7 +11,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.faontane.sistemaMMMmovil",
-      "buildNumber": "1.0.2", 
+      "buildNumber": "1.0.3", 
       "icon": "./assets/logo.png",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false

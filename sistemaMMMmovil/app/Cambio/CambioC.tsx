@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, SafeAreaView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { getFirestore, doc, updateDoc } from 'firebase/firestore';
+import { getFirestore, doc, updateDoc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 
 const db = getFirestore(); // Inicializa Firestore
 
@@ -27,27 +27,36 @@ export default function ChangePasswordScreen() {
             Alert.alert('Error', 'Por favor complete todos los campos.');
             return;
         }
-
+    
         if (newPassword !== confirmPassword) {
             Alert.alert('Error', 'Las nuevas contraseñas no coinciden.');
             return;
         }
-
-        // Verificar si la contraseña antigua ingresada es correcta
+    
         if (oldPassword !== Password) {
             Alert.alert('Error', 'La antigua contraseña no es correcta.');
             return;
         }
-
+    
         try {
-            // Referencia al documento del usuario en Firestore usando su cédula como identificador único
-            const userRef = doc(db, 'Personas', Cedula);
-
+            // Consultar Firestore para encontrar el documento con la cédula proporcionada
+            const personasRef = collection(db, 'Personas');
+            const q = query(personasRef, where('Cedula', '==', Cedula));
+            const querySnapshot = await getDocs(q);
+    
+            if (querySnapshot.empty) {
+                Alert.alert('Error', `No se encontró un usuario con la cédula: ${Cedula}`);
+                return;
+            }
+    
+            // Solo debería haber un documento con esa cédula
+            const userDoc = querySnapshot.docs[0].ref;
+    
             // Actualizar la contraseña en Firestore
-            await updateDoc(userRef, { Password: newPassword });
-
+            await updateDoc(userDoc, { Password: newPassword });
+    
             Alert.alert('Éxito', 'La contraseña ha sido cambiada correctamente.');
-            navigation.goBack(); // Opcional, regresa a la pantalla anterior
+            navigation.goBack();
         } catch (error) {
             console.error('Error al cambiar la contraseña:', error);
             Alert.alert('Error', 'No se pudo cambiar la contraseña. Intente nuevamente.');
