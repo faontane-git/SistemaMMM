@@ -39,7 +39,7 @@ const App: React.FC = () => {
                 <Routes>
                     <Route path="/" element={<LoginForm />} />
                     <Route element={<ProtectedRoute />}>
-                        <Route path="/menu" element={<MainLayout />} />
+                        <Route path="/menu" element={<PublishPage />} />
                         <Route path="/publicar" element={<PublishPage />} />
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/metrics" element={<Metrics />} />

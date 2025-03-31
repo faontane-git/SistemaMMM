@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import Navbar from '../Navbar';
 import {
@@ -9,8 +9,15 @@ import {
   Card,
   CardContent,
   CardActionArea,
-  useTheme
+  useTheme,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Grow
 } from '@mui/material';
+
 import EventIcon from '@mui/icons-material/Event';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import ShareIcon from '@mui/icons-material/Share';
@@ -80,10 +87,49 @@ const publishOptions = [
 
 const PublishPage: React.FC = () => {
   const theme = useTheme();
+  const [showDialog, setShowDialog] = useState(false);
+
+  useEffect(() => {
+    const justLoggedIn = localStorage.getItem('justLoggedIn');
+    if (justLoggedIn === 'true') {
+      setShowDialog(true);
+      localStorage.removeItem('justLoggedIn');
+    }
+  }, []);
+
+  const handleCloseDialog = () => {
+    setShowDialog(false);
+  };
 
   return (
     <div>
       <Navbar />
+
+      {/* Pop-up animado de bienvenida */}
+      <Dialog
+        open={showDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="bienvenida-title"
+        TransitionComponent={Grow}
+        transitionDuration={500}
+      >
+        <DialogTitle id="bienvenida-title">¡Bienvenido!</DialogTitle>
+        <DialogContent dividers>
+          <Typography>
+            Que Dios te bendiga. Gracias por ser parte de nuestra comunidad. ❤️
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleCloseDialog}
+            variant="contained"
+            sx={{ backgroundColor: '#3a7bd5' }}
+          >
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Box
         sx={{
           minHeight: '100vh',
@@ -120,7 +166,12 @@ const PublishPage: React.FC = () => {
                     transition: 'all 0.3s ease-in-out',
                   }}
                 >
-                  <CardActionArea component={Link} to={to} aria-label={title} disabled={title === "Iglesias"}>
+                  <CardActionArea
+                    component={Link}
+                    to={to}
+                    aria-label={title}
+                    disabled={title === "Iglesias"}
+                  >
                     <CardContent sx={{ textAlign: 'center', padding: 1.5 }}>
                       {icon}
                       <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
