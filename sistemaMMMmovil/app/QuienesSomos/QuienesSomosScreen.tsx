@@ -17,7 +17,6 @@ import { Dimensions } from 'react-native';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { SafeAreaView } from 'react-native';
 
-// Definir la interfaz Persona
 interface Persona {
   Nombres: string;
   Apellidos: string;
@@ -49,7 +48,6 @@ interface Persona {
   Sexo: string;
 }
 
-
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function ContactosScreen() {
@@ -67,9 +65,7 @@ export default function ContactosScreen() {
         const querySnapshot = await getDocs(collection(db, 'iglesia'));
         if (!querySnapshot.empty) {
           const iglesiaData = querySnapshot.docs[0].data();
-
           setIglesias([iglesiaData]);
-
           if (iglesiaData.galeria && Array.isArray(iglesiaData.galeria)) {
             setGaleria(iglesiaData.galeria);
           }
@@ -82,13 +78,11 @@ export default function ContactosScreen() {
     fetchIglesias();
   }, []);
 
-
   useEffect(() => {
-    const obtenerContactos = async (db: any, setContactos: (data: Persona[]) => void, setLoading: (loading: boolean) => void) => {
+    const obtenerContactos = async () => {
       try {
         const contactosCollection = collection(db, 'Personas');
         const querySnapshot = await getDocs(contactosCollection);
-
         const contactosArray: Persona[] = querySnapshot.docs.map((doc) => {
           const data = doc.data();
           return {
@@ -123,7 +117,7 @@ export default function ContactosScreen() {
           };
         });
 
-        setContactos(contactosArray); // 🔹 Se almacenan los datos en el estado
+        setContactos(contactosArray);
       } catch (error) {
         console.error('Error al obtener los contactos:', error);
         ToastAndroid.show('Error al cargar contactos', ToastAndroid.SHORT);
@@ -132,10 +126,8 @@ export default function ContactosScreen() {
       }
     };
 
-
-    obtenerContactos(db, setContactos, setLoading); // 🔥 Ahora se llama correctamente
+    obtenerContactos();
   }, []);
-
 
   const handleGoBack = () => {
     if (navigation.canGoBack()) {
@@ -152,12 +144,13 @@ export default function ContactosScreen() {
 
   const renderItem = (item: string) => (
     <View style={styles.carouselItem}>
-      <Image source={{ uri: item.startsWith("data:image") ? item : `data:image/jpeg;base64,${item}` }}
+      <Image
+        source={{ uri: item.startsWith("data:image") ? item : `data:image/jpeg;base64,${item}` }}
         style={styles.carouselImage}
-        resizeMode="cover" />
+        resizeMode="cover"
+      />
     </View>
   );
-
 
   const renderPagination = () => (
     <View style={styles.paginationContainer}>
@@ -190,6 +183,16 @@ export default function ContactosScreen() {
     );
   };
 
+  // 🔵 Mostrar spinner si está cargando
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#2980b9" />
+        <Text style={styles.loadingText}>Cargando información...</Text>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -203,46 +206,30 @@ export default function ContactosScreen() {
 
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={styles.contentSection}>
           <View style={styles.introSection}>
-            <Text style={styles.title}>
-              {iglesias[0]?.nombreIglesia}
-            </Text>
+            <Text style={styles.title}>{iglesias[0]?.nombreIglesia}</Text>
             <Image source={require('../../assets/images/logo-MMM.png')} style={styles.logoCuerpo} />
-            <Text style={styles.description}>
-              {iglesias[0]?.descripcion}
-            </Text>
+            <Text style={styles.description}>{iglesias[0]?.descripcion}</Text>
             <Text style={styles.missionTitle}>Misión:</Text>
-            <Text style={styles.description}>
-              {iglesias[0]?.mision}
-            </Text>
+            <Text style={styles.description}>{iglesias[0]?.mision}</Text>
             <Text style={styles.visionTitle}>Visión:</Text>
-            <Text style={styles.description}>
-              {iglesias[0]?.vision}
-            </Text>
+            <Text style={styles.description}>{iglesias[0]?.vision}</Text>
           </View>
 
-          {loading ? (
-            <ActivityIndicator size="large" color="#3498db" style={styles.loadingIndicator} />
-          ) : (
-            <View>
-              <Text style={styles.contactHeader}>Contactos</Text>
-              {contactos
-                .filter((contacto) =>
-                  ["PASTOR", "PASTORA", "CO-PASTOR"].includes(contacto.CargoIglesia)
-                ) // 🔥 Filtra solo los cargos especificados
-                .sort((a, b) => {
-                  const order = { PASTOR: 1, PASTORA: 2, "CO-PASTOR": 3 }; // 📌 Orden deseado
-                  return (
-                    (order[a.CargoIglesia as keyof typeof order] || 99) -
-                    (order[b.CargoIglesia as keyof typeof order] || 99)
-                  );
-                }) // 🔥 Ordena los cargos según la prioridad definida
-                .map((contacto) => (
-                  <ContactCard key={contacto.Cedula} contacto={contacto} />
-                ))}
-            </View>
-
-
-          )}
+          <Text style={styles.contactHeader}>Contactos</Text>
+          {contactos
+            .filter((contacto) =>
+              ["PASTOR", "PASTORA", "CO-PASTOR"].includes(contacto.CargoIglesia)
+            )
+            .sort((a, b) => {
+              const order = { PASTOR: 1, PASTORA: 2, "CO-PASTOR": 3 };
+              return (
+                (order[a.CargoIglesia as keyof typeof order] || 99) -
+                (order[b.CargoIglesia as keyof typeof order] || 99)
+              );
+            })
+            .map((contacto) => (
+              <ContactCard key={contacto.Cedula} contacto={contacto} />
+            ))}
 
           <View style={styles.emailBox}>
             <MaterialIcons name="email" size={24} color="#ffffff" style={styles.emailIcon} />
@@ -269,7 +256,6 @@ export default function ContactosScreen() {
             />
             {renderPagination()}
           </View>
-
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -295,20 +281,8 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: '700', color: '#2c3e50', textAlign: 'center' },
   subtitle: { fontSize: 16, color: '#7f8c8d', textAlign: 'center', marginBottom: 15 },
   description: { fontSize: 14, color: '#555', lineHeight: 22, textAlign: 'justify' },
-  missionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#3498db',
-    marginTop: 15,
-    marginBottom: 5,
-  },
-  visionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1abc9c',
-    marginTop: 15,
-    marginBottom: 5,
-  },
+  missionTitle: { fontSize: 16, fontWeight: 'bold', color: '#3498db', marginTop: 15, marginBottom: 5 },
+  visionTitle: { fontSize: 16, fontWeight: 'bold', color: '#1abc9c', marginTop: 15, marginBottom: 5 },
   contactHeader: { fontSize: 18, fontWeight: '700', color: '#2c3e50', marginBottom: 10 },
   contactCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', padding: 15, borderRadius: 8, marginBottom: 15 },
   contactImage: { width: 50, height: 50, borderRadius: 25, marginRight: 15 },
@@ -324,19 +298,9 @@ const styles = StyleSheet.create({
   galleryHeader: { fontSize: 18, fontWeight: '700', color: '#2c3e50', marginBottom: 10 },
   carouselItem: { justifyContent: 'center', alignItems: 'center' },
   carouselImage: { width: '100%', height: 200, borderRadius: 8 },
-  paginationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-  paginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#d3d3d3',
-    marginHorizontal: 4,
-  },
-  paginationDotActive: {
-    backgroundColor: '#3498db',
-  },
+  paginationContainer: { flexDirection: 'row', justifyContent: 'center', marginTop: 10 },
+  paginationDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#d3d3d3', marginHorizontal: 4 },
+  paginationDotActive: { backgroundColor: '#3498db' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F8F9FA' },
+  loadingText: { marginTop: 10, fontSize: 16, color: '#2c3e50' },
 });

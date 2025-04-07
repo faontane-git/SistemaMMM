@@ -23,7 +23,14 @@ const Noticias: React.FC<NoticiasProps> = ({ noticias, handleOptionPress }) => {
         );
     }
 
-    const ultimaNoticia = noticias[0]; // Última noticia publicada
+    // Ordenar las noticias por fecha (más reciente primero)
+    const noticiasOrdenadas = noticias.sort((a, b) => {
+        const fechaA = new Date(a.fecha || 0).getTime();
+        const fechaB = new Date(b.fecha || 0).getTime();
+        return fechaB - fechaA; // Orden descendente
+    });
+
+    const ultimaNoticia = noticiasOrdenadas[0]; // Última noticia publicada
 
     return (
         <View style={styles.container}>
@@ -53,6 +60,7 @@ const Noticias: React.FC<NoticiasProps> = ({ noticias, handleOptionPress }) => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {

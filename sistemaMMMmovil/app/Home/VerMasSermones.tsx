@@ -38,9 +38,8 @@ export default function VerMasSermones() {
     const { type } = (route.params as RouteParams) || {};
 
     useEffect(() => {
-        console.log(type);
         if (!type) return;
-
+    
         const fetchSermones = async () => {
             try {
                 const snapshot = await getDocs(collection(firestore, 'Audios'));
@@ -48,12 +47,20 @@ export default function VerMasSermones() {
                     id: doc.id,
                     ...doc.data(),
                 })) as Sermon[];
-
+    
                 const filteredSermones = sermonesArray.filter((sermon) => sermon.type === type);
+    
+                // Ordenar los sermones por la fecha de carga (más reciente primero)
+                filteredSermones.sort((a, b) => {
+                    const fechaA = new Date(a.uploadedAt).getTime();
+                    const fechaB = new Date(b.uploadedAt).getTime();
+                    return fechaB - fechaA; // Orden descendente
+                });
+    
                 const groupedSermones = filteredSermones.length > 0
                     ? [{ title: type, data: filteredSermones }]
                     : [];
-
+    
                 setSermones(groupedSermones);
             } catch (error) {
                 console.error('Error fetching sermones:', error);
@@ -61,9 +68,10 @@ export default function VerMasSermones() {
                 setLoading(false);
             }
         };
-
+    
         fetchSermones();
     }, [type]);
+    
 
     const handleGoBack = () => {
         if (navigation.canGoBack()) {

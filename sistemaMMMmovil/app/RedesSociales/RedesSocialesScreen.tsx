@@ -44,7 +44,8 @@ export default function RedesSocialesScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#2980b9" />
+        <Text style={styles.loadingText}>Cargando información...</Text>
       </View>
     );
   }
@@ -102,6 +103,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  loadingText: { marginTop: 10, fontSize: 16, color: '#2c3e50' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

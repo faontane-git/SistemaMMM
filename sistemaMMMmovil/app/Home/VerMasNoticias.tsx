@@ -39,10 +39,17 @@ export default function VerMasNoticias() { // Exportación por defecto
         const fetchNoticias = async () => {
             try {
                 const snapshot = await getDocs(collection(firestore, 'Noticias'));
-                const noticiasArray = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                })) as Noticia[];
+                const noticiasArray = snapshot.docs
+                    .map((doc) => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    })) as Noticia[];
+
+                noticiasArray.sort((a, b) => {
+                    const fechaA = new Date(a.fecha ?? 0).getTime();
+                    const fechaB = new Date(b.fecha ?? 0).getTime();
+                    return fechaB - fechaA; // Orden descendente (más reciente primero)
+                });
                 setNoticias(noticiasArray);
             } catch (error) {
                 console.error('Error fetching noticias:', error);
