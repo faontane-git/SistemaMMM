@@ -11,7 +11,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.faontane.sistemaMMMmovil",
-      "buildNumber": "1.0.4", 
+      "buildNumber": "1.0.4",
       "icon": "./assets/logo.png",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -24,7 +24,11 @@
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.faontane.sistemaMMMmovil"
+      "package": "com.faontane.sistemaMMMmovil",
+      "notification": {
+        "icon": "./assets/logo.png",
+        "color": "#1B4F72"
+      }
     },
     "web": {
       "bundler": "metro",

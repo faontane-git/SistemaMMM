@@ -30,6 +30,7 @@ import FormularioActividad from './components/Agenda/FormularioActividad';
 import HorarioOtros from './components/Agenda/HorarioOtros';
 import HorarioConsojeria from './components/Agenda/HorarioConsejeria';
 import HorarioCultos from './components/Agenda/HorarioCultos';
+import PaginaNotificaciones from './components/Notificaciones/Notificaciones';
 
 const App: React.FC = () => {
     return (
@@ -63,6 +64,7 @@ const App: React.FC = () => {
                         <Route path='/horario-otros' element={<HorarioOtros/>}/>
                         <Route path='/horario-consejeria' element={<HorarioConsojeria/>}/>
                         <Route path='/horario-cultos' element={<HorarioCultos/>}/>
+                        <Route path="/notificaciones" element={<PaginaNotificaciones />} />
                     </Route>
                 </Routes>
             </Router>
