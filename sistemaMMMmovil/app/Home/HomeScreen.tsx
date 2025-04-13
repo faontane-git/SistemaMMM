@@ -8,7 +8,8 @@ import {
     ActivityIndicator,
     Image,
     Modal,
-    Pressable
+    Pressable,
+    Alert
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -17,6 +18,7 @@ import { firestore } from '../../firebaseConfig';
 import Noticias from './Noticias';
 import Sermones from './Sermones';
 import { SafeAreaView } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
 
 export default function HomeScreen() {
     const [noticias, setNoticias] = useState<any[]>([]);
@@ -27,17 +29,57 @@ export default function HomeScreen() {
     const navigation = useNavigation();
     const [idioma, setIdioma] = useState<'es' | 'en'>('es');
 
-    // Formatear la fecha del mensaje en formato legible
-    const formatFecha = (timestamp: any) => {
-        if (!timestamp) return "Fecha no disponible";
-        const fecha = new Date(timestamp.seconds * 1000);
-        return fecha.toLocaleDateString("es-ES", {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
+    useEffect(() => {
+        // Pedir permisos y obtener token
+        const getPushToken = async () => {
+            const authStatus = await messaging().requestPermission();
+            const enabled =
+                authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+                authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+            if (!enabled) {
+                Alert.alert('Permiso para notificaciones fue denegado');
+                return;
+            }
+
+            const fcmToken = await messaging().getToken();
+            if (fcmToken) {
+                console.log('FCM Token:', fcmToken);
+            }
+        };
+
+        getPushToken();
+
+        // Notificación recibida en primer plano
+        const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
+            Alert.alert('Nueva notificación', remoteMessage.notification?.title || 'Notificación recibida');
         });
-    };
+
+        // Segundo plano
+        const unsubscribeOnNotificationOpenedApp = messaging().onNotificationOpenedApp(remoteMessage => {
+            console.log('Notificación tocada en segundo plano:', remoteMessage);
+            if (remoteMessage?.data?.mostrarModal === 'true') {
+                setModalVisible(true); // Solo mostrar si se indicó
+            }
+        });
+
+        // App cerrada
+        messaging()
+            .getInitialNotification()
+            .then(remoteMessage => {
+                if (remoteMessage) {
+                    console.log('App abierta desde una notificación:', remoteMessage);
+                    if (remoteMessage?.data?.mostrarModal === 'true') {
+                        setModalVisible(true);
+                    }
+                }
+            });
+
+        return () => {
+            unsubscribeOnMessage();
+            unsubscribeOnNotificationOpenedApp();
+        };
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
