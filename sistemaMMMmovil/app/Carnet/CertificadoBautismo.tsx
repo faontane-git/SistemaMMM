@@ -177,8 +177,6 @@ export default function CertificadoBautismo() {
     }
   };
 
-
-
   const { width } = Dimensions.get('window');
 
   const qrData = JSON.stringify({
