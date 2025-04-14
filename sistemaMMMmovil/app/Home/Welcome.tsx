@@ -8,11 +8,14 @@ import {
   ActivityIndicator,
   SafeAreaView,
   Alert,
+  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '@/firebaseConfig';
 import messaging from '@react-native-firebase/messaging';
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
 
 interface BienvenidaData {
   Titulo: string;
@@ -23,6 +26,36 @@ export default function WelcomeScreen() {
   const navigation = useNavigation();
   const [bienvenida, setBienvenida] = useState<BienvenidaData>({ Titulo: '', Mensaje: '' });
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
+    });
+  }, []);
+
+  useEffect(() => {
+    const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
+      console.log('Mensaje en primer plano:', remoteMessage);
+
+      // Puedes mostrar una notificación local si quieres
+      if (Platform.OS === 'android') {
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: remoteMessage.notification?.title || 'Notificación',
+            body: remoteMessage.notification?.body || '',
+          },
+          trigger: null,
+        });
+      }
+    });
+
+    return unsubscribeOnMessage;
+  }, []);
+
 
   useEffect(() => {
     const initializeData = async () => {
@@ -37,6 +70,8 @@ export default function WelcomeScreen() {
         setLoading(false);
       }
     };
+
+    initializeData();
 
     const getPushToken = async () => {
       const authStatus = await messaging().requestPermission();
@@ -56,14 +91,34 @@ export default function WelcomeScreen() {
       }
     };
 
-    initializeData();
+    const setupNotifications = async () => {
+      // Pedir permisos
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== 'granted') {
+        await Notifications.requestPermissionsAsync();
+      }
+
+      // Configurar canal para Android
+      if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+          name: 'Default Channel',
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+        });
+      }
+
+      // Escuchar notificaciones entrantes
+      const subscription = Notifications.addNotificationReceivedListener(notification => {
+        console.log('Notificación recibida:', notification);
+      });
+
+      return () => subscription.remove();
+    };
+
     getPushToken();
+    setupNotifications();
 
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('Nueva notificación', remoteMessage.notification?.title || 'Notificación recibida');
-    });
 
-    return unsubscribe;
   }, []);
 
   const handleContinue = () => {
