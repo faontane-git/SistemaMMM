@@ -37,9 +37,33 @@ export default function WelcomeScreen() {
         setLoading(false);
       }
     };
- 
-    initializeData();
 
+    const getPushToken = async () => {
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+      if (!enabled) {
+        Alert.alert('Permiso para notificaciones fue denegado');
+        return;
+      }
+
+      const fcmToken = await messaging().getToken();
+      if (fcmToken) {
+        console.log('FCM Token:', fcmToken);
+        // Aquí puedes guardar el token en Firestore si deseas
+      }
+    };
+
+    initializeData();
+    getPushToken();
+
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('Nueva notificación', remoteMessage.notification?.title || 'Notificación recibida');
+    });
+
+    return unsubscribe;
   }, []);
 
   const handleContinue = () => {
