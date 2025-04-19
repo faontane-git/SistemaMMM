@@ -91,32 +91,36 @@ export default function WelcomeScreen() {
       }
     };
 
-    const setupNotifications = async () => {
-      // Pedir permisos
-      const { status } = await Notifications.getPermissionsAsync();
-      if (status !== 'granted') {
-        await Notifications.requestPermissionsAsync();
-      }
-
-      // Configurar canal para Android
+    const setupNotificationChannels = async () => {
       if (Platform.OS === 'android') {
         await Notifications.setNotificationChannelAsync('default', {
-          name: 'Default Channel',
+          name: 'Canal General',
+          importance: Notifications.AndroidImportance.DEFAULT,
+        });
+
+        await Notifications.setNotificationChannelAsync('important', {
+          name: 'Alertas Importantes',
           importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 500, 500, 500],
+          lightColor: '#FF231F7C',
+        });
+
+        await Notifications.setNotificationChannelAsync('silent', {
+          name: 'Silenciosas',
+          importance: Notifications.AndroidImportance.MIN,
+          sound: null,
+        });
+
+        await Notifications.setNotificationChannelAsync('reminders', {
+          name: 'Recordatorios',
+          importance: Notifications.AndroidImportance.HIGH,
           vibrationPattern: [0, 250, 250, 250],
         });
       }
-
-      // Escuchar notificaciones entrantes
-      const subscription = Notifications.addNotificationReceivedListener(notification => {
-        console.log('Notificación recibida:', notification);
-      });
-
-      return () => subscription.remove();
     };
 
     getPushToken();
-    setupNotifications();
+    setupNotificationChannels();
 
 
   }, []);
