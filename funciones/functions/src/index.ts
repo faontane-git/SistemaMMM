@@ -1,19 +1,45 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+import * as functions from "firebase-functions";
+import * as nodemailer from "nodemailer";
 
-import {onRequest} from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
+const gmailEmail = functions.config().gmail.email;
+const gmailPassword = functions.config().gmail.password;
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
+// Configurar el transporter
+const mailTransport = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: gmailEmail,
+    pass: gmailPassword
+  }
+});
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+export const sendEmail = functions.https.onRequest((req, res) => {
+    if (req.method !== 'POST') {
+      res.status(405).send('Método no permitido');
+      return;
+    }
+  
+    const { to, subject, text, html } = req.body;
+  
+    if (!to) {
+      res.status(400).send('Falta el destinatario (to)');
+      return;
+    }
+  
+    const mailOptions = {
+      from: `Tu App <${functions.config().gmail.email}>`,
+      to,
+      subject: subject || 'Sin asunto',
+      text: text || '',
+      html: html || ''
+    };
+  
+    mailTransport.sendMail(mailOptions, (error) => {
+      if (error) {
+        console.error('Error enviando email:', error);
+        res.status(500).send('Error al enviar el correo');
+        return;
+      }
+      res.status(200).send('Correo enviado con éxito');
+    });
+  });
