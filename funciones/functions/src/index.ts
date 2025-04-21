@@ -1,45 +1,29 @@
-import * as functions from "firebase-functions";
+import * as functions from "firebase-functions/v1";
 import * as nodemailer from "nodemailer";
 
-const gmailEmail = functions.config().gmail.email;
-const gmailPassword = functions.config().gmail.password;
-
-// Configurar el transporter
-const mailTransport = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: gmailEmail,
-    pass: gmailPassword
-  }
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: "proyectommm9@gmail.com",
+        pass: "Elguapo10",
+    },
 });
 
-export const sendEmail = functions.https.onRequest((req, res) => {
-    if (req.method !== 'POST') {
-      res.status(405).send('Método no permitido');
-      return;
-    }
-  
-    const { to, subject, text, html } = req.body;
-  
-    if (!to) {
-      res.status(400).send('Falta el destinatario (to)');
-      return;
-    }
-  
+export const sendWelcomeEmail = functions.auth.user().onCreate(async (user) => {
+    const email = user.email;
+    const displayName = user.displayName || "Usuario";
+
     const mailOptions = {
-      from: `Tu App <${functions.config().gmail.email}>`,
-      to,
-      subject: subject || 'Sin asunto',
-      text: text || '',
-      html: html || ''
+        from: `"Tu App" <proyectommm9@gmail.com>`,
+        to: email,
+        subject: "¡Bienvenido a nuestra aplicación!",
+        html: `<h1>Hola ${displayName},</h1><p>Gracias por registrarte en nuestra app.</p>`,
     };
-  
-    mailTransport.sendMail(mailOptions, (error) => {
-      if (error) {
-        console.error('Error enviando email:', error);
-        res.status(500).send('Error al enviar el correo');
-        return;
-      }
-      res.status(200).send('Correo enviado con éxito');
-    });
-  });
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log("Correo de bienvenida enviado a:", email);
+    } catch (error) {
+        console.error("Error al enviar el correo de bienvenida:", error);
+    }
+});
