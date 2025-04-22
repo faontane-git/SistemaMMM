@@ -18,6 +18,7 @@
       }
     },
     "android": {
+      "versionCode": 4,
       "useNextNotificationsApi": true,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
