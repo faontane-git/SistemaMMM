@@ -15,7 +15,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '@/firebaseConfig';
 import messaging from '@react-native-firebase/messaging';
 import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
+import { PermissionsAndroid } from 'react-native'; // arriba de todo
 
 interface BienvenidaData {
   Titulo: string;
@@ -74,20 +74,35 @@ export default function WelcomeScreen() {
     initializeData();
 
     const getPushToken = async () => {
-      const authStatus = await messaging().requestPermission();
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-      if (!enabled) {
-        Alert.alert('Permiso para notificaciones fue denegado');
-        return;
-      }
-
-      const fcmToken = await messaging().getToken();
-      if (fcmToken) {
-        console.log('FCM Token:', fcmToken);
-        // Aquí puedes guardar el token en Firestore si deseas
+      try {
+        if (Platform.OS === 'android' && Platform.Version >= 33) {
+          const permission = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+          );
+    
+          if (permission !== PermissionsAndroid.RESULTS.GRANTED) {
+            Alert.alert('Permiso para mostrar notificaciones fue denegado.');
+            return;
+          }
+        }
+    
+        const authStatus = await messaging().requestPermission();
+        const enabled =
+          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    
+        if (!enabled) {
+          Alert.alert('Permiso para recibir notificaciones fue denegado.');
+          return;
+        }
+    
+        const fcmToken = await messaging().getToken();
+        if (fcmToken) {
+          console.log('FCM Token:', fcmToken);
+          // Puedes guardarlo si quieres
+        }
+      } catch (error) {
+        console.error('Error obteniendo el token:', error);
       }
     };
 
