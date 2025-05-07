@@ -29,6 +29,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Swal from 'sweetalert2';
 import { styled } from '@mui/system';
+import { query, orderBy } from 'firebase/firestore'; // asegúrate de tener estas importaciones
 
 interface Noticia {
   id: string;
@@ -62,12 +63,13 @@ const DetalleNoticia: React.FC = () => {
       try {
         const db = getFirestore();
         const noticiasCollection = collection(db, 'Noticias');
-        const querySnapshot = await getDocs(noticiasCollection);
+        const noticiasQuery = query(noticiasCollection, orderBy('fecha', 'desc')); // 🆕 Orden descendente por fecha
+        const querySnapshot = await getDocs(noticiasQuery);
         const noticiasArray: Noticia[] = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Noticia[];
-
+  
         setNoticias(noticiasArray);
       } catch (error) {
         console.error('Error al obtener noticias:', error);
@@ -75,9 +77,10 @@ const DetalleNoticia: React.FC = () => {
         setLoading(false);
       }
     };
-
+  
     obtenerNoticias();
   }, []);
+  
 
   const handleOpenModal = (noticia: Noticia) => {
     setNoticiaSeleccionada(noticia);
